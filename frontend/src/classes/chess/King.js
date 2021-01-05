@@ -212,7 +212,7 @@ class King extends Piece {
 		// castling
 		this.addCastlingMoves(board, kingParameters);
 
-		this.checkIfKingInCheck(kingParameters);
+		// this.checkIfKingInCheck(kingParameters);
 		this.moves = this.notAllowKingToMoveToAttackedCell(kingParameters);
 
 		return this.moves;
