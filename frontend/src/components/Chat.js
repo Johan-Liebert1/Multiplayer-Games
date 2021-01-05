@@ -67,6 +67,9 @@ const Chat = () => {
 			let { newMessage, username, color } = data;
 			setMessageList([...messageList, { username, newMessage, color }]);
 		});
+
+		const chatDiv = document.getElementById("chat-container");
+		chatDiv.scrollTop = chatDiv.scrollHeight;
 	}, [messageList, socket]);
 
 	return (

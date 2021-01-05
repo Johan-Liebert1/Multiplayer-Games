@@ -5,6 +5,7 @@ import Cell from "./Cell";
 import CheckersPiece from "../classes/checkers/CheckersPiece";
 import CheckersGame from "../classes/checkers/CheckersGame";
 import GameOverComponent from "./GameOverComponent";
+import useWindowSize from "../hooks/useWindowSize";
 
 const game = new CheckersGame();
 
@@ -24,6 +25,7 @@ const CheckersBoard = () => {
 		[0, 0, 0, 0, 0, 0, 0, 0]
 	]);
 
+	const windowSize = useWindowSize();
 	const [gameOver, setGameOver] = useState({
 		gameOver: false,
 		winnerName: null,
@@ -117,8 +119,10 @@ const CheckersBoard = () => {
 	};
 
 	return (
-		<div>
-			<div>{getPlayerName("opponent")}</div>
+		<div style={{ margin: windowSize[0] < 910 ? "2rem 0" : "" }}>
+			<div style={{ height: "2rem" }}>
+				<h3>{getPlayerName("opponent")}</h3>
+			</div>
 			<div id="checkersBoard" style={{ position: "relative" }}>
 				{gameOver.gameOver && (
 					<GameOverComponent
@@ -179,7 +183,9 @@ const CheckersBoard = () => {
 					})}
 				</div>
 			</div>
-			<div>{getPlayerName("self")}</div>
+			<div style={{ height: "2rem", padding: "0.5rem 0" }}>
+				<h3>{getPlayerName("self")}</h3>
+			</div>
 		</div>
 	);
 };

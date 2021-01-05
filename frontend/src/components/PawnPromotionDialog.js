@@ -46,16 +46,28 @@ const PawnPromotionDialog = ({ pawnColor, handlePawnPromotion }) => {
 					exit="exit"
 				>
 					<div onClick={() => handleClick("queen")}>
-						<img src={`images/chess/${pawnColor}Queen.png`} />
+						<img
+							src={`images/chess/${pawnColor}Queen.png`}
+							alt={`${pawnColor}queen`}
+						/>
 					</div>
 					<div onClick={() => handleClick("rook")}>
-						<img src={`images/chess/${pawnColor}Rook.png`} />
+						<img
+							src={`images/chess/${pawnColor}Rook.png`}
+							alt={`${pawnColor}rook`}
+						/>
 					</div>
 					<div onClick={() => handleClick("bishop")}>
-						<img src={`images/chess/${pawnColor}Bishop.png`} />
+						<img
+							src={`images/chess/${pawnColor}Bishop.png`}
+							alt={`${pawnColor}bishop`}
+						/>
 					</div>
 					<div onClick={() => handleClick("knight")}>
-						<img src={`images/chess/${pawnColor}Knight.png`} />
+						<img
+							src={`images/chess/${pawnColor}Knight.png`}
+							alt={`${pawnColor}knight`}
+						/>
 					</div>
 				</motion.div>
 			</AnimatePresence>

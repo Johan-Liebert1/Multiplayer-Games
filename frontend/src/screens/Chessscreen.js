@@ -11,7 +11,7 @@ const ChessScreen = () => {
 	const mainDivStyles = {
 		display: "flex",
 		alignItems: "center",
-		justifyContent: "center",
+		justifyContent: "space-around",
 		minHeight: "100vh",
 		minWidth: "85vw",
 		flexWrap: "wrap"

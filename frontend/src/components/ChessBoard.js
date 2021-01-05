@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import useWindowSize from "../hooks/useWindowSize";
 
 import Cell from "./Cell";
 import Pawn from "../classes/chess/Pawn";
@@ -66,6 +67,7 @@ const ChessBoard = () => {
 	const { chessPieceColor, username } = useSelector(state => state.user);
 	const chessSockets = useSelector(state => state.chessSockets);
 
+	const windowSize = useWindowSize();
 	const [gameOver, setGameOver] = useState({
 		gameOver: false,
 		winnerName: null,
@@ -225,8 +227,10 @@ const ChessBoard = () => {
 	};
 
 	return (
-		<div>
-			<div>{getPlayerName("opponent")}</div>
+		<div style={{ margin: windowSize[0] < 910 ? "2rem 0" : "" }}>
+			<div style={{ height: "2rem" }}>
+				<h3>{getPlayerName("opponent")}</h3>
+			</div>
 
 			<div id="checkersBoard" style={{ position: "relative" }}>
 				{gameOver.gameOver && (
@@ -252,7 +256,9 @@ const ChessBoard = () => {
 					{showChessBoard(chessPieceColor)}
 				</div>
 			</div>
-			<div>{getPlayerName("opponent")}</div>
+			<div style={{ height: "2rem", padding: "0.5rem 0" }}>
+				<h3>{getPlayerName("self")}</h3>
+			</div>
 		</div>
 	);
 };
