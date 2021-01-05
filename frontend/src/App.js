@@ -3,7 +3,7 @@ import { Switch, Route } from "react-router-dom";
 
 import HomeScreen from "./screens/HomeScreen";
 import CheckersScreen from "./screens/CheckersScreen";
-import ChessScreen from "./screens/ChessScreen";
+import ChessScreen from "./screens/Chessscreen";
 import GamesScreen from "./screens/GamesScreen";
 import SketchIOScreen from "./screens/SketchIOScreen";
 import InvitePlayersScreen from "./screens/InvitePlayersScreen";
