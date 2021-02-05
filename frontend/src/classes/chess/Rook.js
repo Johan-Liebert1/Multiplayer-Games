@@ -112,6 +112,8 @@ class Rook extends Piece {
 		}
 
 		this.checkIfKingInCheck(kingParameters);
+		this.handlePiecePinnedByRook(kingParameters, board);
+		this.handlePiecePinnedByBishop(kingParameters, board);
 
 		return this.moves;
 	};

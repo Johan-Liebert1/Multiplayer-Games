@@ -6,14 +6,26 @@ class Pawn extends Piece {
 		this.hasMoved = false;
 		this.pieceName = "pawn";
 		this.image = `images/chess/${this.color}Pawn.png`;
+
+		this.setHasMoved();
 	}
+
+	setHasMoved = () => {
+		if (this.color === "black" && this.row !== 1) {
+			this.hasMoved = true;
+		}
+
+		if (this.color === "white" && this.row !== 6) {
+			this.hasMoved = true;
+		}
+	};
 
 	validMoves = (board, kingParameters, initialCall = false) => {
 		this.resetMoves();
 
 		const adder = this.color === "black" ? 1 : -1;
 
-		if (!this.hasMoved) {
+		if (!this.hasMoved && board[this.row + adder][this.col] === 0) {
 			if (board[this.row + adder * 2][this.col] === 0) {
 				this.moves[this.getStr(this.row + adder * 2, this.col)] = "valid";
 			}
@@ -58,6 +70,8 @@ class Pawn extends Piece {
 		}
 
 		this.checkIfKingInCheck(kingParameters);
+		this.handlePiecePinnedByRook(kingParameters, board);
+		this.handlePiecePinnedByBishop(kingParameters, board);
 
 		return this.moves;
 	};

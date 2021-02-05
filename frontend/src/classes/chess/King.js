@@ -2,12 +2,16 @@ import Piece from "./ChessPiece";
 import Rook from "./Rook";
 
 class King extends Piece {
-	constructor(color, row, col) {
+	constructor(color, row, col, canCastleLeft = null, canCastleRight = null) {
 		super(color, row, col);
 		this.pieceName = "king";
 		this.image = `images/chess/${this.color}King.png`;
 		this.isKing = true;
 		this.hasMoved = false;
+
+		// for puzzles
+		this.canCastleLeft = canCastleLeft;
+		this.canCastleRight = canCastleRight;
 	}
 
 	notAllowKingToMoveToAttackedCell = kingParameters => {
@@ -40,6 +44,14 @@ class King extends Piece {
 		const row = rookColor === "white" ? 7 : 0;
 		const blockedPath = { leftBlocked: false, rightBlocked: false };
 
+		if (!(board[row][0] instanceof Rook)) {
+			blockedPath.leftBlocked = true;
+		}
+
+		if (!(board[row][7] instanceof Rook)) {
+			blockedPath.leftBlocked = true;
+		}
+
 		const leftCols = [1, 2, 3];
 		const rightCols = [5, 6];
 
@@ -66,6 +78,20 @@ class King extends Piece {
 	};
 
 	addCastlingMoves = (board, kingParameters) => {
+		if (this.canCastleLeft !== null || this.canCastleRight !== null) {
+			// this is for puzzles
+
+			if (this.canCastleLeft === true) {
+				this.moves[this.getStr(this.row, this.col - 2)] = "castling";
+			}
+
+			if (this.canCastleRight === true) {
+				this.moves[this.getStr(this.row, this.col + 2)] = "castling";
+			}
+
+			return;
+		}
+
 		const { whiteKingInCheck, blackKingInCheck } = kingParameters;
 
 		if (this.hasMoved) return;
@@ -73,12 +99,13 @@ class King extends Piece {
 		if (this.color === "white") {
 			// if there's an unmoved Rook
 			if (whiteKingInCheck) return;
+			if (this.row !== 7) return;
 
 			// if there's no rook then return
 			if (!this.isRookPresent(board, this.color)) return;
 
 			// if any piece is blocking the path between both rooks and king, return
-			const { leftBlocked, rightBlocked } = this.isPathBetweenRookAndKingBlocked(
+			let { leftBlocked, rightBlocked } = this.isPathBetweenRookAndKingBlocked(
 				board,
 				this.color
 			);
@@ -94,6 +121,7 @@ class King extends Piece {
 			}
 		} else {
 			if (blackKingInCheck) return;
+			if (this.row !== 0) return;
 			if (!this.isRookPresent(board, this.color)) return;
 
 			const { leftBlocked, rightBlocked } = this.isPathBetweenRookAndKingBlocked(
@@ -111,6 +139,117 @@ class King extends Piece {
 				this.moves[this.getStr(this.row, this.col + 2)] = "castling";
 			}
 		}
+	};
+
+	handleKingInCheckByRook = ({ pieceCheckingKing }) => {
+		let newValidMoves = {};
+		let rookSquares = {};
+
+		let row = pieceCheckingKing.row + 1,
+			col = pieceCheckingKing.col;
+		// up (row--)
+		while (row > -1) {
+			rookSquares[this.getStr(row, col)] = true;
+			row--;
+		}
+
+		// down (row++)
+		row = pieceCheckingKing.row - 1;
+		while (row < 8) {
+			rookSquares[this.getStr(row, col)] = true;
+			row++;
+		}
+
+		// left (col--)
+		row = pieceCheckingKing.row;
+		col = pieceCheckingKing.col - 1;
+		while (col > -1) {
+			rookSquares[this.getStr(row, col)] = true;
+			col--;
+		}
+
+		// right (col+6)
+		col = pieceCheckingKing.col + 1;
+		while (col < 8) {
+			rookSquares[this.getStr(row, col)] = true;
+			col++;
+		}
+
+		Object.keys(this.moves).forEach(move => {
+			if (!(move in rookSquares)) {
+				newValidMoves[move] = this.moves[move];
+			}
+		});
+
+		let cm = this.getStr(pieceCheckingKing.row, pieceCheckingKing.col);
+
+		if (cm in this.moves) {
+			newValidMoves[cm] = this.moves[cm];
+		}
+
+		this.moves = newValidMoves;
+	};
+
+	handleKingInCheckByBishop = ({ pieceCheckingKing }) => {
+		// go upper left (row--, col--)
+		let bishopSquares = {};
+
+		let row = pieceCheckingKing.row - 1,
+			col = pieceCheckingKing.col - 1;
+
+		while (row > -1 && col > -1) {
+			bishopSquares[this.getStr(row, col)] = true;
+			row--;
+			col--;
+		}
+
+		// upper right (row--, col++)
+		row = pieceCheckingKing.row - 1;
+		col = pieceCheckingKing.col + 1;
+		while (row > -1 && col < 8) {
+			bishopSquares[this.getStr(row, col)] = true;
+			row--;
+			col++;
+		}
+
+		// lower left (row++, col--)
+		row = pieceCheckingKing.row + 1;
+		col = pieceCheckingKing.col - 1;
+		while (row < 8 && col > -1) {
+			bishopSquares[this.getStr(row, col)] = true;
+			row++;
+			col--;
+		}
+
+		// lower right (row++, col++)
+		row = pieceCheckingKing.row + 1;
+		col = pieceCheckingKing.col + 1;
+		while (row < 8 && col < 8) {
+			bishopSquares[this.getStr(row, col)] = true;
+			row++;
+			col++;
+		}
+
+		let newValidMoves = {};
+
+		Object.keys(this.moves).forEach(move => {
+			if (!(move in bishopSquares)) {
+				newValidMoves[move] = this.moves[move];
+			}
+		});
+
+		let cm = this.getStr(pieceCheckingKing.row, pieceCheckingKing.col);
+
+		if (cm in this.moves) {
+			newValidMoves[cm] = this.moves[cm];
+		}
+
+		this.moves = newValidMoves;
+	};
+
+	handleKingInCheckByQueen = ({ pieceCheckingKing }) => {
+		this.handleKingInCheckByRook({ pieceCheckingKing });
+		this.handleKingInCheckByBishop({ pieceCheckingKing });
 	};
 
 	validMoves = (board, kingParameters) => {
@@ -212,7 +351,35 @@ class King extends Piece {
 		// castling
 		this.addCastlingMoves(board, kingParameters);
 
-		// this.checkIfKingInCheck(kingParameters);
+		const {
+			whiteKingInCheck,
+			blackKingInCheck,
+			pieceCheckingWhiteKing,
+			pieceCheckingBlackKing,
+			whiteKingPos,
+			blackKingPos
+		} = kingParameters;
+
+		if (this.color === "white" && whiteKingInCheck) {
+			let obj = { pieceCheckingKing: pieceCheckingWhiteKing };
+			if (pieceCheckingWhiteKing.pieceName === "rook") {
+				this.handleKingInCheckByRook(obj);
+			} else if (pieceCheckingWhiteKing.pieceName === "bishop") {
+				this.handleKingInCheckByBishop(obj);
+			} else if (pieceCheckingWhiteKing.pieceName === "queen") {
+				this.handleKingInCheckByQueen(obj);
+			}
+		} else if (this.color === "black" && blackKingInCheck) {
+			let obj = { pieceCheckingKing: pieceCheckingBlackKing };
+			if (pieceCheckingBlackKing.pieceName === "rook") {
+				this.handleKingInCheckByRook(obj);
+			} else if (pieceCheckingBlackKing.pieceName === "bishop") {
+				this.handleKingInCheckByBishop(obj);
+			} else if (pieceCheckingBlackKing.pieceName === "queen") {
+				this.handleKingInCheckByQueen(obj);
+			}
+		}
+
 		this.moves = this.notAllowKingToMoveToAttackedCell(kingParameters);
 
 		return this.moves;

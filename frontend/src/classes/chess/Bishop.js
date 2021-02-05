@@ -135,6 +135,8 @@ class Bishop extends Piece {
 		this.lowerLeft(board);
 
 		this.checkIfKingInCheck(kingParameters);
+		this.handlePiecePinnedByRook(kingParameters, board);
+		this.handlePiecePinnedByBishop(kingParameters, board);
 
 		return this.moves;
 	};

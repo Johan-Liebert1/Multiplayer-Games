@@ -7,13 +7,14 @@ import Queen from "./Queen";
 import Rook from "./Rook";
 
 class ChessGame {
-	constructor() {
+	constructor(turn = "white", whiteKingPos = [7, 4], blackKingPos = [0, 4]) {
+		this.turn = turn;
+
 		this.cellsClicked = { rows: [], cols: [] };
 		this.numClicks = 0;
-		this.turn = "white";
 		this.selected = null;
-		this.whiteKingPos = [7, 4];
-		this.blackKingPos = [0, 4];
+		this.whiteKingPos = whiteKingPos;
+		this.blackKingPos = blackKingPos;
 		this.whiteKingInCheck = false;
 		this.blackKingInCheck = false;
 		this.pieceCheckingWhiteKing = null;
@@ -110,6 +111,7 @@ class ChessGame {
 				piece.isClicked = true;
 			}
 		}
+
 		let tempCellsClicked = this.select(board, row, col);
 
 		return tempCellsClicked;
@@ -207,11 +209,14 @@ class ChessGame {
 		}
 
 		if (this.whiteKingInCheck) {
+			console.log("this.whiteKingInCheck");
 			let [r, c] = this.whiteKingPos;
 			board[r][c].isBeingAttacked = true;
 		}
 
 		if (this.blackKingInCheck) {
+			console.log("this.blackKingInCheck");
+
 			let [r, c] = this.blackKingPos;
 			board[r][c].isBeingAttacked = true;
 		}
@@ -242,9 +247,51 @@ class ChessGame {
 							// as pawn's valid moves aren't its capturing moves
 							if (totalMoves[key] !== "valid") {
 								attackedCells[key] = totalMoves[key];
+
+								if (
+									board[row][col].color === "black" &&
+									this.getStr(...this.whiteKingPos) === key
+								) {
+									console.log("key = ", key);
+									console.log(
+										"getstr(whiteKingPos) = ",
+										this.getStr(...this.whiteKingPos)
+									);
+									this.whiteKingInCheck = true;
+									this.pieceCheckingWhiteKing = board[row][col];
+								}
+
+								if (
+									board[row][col].color === "white" &&
+									this.getStr(...this.blackKingPos) === key
+								) {
+									console.log("key = ", key);
+									console.log(
+										"getstr(blackKingPos) = ",
+										this.getStr(...this.blackKingPos)
+									);
+									this.blackKingInCheck = true;
+									this.pieceCheckingBlackKing = board[row][col];
+								}
 							}
 						} else {
 							attackedCells[key] = totalMoves[key];
+
+							if (
+								board[row][col].color === "black" &&
+								this.getStr(...this.whiteKingPos) === key
+							) {
+								this.whiteKingInCheck = true;
+								this.pieceCheckingWhiteKing = board[row][col];
+							}
+
+							if (
+								board[row][col].color === "white" &&
+								this.getStr(...this.blackKingPos) === key
+							) {
+								this.blackKingInCheck = true;
+								this.pieceCheckingBlackKing = board[row][col];
+							}
 						}
 					});
 
@@ -256,35 +303,12 @@ class ChessGame {
 				}
 			}
 		}
-	};
 
-	setAttackedCellsByPiece = (board, piece) => {
-		let movesToReplace = {};
-		const str = this.getStr(piece.row, piece.col);
-
-		if (piece.pieceName === "pawn") {
-			piece.validMoves(board, this.kingParams, true);
-			let newMoves = { ...piece.moves, ...piece.protectingMoves };
-
-			Object.keys(newMoves).forEach(key => {
-				if (newMoves[key] !== "valid") {
-					movesToReplace[key] = newMoves[key];
-				}
-			});
-		} else {
-			piece.validMoves(board, this.kingParams);
-			movesToReplace = { ...piece.moves, ...piece.protectingMoves };
-		}
-
-		if (piece.color === "white") {
-			this.cellsUnderAttackByWhite[str] = movesToReplace;
-		} else {
-			this.cellsUnderAttackByBlack[str] = movesToReplace;
-		}
+		this.setKingParams();
+		this.isGameOver(board);
 	};
 
 	select = (board, row, col) => {
-		// console.log("select called");
 		if (this.numClicks === 0) {
 			if (board[row][col] === 0) return;
 			else if (board[row][col] === "dot") return;
@@ -445,25 +469,33 @@ class ChessGame {
 		return false;
 	};
 
-	blackWins = () => {
+	blackWins = (stalemate = "black") => {
 		this.gameOver = true;
-		this.winner = "black";
+		this.winner = stalemate;
 		return this.gameOver;
 	};
 
-	whiteWins = () => {
+	whiteWins = (stalemate = "white") => {
 		this.gameOver = true;
-		this.winner = "white";
+		this.winner = stalemate;
 		return this.gameOver;
 	};
 
 	isGameOver = board => {
 		if (!this.colorHasMovesLeft(board, "white")) {
-			return this.blackWins();
+			if (this.whiteKingInCheck) {
+				return this.blackWins();
+			} else {
+				return this.blackWins("Stalemate (Draw)");
+			}
 		}
 
 		if (!this.colorHasMovesLeft(board, "black")) {
-			return this.whiteWins();
+			if (this.blackKingInCheck) {
+				return this.whiteWins();
+			} else {
+				return this.whiteWins("Stalemate (Draw)");
+			}
 		}
 
 		return false;
