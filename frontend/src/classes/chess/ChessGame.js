@@ -13,6 +13,7 @@ class ChessGame {
 		this.cellsClicked = { rows: [], cols: [] };
 		this.numClicks = 0;
 		this.selected = null;
+
 		this.whiteKingPos = whiteKingPos;
 		this.blackKingPos = blackKingPos;
 		this.whiteKingInCheck = false;
@@ -20,8 +21,14 @@ class ChessGame {
 		this.pieceCheckingWhiteKing = null;
 		this.pieceCheckingBlackKing = null;
 		this.kingParams = {};
+
 		this.gameOver = false;
-		this.winner = null;
+		this.winner = "";
+		this.whitePiecesOnBoard = {};
+		this.blackPiecesOnBoard = {};
+		this.piecePoints = { king: 0, queen: 9, knight: 3, bishop: 3, rook: 5, pawn: 1 };
+		this.whitePiecesValue = 0;
+		this.blackPiecesValue = 0;
 
 		// key = row,col of the piece
 		// value = piece.validMoves()
@@ -228,6 +235,11 @@ class ChessGame {
 		this.cellsUnderAttackByBlack = {};
 		this.cellsUnderAttackByWhite = {};
 
+		this.whitePiecesOnBoard = {};
+		this.blackPiecesOnBoard = {};
+		this.whitePiecesValue = 0;
+		this.blackPiecesValue = 0;
+
 		for (let row = 0; row < board.length; row++) {
 			for (let col = 0; col < board.length; col++) {
 				if (board[row][col] instanceof Piece) {
@@ -235,12 +247,38 @@ class ChessGame {
 					let str = this.getStr(piece.row, piece.col);
 					let attackedCells = {};
 
+					if (piece.color === "white") {
+						if (!(piece.pieceName in this.whitePiecesOnBoard)) {
+							this.whitePiecesOnBoard[piece.pieceName] = 1;
+						} else {
+							this.whitePiecesOnBoard[piece.pieceName] += 1;
+						}
+						this.whitePiecesValue += this.piecePoints[piece.pieceName];
+					} else if (piece.color === "black") {
+						if (!(piece.pieceName in this.blackPiecesOnBoard)) {
+							this.blackPiecesOnBoard[piece.pieceName] = 1;
+						} else {
+							this.blackPiecesOnBoard[piece.pieceName] += 1;
+						}
+						this.blackPiecesValue += this.piecePoints[piece.pieceName];
+					}
+
 					// this will set piece.moves and piece.protectingMoves
 					if (piece.pieceName !== "pawn")
 						piece.validMoves(board, this.kingParams);
 					else piece.validMoves(board, this.kingParams, true);
 
-					let totalMoves = { ...piece.moves, ...piece.protectingMoves };
+					let totalMoves = {};
+
+					if (piece.pieceName === "king") {
+						totalMoves = {
+							...piece.moves,
+							...piece.protectingMoves,
+							...piece.invalidMoves
+						};
+					} else {
+						totalMoves = { ...piece.moves, ...piece.protectingMoves };
+					}
 
 					Object.keys(totalMoves).forEach(key => {
 						if (board[row][col].pieceName === "pawn") {
@@ -469,24 +507,45 @@ class ChessGame {
 		return false;
 	};
 
-	blackWins = (stalemate = "black") => {
+	blackWins = () => {
 		this.gameOver = true;
-		this.winner = stalemate;
+		this.winner = "black";
 		return this.gameOver;
 	};
 
-	whiteWins = (stalemate = "white") => {
+	whiteWins = () => {
 		this.gameOver = true;
-		this.winner = stalemate;
+		this.winner = "white";
+		return this.gameOver;
+	};
+
+	draw = how => {
+		this.gameOver = true;
+		this.winner = `Draw (${how})`;
 		return this.gameOver;
 	};
 
 	isGameOver = board => {
+		if (this.whitePiecesValue === 0 || this.whitePiecesValue === 3) {
+			if (this.blackPiecesValue === 0 || this.blackPiecesValue === 3) {
+				// only two kings are left on board, or a king and bishop/knight left
+				return this.draw("Insufficient Pieces");
+			}
+		}
+
+		if (this.blackPiecesValue === 0 || this.blackPiecesValue === 3) {
+			if (this.whitePiecesValue === 0 || this.whitePiecesValue === 3) {
+				// only two kings are left on board, or a king and bishop/knight left
+
+				return this.draw("Insufficient Pieces");
+			}
+		}
+
 		if (!this.colorHasMovesLeft(board, "white")) {
 			if (this.whiteKingInCheck) {
 				return this.blackWins();
 			} else {
-				return this.blackWins("Stalemate (Draw)");
+				return this.draw("Stalemate");
 			}
 		}
 
@@ -494,7 +553,7 @@ class ChessGame {
 			if (this.blackKingInCheck) {
 				return this.whiteWins();
 			} else {
-				return this.whiteWins("Stalemate (Draw)");
+				return this.draw("Stalemate");
 			}
 		}
 

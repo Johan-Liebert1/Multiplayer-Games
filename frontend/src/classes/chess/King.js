@@ -8,6 +8,7 @@ class King extends Piece {
 		this.image = `images/chess/${this.color}King.png`;
 		this.isKing = true;
 		this.hasMoved = false;
+		this.invalidMoves = {};
 
 		// for puzzles
 		this.canCastleLeft = canCastleLeft;
@@ -16,7 +17,8 @@ class King extends Piece {
 
 	notAllowKingToMoveToAttackedCell = kingParameters => {
 		// not allow king to capture a protected piece
-		let newValidMoves = {};
+		let newValidMoves = {},
+			newInvalidMoves = {};
 		const { cellsUnderAttackByWhite, cellsUnderAttackByBlack } = kingParameters;
 		const cellsUnderAttack =
 			this.color === "white" ? cellsUnderAttackByBlack : cellsUnderAttackByWhite;
@@ -34,8 +36,12 @@ class King extends Piece {
 			}
 			if (moveAllowed) {
 				newValidMoves[moveKeys[i]] = this.moves[moveKeys[i]];
+			} else {
+				newInvalidMoves[moveKeys[i]] = "invalid";
 			}
 		}
+
+		this.invalidMoves = newInvalidMoves;
 
 		return newValidMoves;
 	};
@@ -255,98 +261,34 @@ class King extends Piece {
 	validMoves = (board, kingParameters) => {
 		this.resetMoves();
 
-		// vertical
-		if (this.row + 1 < 8) {
-			// vertical down
-			if (board[this.row + 1][this.col] === 0) {
-				this.moves[this.getStr(this.row + 1, this.col)] = "valid";
-			} else if (board[this.row + 1][this.col].color !== this.color) {
-				this.moves[this.getStr(this.row + 1, this.col)] = "capturing";
-			} else if (board[this.row + 1][this.col].color === this.color) {
-				this.protectingMoves[this.getStr(this.row + 1, this.col)] = "protecting";
-			}
+		const rowsArray = [
+			[-1, 0, 1],
+			[-1, 1],
+			[-1, 0, 1]
+		];
+		const colsArray = [this.col - 1, this.col, this.col + 1];
 
-			// lower right
-			if (this.col + 1 < 8) {
-				if (board[this.row + 1][this.col + 1] === 0) {
-					this.moves[this.getStr(this.row + 1, this.col + 1)] = "valid";
-				} else if (board[this.row + 1][this.col + 1].color !== this.color) {
-					this.moves[this.getStr(this.row + 1, this.col + 1)] = "capturing";
-				} else if (board[this.row + 1][this.col + 1].color === this.color) {
-					this.protectingMoves[this.getStr(this.row + 1, this.col + 1)] =
-						"protecting";
-				}
-			}
+		colsArray.forEach((column, i) => {
+			if (column > -1 && column < 8) {
+				rowsArray[i].forEach(rowAdder => {
+					if (this.row + rowAdder > -1 && this.row + rowAdder < 8) {
+						let piece = board[this.row + rowAdder][column];
 
-			// lower left
-			if (this.col - 1 >= 0) {
-				if (board[this.row + 1][this.col - 1] === 0) {
-					this.moves[this.getStr(this.row + 1, this.col - 1)] = "valid";
-				} else if (board[this.row + 1][this.col - 1].color !== this.color) {
-					this.moves[this.getStr(this.row + 1, this.col - 1)] = "capturing";
-				} else if (board[this.row + 1][this.col - 1].color === this.color) {
-					this.protectingMoves[this.getStr(this.row + 1, this.col - 1)] =
-						"protecting";
-				}
+						if (piece === 0) {
+							this.moves[this.getStr(this.row + rowAdder, column)] =
+								"valid";
+						} else if (piece.color !== this.color) {
+							this.moves[this.getStr(this.row + rowAdder, column)] =
+								"capturing";
+						} else if (piece.color === this.color) {
+							this.protectingMoves[
+								this.getStr(this.row + rowAdder, column)
+							] = "protecting";
+						}
+					}
+				});
 			}
-		}
-
-		// vertical
-		if (this.row - 1 >= 0) {
-			// vertical up
-			if (board[this.row - 1][this.col] === 0) {
-				this.moves[this.getStr(this.row - 1, this.col)] = "valid";
-			} else if (board[this.row - 1][this.col].color !== this.color) {
-				this.moves[this.getStr(this.row - 1, this.col)] = "capturing";
-			} else if (board[this.row - 1][this.col].color === this.color) {
-				this.protectingMoves[this.getStr(this.row - 1, this.col)] = "protecting";
-			}
-
-			// upper right
-			if (this.col + 1 < 8) {
-				if (board[this.row - 1][this.col + 1] === 0) {
-					this.moves[this.getStr(this.row - 1, this.col + 1)] = "valid";
-				} else if (board[this.row - 1][this.col + 1].color !== this.color) {
-					this.moves[this.getStr(this.row - 1, this.col + 1)] = "capturing";
-				} else if (board[this.row - 1][this.col + 1].color === this.color) {
-					this.protectingMoves[this.getStr(this.row - 1, this.col + 1)] =
-						"protecting";
-				}
-			}
-
-			// upper left
-			if (this.col - 1 >= 0) {
-				if (board[this.row - 1][this.col - 1] === 0) {
-					this.moves[this.getStr(this.row - 1, this.col - 1)] = "valid";
-				} else if (board[this.row - 1][this.col - 1].color !== this.color) {
-					this.moves[this.getStr(this.row - 1, this.col - 1)] = "capturing";
-				} else if (board[this.row - 1][this.col - 1].color === this.color) {
-					this.protectingMoves[this.getStr(this.row - 1, this.col - 1)] =
-						"protecting";
-				}
-			}
-		}
-
-		// horizontal
-		if (this.col + 1 < 8) {
-			if (board[this.row][this.col + 1] === 0) {
-				this.moves[this.getStr(this.row, this.col + 1)] = "valid";
-			} else if (board[this.row][this.col + 1].color !== this.color) {
-				this.moves[this.getStr(this.row, this.col + 1)] = "capturing";
-			} else if (board[this.row][this.col + 1].color === this.color) {
-				this.protectingMoves[this.getStr(this.row, this.col + 1)] = "protecting";
-			}
-		}
-
-		if (this.col - 1 >= 0) {
-			if (board[this.row][this.col - 1] === 0) {
-				this.moves[this.getStr(this.row, this.col - 1)] = "valid";
-			} else if (board[this.row][this.col - 1].color !== this.color) {
-				this.moves[this.getStr(this.row, this.col - 1)] = "capturing";
-			} else if (board[this.row][this.col - 1].color === this.color) {
-				this.protectingMoves[this.getStr(this.row, this.col - 1)] = "protecting";
-			}
-		}
+		});
 
 		// castling
 		this.addCastlingMoves(board, kingParameters);
@@ -355,9 +297,7 @@ class King extends Piece {
 			whiteKingInCheck,
 			blackKingInCheck,
 			pieceCheckingWhiteKing,
-			pieceCheckingBlackKing,
-			whiteKingPos,
-			blackKingPos
+			pieceCheckingBlackKing
 		} = kingParameters;
 
 		if (this.color === "white" && whiteKingInCheck) {

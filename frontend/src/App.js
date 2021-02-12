@@ -3,6 +3,7 @@ import { Switch, Route } from "react-router-dom";
 
 import HomeScreen from "./screens/HomeScreen";
 import CheckersScreen from "./screens/CheckersScreen";
+// Chessscreen for heroku, ChessScreen for dev (no idea why)
 import ChessScreen from "./screens/Chessscreen";
 import GamesScreen from "./screens/GamesScreen";
 import SketchIOScreen from "./screens/SketchIOScreen";
