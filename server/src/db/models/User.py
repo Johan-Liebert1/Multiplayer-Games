@@ -5,7 +5,7 @@ from ..connection import Base
 
 
 class UserModel(Base):
-    __tablename__ = "user"
+    __tablename__ = "user_details"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String, nullable=False)

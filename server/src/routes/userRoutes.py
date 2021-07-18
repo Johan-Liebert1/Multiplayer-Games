@@ -43,24 +43,22 @@ def get_all_users(db: Session = Depends(get_db)):
 
 @userRouter.post("/register")
 def read_item(details: UserCreateRequest, db: Session = Depends(get_db)):
-    try:
-        to_create = UserModel(
-            username=details.username,
-            password=details.password,
-            salt="",
-            firstName=details.firstName,
-            lastName=details.lastName,
-            email=details.email,
-        )
+    to_create = UserModel(
+        username=details.username,
+        password=details.password,
+        salt="",
+        firstName=details.firstName,
+        lastName=details.lastName,
+        email=details.email,
+    )
 
-        db.add(to_create)
-        db.commit()
+    db.add(to_create)
+    db.commit()
 
-        return {
-            "success": True,
-            "user": details,
-            "message": "User Registered successfully",
-        }
+    return {
+        "success": True,
+        "user": details,
+        "message": "User Registered successfully",
+    }
 
-    except:
-        return {"success": False, "message": "Sorry, some error occured"}
+    # return {"success": False, "message": "Sorry, some error occured"}

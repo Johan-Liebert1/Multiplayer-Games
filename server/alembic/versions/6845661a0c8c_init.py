@@ -1,8 +1,8 @@
-"""update user model
+"""init
 
-Revision ID: be8ace8454b4
-Revises: 419ee654ea7e
-Create Date: 2021-07-18 18:34:15.912707
+Revision ID: 6845661a0c8c
+Revises: be8ace8454b4
+Create Date: 2021-07-18 20:23:57.837444
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = "be8ace8454b4"
-down_revision = "419ee654ea7e"
+revision = "6845661a0c8c"
+down_revision = "be8ace8454b4"
 branch_labels = None
 depends_on = None
 
@@ -30,4 +30,4 @@ def upgrade():
 
 
 def downgrade():
-    op.drop_table("user")
+    op.drop_table("user_details")
