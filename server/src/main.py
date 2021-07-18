@@ -1,32 +1,22 @@
 # /media/pragyan/Local Disk/Python/MultiplayerGamesFastAPITS/server/env/bin/python3
 
-from db.models.User import UserModel
-from schemas.userSchema import UserCreateRequest
+import os
+import sys
 
-from fastapi import FastAPI, Depends
-from typing import Optional
+from fastapi import FastAPI
 
-from sqlalchemy.orm import Session
+from routes import userRoutes
 
-# sys.path.append("/media/pragyan/Local Disk/Python/MultiplayerGamesFastAPITS/server")
+BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+sys.path.insert(0, BASE_DIR)
 
-from db.connection import get_db
-
+print(f"{BASE_DIR=}")
 
 app = FastAPI()
+
+app.include_router(userRoutes.userRouter, prefix="/api/user", tags=["user"])
 
 
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
-
-
-@app.post("/user")
-def read_item(details: UserCreateRequest, db: Session = Depends(get_db)):
-    print(f"\n{details=}\n")
-    to_create = UserModel(id=details.id, name=details.name)
-
-    db.add(to_create)
-    db.commit()
-
-    return {"success": True, "created": {"id": to_create.id, "name": to_create.name}}
