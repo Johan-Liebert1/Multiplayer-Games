@@ -1,4 +1,3 @@
-from typing import final
 from config.Config import Config
 
 from sqlalchemy import create_engine

@@ -5,6 +5,21 @@ from sqlalchemy import pool
 
 from alembic import context
 
+import sys
+from os import path
+
+BASE_DIR = path.abspath(path.dirname(path.dirname((__file__))))
+__package__ = "server.alembic"
+# print(f"\n\n{__file__=}")
+# print(f"\n\n{__package__=}")
+# print(f"\n\n{__name__=}")
+# print(f"\n\n{BASE_DIR=}")
+
+
+sys.path.insert(0, BASE_DIR)
+
+# print(f"\n\n{sys.path=}\n\n")
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
@@ -63,9 +78,7 @@ def run_migrations_online():
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()
