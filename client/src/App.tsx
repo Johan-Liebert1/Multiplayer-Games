@@ -5,7 +5,7 @@ import { Route, Switch } from "react-router";
 
 const App: React.FC = () => {
   return (
-    <div className="App" style={{ minWidth: "100%", minHeight: "100%" }}>
+    <div className="App" style={{ minWidth: "100%", minHeight: "100%", display: "flex" }}>
       <Switch>
         {routes.map(route => (
           <Route

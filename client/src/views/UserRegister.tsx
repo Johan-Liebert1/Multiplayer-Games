@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
@@ -10,10 +11,13 @@ import OutlinedInput from "@material-ui/core/OutlinedInput";
 
 import useStyles from "../styles/UserLoginStyles";
 import { FormControl, FormHelperText, IconButton } from "@material-ui/core";
+// import { Alert, AlertTitle } from "@material-ui/lab";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 import InputLabel from "@material-ui/core/InputLabel";
 import InputAdornment from "@material-ui/core/InputAdornment";
+
 import clsx from "clsx";
+import { axiosInstance } from "../config/axiosConfig";
 
 const UserRegister: React.FC = () => {
   const classes = useStyles();
@@ -33,7 +37,7 @@ const UserRegister: React.FC = () => {
 
   useEffect(() => {
     setPasswordsMatch(formDetails.password === formDetails.confirmPassword);
-  }, [formDetails.confirmPassword]);
+  }, [formDetails.confirmPassword, formDetails.password]);
 
   const handleChange = (key: string, value: string) => {
     setFormDetails({
@@ -49,11 +53,12 @@ const UserRegister: React.FC = () => {
     return true;
   };
 
-  const registerUser = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const registerUser = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
 
     if (areFormDetailsValid()) {
-      console.log(formDetails);
+      const createRequest = await axiosInstance.post("/user/register", formDetails);
+      console.log(createRequest);
     } else {
       console.log("nooooooooo");
     }
@@ -66,6 +71,10 @@ const UserRegister: React.FC = () => {
       className={classes.root}
       style={{ minWidth: "50%" }}
     >
+      {/* <Alert severity="info">
+        <AlertTitle>Info</AlertTitle>
+        This is an info alert — <strong>check it out!</strong>
+      </Alert> */}
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
@@ -86,6 +95,7 @@ const UserRegister: React.FC = () => {
                 onChange={e => handleChange("username", e.target.value)}
                 labelWidth={70}
                 fullWidth
+                autoComplete="username"
               />
               {formDetails.username.trim().length === 0 && (
                 <FormHelperText error>Username cannot be empy</FormHelperText>
@@ -102,6 +112,7 @@ const UserRegister: React.FC = () => {
                 type={showPassword.password ? "text" : "password"}
                 value={formDetails.password}
                 onChange={e => handleChange("password", e.target.value)}
+                autoComplete="new-password"
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton
@@ -139,6 +150,7 @@ const UserRegister: React.FC = () => {
                 type={showPassword.confirm ? "text" : "password"}
                 value={formDetails.confirmPassword}
                 onChange={e => handleChange("confirmPassword", e.target.value)}
+                autoComplete="new-password"
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton
@@ -199,9 +211,18 @@ const UserRegister: React.FC = () => {
             className={classes.submit}
             onClick={e => registerUser(e)}
           >
-            Sign In
+            Register
           </Button>
         </form>
+      </div>
+
+      <div>
+        Already have an account?{" "}
+        <Link to="/">
+          <Button color="primary" variant="contained">
+            Login
+          </Button>
+        </Link>
       </div>
     </Container>
   );
