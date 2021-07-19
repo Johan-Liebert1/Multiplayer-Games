@@ -12,10 +12,10 @@ from helpers.serializers import serialize
 
 # db models
 from db.connection import get_db
-from schemas.schemas import UserCreateRequest, UserLoginRequest
 from db.models.User import UserModel
 
 from config.Config import Config
+from schemas.schemas import UserCreateRequest, UserLoginRequest
 
 import bcrypt
 import jwt
