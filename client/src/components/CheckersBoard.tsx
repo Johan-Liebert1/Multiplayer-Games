@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
 import Cell from "./Cell";
 
 import CheckersPiece from "../classes/checkers/CheckersPiece";
@@ -31,7 +30,7 @@ const CheckersBoard: React.FC = () => {
     winnerColor: null
   });
 
-  const checkersPieceColor: CheckersPieceColor = "white";
+  let [checkersPieceColor, setCheckersPieceColor] = useState<CheckersPieceColor>("white");
 
   useEffect(() => {
     let tempBoard = board.map(r => r);
@@ -85,15 +84,21 @@ const CheckersBoard: React.FC = () => {
   // 	}
   // };
 
+  useEffect(() => {
+    console.log("changed checkerspiece color to ", checkersPieceColor);
+  }, [checkersPieceColor]);
+
   const showMoves = (row: number, col: number) => {
     if (!gameOver.gameOver) {
       let tempBoard = board.map(b => b);
       let cellsClicked = game.showValidMoves(checkersPieceColor, tempBoard, row, col);
+      console.log(cellsClicked);
       setBoard(tempBoard);
 
-      // if (cellsClicked && cellsClicked.rows.length === 2) {
-      //   socket.emit("movePlayed", { cellsClicked });
-      // }
+      if (cellsClicked && cellsClicked.rows.length === 2) {
+        setCheckersPieceColor(oldVal => (oldVal === "white" ? "red" : "white"));
+        // socket.emit("movePlayed", { cellsClicked });
+      }
 
       // let isGameOver = game.isGameOver(board);
 

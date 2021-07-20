@@ -67,11 +67,8 @@ const Cell: React.FC<CellProps> = ({
   };
 
   const handleCellClick = () => {
-    console.log("handleCellClick", row, col);
     showMoves(row, col);
   };
-
-  console.log("bluedot", blueDot);
 
   return (
     <div onClick={handleCellClick} style={divStyles}>

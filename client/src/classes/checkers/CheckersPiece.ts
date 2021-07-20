@@ -1,5 +1,9 @@
-import { CheckersBoardType, CheckersPieceColor } from "../../types/checkersTypes";
-import { MoveType } from "../../types/games";
+import { getStr } from "../../helpers/globalHelpers";
+import {
+  CheckersBoardType,
+  CheckersMoveType,
+  CheckersPieceColor
+} from "../../types/checkersTypes";
 
 export default class CheckersPiece {
   color: CheckersPieceColor;
@@ -9,9 +13,7 @@ export default class CheckersPiece {
   oppColor: CheckersPieceColor;
   currentRow: number;
   currentCol: number;
-  moves:
-    | { [key: string]: MoveType }
-    | { [key: string]: { capturing: { row: number; col: number } } };
+  moves: CheckersMoveType;
 
   constructor(color: CheckersPieceColor, pos: number[]) {
     this.color = color;
@@ -23,8 +25,6 @@ export default class CheckersPiece {
     this.currentCol = pos[1];
     this.moves = {};
   }
-
-  getStr = (row: number, col: number) => `${row},${col}`;
 
   makeKing = () => (this.isKing = true);
 
@@ -67,11 +67,6 @@ export default class CheckersPiece {
       rowCheck = [1, -1];
     }
 
-    // this.moves[this.getStr(cr + 2, cc + 2)] = [
-    //   "capturing",
-    //   { row: cr + 1, col: cc + 1 }
-    // ];
-
     rowAdders.forEach((ra, raIdx) => {
       if (this.currentRow + ra >= 0 && this.currentRow + ra < board.length) {
         colAdders.forEach((ca, caIdx) => {
@@ -85,15 +80,15 @@ export default class CheckersPiece {
             // potential move square needs to be empty
             if (board[pRow][pCol] === 0) {
               // gotta check if a piece exists at this position
-              const rCheck = rowCheck[raIdx];
-              const cCheck = colCheck[caIdx];
+              const rCheck = this.currentRow + rowCheck[raIdx];
+              const cCheck = this.currentCol + colCheck[caIdx];
               const piece = board[rCheck][cCheck];
 
               if (piece instanceof CheckersPiece) {
                 // piece exists, now we check if it's color is the opposite color or not
                 if (piece.color === this.oppColor) {
                   // can capture the piece
-                  this.moves[this.getStr(pRow, pCol)] = {
+                  this.moves[getStr(pRow, pCol)] = {
                     capturing: {
                       row: rCheck,
                       col: cCheck
@@ -140,7 +135,7 @@ export default class CheckersPiece {
             const pCol = this.currentCol + ca;
 
             if (board[pRow][pCol] === 0) {
-              this.moves[this.getStr(pRow, pCol)] = "valid";
+              this.moves[getStr(pRow, pCol)] = "valid";
             }
           }
         }
