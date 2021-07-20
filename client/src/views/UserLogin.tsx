@@ -43,7 +43,7 @@ const UserLogin: React.FC<UserLoginProps> = ({ history }) => {
     const loginRequest = await axiosInstance.post("/user/login", formDetails);
 
     if (loginRequest.data.success) {
-      history.push(routes[routeNames.CHECKERS_SCREEN].path);
+      history.push(routes[routeNames.SKETCHIO_SCREEN].path);
     }
   };
 

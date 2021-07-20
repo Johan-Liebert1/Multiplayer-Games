@@ -1,5 +1,6 @@
 import CheckersScreen from "../views/CheckersScreen";
 import GamesScreen from "../views/GamesScreen";
+import SketchIOScreen from "../views/SketchIOScreen";
 import UserLogin from "../views/UserLogin";
 import UserRegister from "../views/UserRegister";
 
@@ -7,7 +8,8 @@ export const routeNames = Object.freeze({
   LOGIN: "LOGIN",
   REGISTER: "REGISTER",
   GAMES_SCREEN: "GAMES_SCREEN",
-  CHECKERS_SCREEN: "CHECKERS_SCREEN"
+  CHECKERS_SCREEN: "CHECKERS_SCREEN",
+  SKETCHIO_SCREEN: "SKETCHIO_SCREEN"
 });
 
 const routes = {
@@ -30,6 +32,11 @@ const routes = {
     name: routeNames.CHECKERS_SCREEN,
     path: "/checkers",
     component: CheckersScreen
+  },
+  [routeNames.SKETCHIO_SCREEN]: {
+    name: routeNames.SKETCHIO_SCREEN,
+    path: "/sketchio",
+    component: SketchIOScreen
   }
 };
 
