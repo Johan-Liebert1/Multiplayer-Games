@@ -18,8 +18,11 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 
 import clsx from "clsx";
 import { axiosInstance } from "../config/axiosConfig";
+import { RouteProps } from "../types/routeProps";
 
-const UserRegister: React.FC = () => {
+interface UserRegisterProps extends RouteProps {}
+
+const UserRegister: React.FC<UserRegisterProps> = () => {
   const classes = useStyles();
 
   const [showPassword, setShowPassword] = useState({ password: false, confirm: false });

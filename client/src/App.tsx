@@ -7,11 +7,11 @@ const App: React.FC = () => {
   return (
     <div className="App" style={{ minWidth: "100%", minHeight: "100%", display: "flex" }}>
       <Switch>
-        {routes.map(route => (
+        {Object.values(routes).map(route => (
           <Route
             exact
             path={route.path}
-            render={() => <route.component />}
+            render={routeProps => <route.component {...routeProps} />}
             key={route.name}
           />
         ))}

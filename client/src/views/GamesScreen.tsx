@@ -1,8 +1,11 @@
 import React from "react";
 import GameCard from "../components/GameCard";
 import { Games } from "../types/games";
+import { RouteProps } from "../types/routeProps";
 
-const GamesScreen: React.FC = () => {
+interface GamesScreenProps extends RouteProps {}
+
+const GamesScreen: React.FC<GamesScreenProps> = () => {
   const divStyles = {
     width: window.innerWidth > 10000 ? "70%" : "100%",
     display: "flex",

@@ -2,6 +2,9 @@ __pycache__
 env
 .vscode
 
+client/src/classes/chess
+client/src/classes/sketch
+
 # dependencies
 node_modules
 /.pnp

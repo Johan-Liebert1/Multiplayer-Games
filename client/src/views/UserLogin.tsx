@@ -6,7 +6,6 @@ import OutlinedInput from "@material-ui/core/OutlinedInput";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import TextField from "@material-ui/core/TextField";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
@@ -16,8 +15,13 @@ import InputLabel from "@material-ui/core/InputLabel";
 import InputAdornment from "@material-ui/core/InputAdornment";
 
 import useStyles from "../styles/UserLoginStyles";
+import { axiosInstance } from "../config/axiosConfig";
+import { RouteProps } from "../types/routeProps";
+import routes, { routeNames } from "../routes/router";
 
-const UserLogin: React.FC = () => {
+interface UserLoginProps extends RouteProps {}
+
+const UserLogin: React.FC<UserLoginProps> = ({ history }) => {
   const classes = useStyles();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -33,8 +37,14 @@ const UserLogin: React.FC = () => {
     });
   };
 
-  const loginUser = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const loginUser = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
+
+    const loginRequest = await axiosInstance.post("/user/login", formDetails);
+
+    if (loginRequest.data.success) {
+      history.push(routes[routeNames.CHECKERS_SCREEN].path);
+    }
   };
 
   return (

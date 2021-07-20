@@ -15,10 +15,13 @@ interface GameCardProps {
 
 const useStyles = makeStyles({
   root: {
-    maxWidth: 250
+    maxWidth: 225
+  },
+  actionArea: {
+    minWidth: "100%"
   },
   media: {
-    height: 250 * 0.9,
+    height: 225,
     objectFit: "contain"
   }
 });
@@ -30,7 +33,7 @@ const GameCard: React.FC<GameCardProps> = ({ gameName }) => {
 
   return (
     <Card className={classes.root}>
-      <CardActionArea>
+      <CardActionArea className={classes.actionArea}>
         <CardMedia
           className={classes.media}
           image={imageUrl}
@@ -47,11 +50,8 @@ const GameCard: React.FC<GameCardProps> = ({ gameName }) => {
         </CardContent>
       </CardActionArea>
       <CardActions>
-        <Button size="small" color="primary">
-          Share
-        </Button>
-        <Button size="small" color="primary">
-          Learn More
+        <Button size="small" style={{ color: "green" }}>
+          Create Room
         </Button>
       </CardActions>
     </Card>
