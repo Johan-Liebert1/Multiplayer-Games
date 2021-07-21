@@ -2,8 +2,7 @@ __pycache__
 env
 .vscode
 
-client/src/classes/chess
-client/src/classes/sketch
+test
 
 # dependencies
 node_modules
