@@ -14,6 +14,7 @@ class ChessPiece {
   isBeingAttacked: boolean;
   isClicked: boolean;
   pieceName: ChessPieceName;
+  image: string;
 
   constructor(color: ChessPieceColor, row: number, col: number) {
     this.color = color;
@@ -24,6 +25,7 @@ class ChessPiece {
     this.isBeingAttacked = false;
     this.isClicked = false;
     this.pieceName = "";
+    this.image = "";
     // this.setRowCol(row, col);
   }
 
@@ -270,15 +272,15 @@ class ChessPiece {
   //   }
   // };
 
-  // setRowCol = (row: number, col: number) => {
-  //   this.row = row;
-  //   this.col = col;
-  // };
+  setRowCol = (row: number, col: number) => {
+    this.row = row;
+    this.col = col;
+  };
 
-  // resetMoves = () => {
-  //   this.moves = {};
-  //   this.protectingMoves = {};
-  // };
+  resetMoves = () => {
+    this.moves = {};
+    this.protectingMoves = {};
+  };
 }
 
 export default ChessPiece;
