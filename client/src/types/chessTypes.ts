@@ -23,18 +23,20 @@ export type ProtectingChessMove = {
 
 export type ChessBoardType = (ChessPiece | number | "dot")[][];
 
+export type PiecePosition = [number, number];
+
 export type KingParametersType = {
   blackKingInCheck: boolean;
   whiteKingInCheck: boolean;
   pieceCheckingWhiteKing: ChessPiece | null;
   pieceCheckingBlackKing: ChessPiece | null;
-  whiteKingPos: [number, number];
-  blackKingPos: [number, number];
+  whiteKingPos: PiecePosition;
+  blackKingPos: PiecePosition;
   cellsUnderAttackByWhite: ValidChessMove | ProtectingChessMove;
   cellsUnderAttackByBlack: ValidChessMove | ProtectingChessMove;
 };
 
 export type GenericKingParametersType = {
   pieceCheckingKing: ChessPiece | null;
-  kingPos: [number, number];
+  kingPos: PiecePosition;
 };
