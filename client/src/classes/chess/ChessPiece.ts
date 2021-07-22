@@ -5,6 +5,7 @@ import {
   ChessPieceName,
   GenericKingParametersType,
   KingParametersType,
+  PiecePosition,
   ProtectingChessMove,
   ValidChessMove
 } from "../../types/chessTypes";
@@ -19,6 +20,7 @@ class ChessPiece {
   isClicked: boolean;
   pieceName: ChessPieceName;
   image: string;
+  isKing: boolean;
 
   constructor(color: ChessPieceColor, row: number, col: number) {
     this.color = color;
@@ -30,8 +32,11 @@ class ChessPiece {
     this.isClicked = false;
     this.pieceName = "";
     this.image = "";
+    this.isKing = false;
     // this.setRowCol(row, col);
   }
+
+  getCellsBetweenPieces = (kingPos: PiecePosition) => ({});
 
   checkIfKingInCheck = (kingParameters: KingParametersType) => {
     let { whiteKingInCheck, blackKingInCheck } = kingParameters;
@@ -56,12 +61,12 @@ class ChessPiece {
   handleKingInCheck = (kingParameters: GenericKingParametersType) => {
     // the king of the same color is in check
     let { kingPos, pieceCheckingKing } = kingParameters;
-    let newValidMoves = {};
+    let newValidMoves: ValidChessMove = {};
 
     // handle king is being checked by every piece except the king
     if (
-      pieceCheckingKing.pieceName === "knight" ||
-      pieceCheckingKing.pieceName === "pawn"
+      pieceCheckingKing &&
+      (pieceCheckingKing.pieceName === "knight" || pieceCheckingKing.pieceName === "pawn")
     ) {
       // only way to escape a Knight's or a Pawn's check is to either move the king,
       // or to capture the Knight or Pawn
@@ -115,7 +120,7 @@ class ChessPiece {
     kingParameters: KingParametersType,
     board: ChessBoardType
   ) => {
-    let newValidMoves = {};
+    let newValidMoves: ValidChessMove = {};
 
     let { blackKingPos, whiteKingPos } = kingParameters;
 
@@ -131,7 +136,7 @@ class ChessPiece {
     if (this.row !== kingPos[0] || this.col !== kingPos[1]) return;
     else if (this.row === kingPos[0]) {
       // piece and king are on the same row
-      let colAdder,
+      let colAdder = 0,
         isPinned = false;
 
       // if king is to the left, check the right and vice versa
@@ -166,8 +171,8 @@ class ChessPiece {
         this.moves = newValidMoves;
       }
     } else if (this.col === kingPos[1]) {
-      // piece and king are on the same row
-      let rowAdder,
+      // piece and king are on the same col
+      let rowAdder = 0,
         isPinned = false;
 
       // if king is to the left, check the right and vice versa
@@ -209,7 +214,7 @@ class ChessPiece {
     kingParameters: KingParametersType,
     board: ChessBoardType
   ) => {
-    let newValidMoves = {};
+    let newValidMoves: ValidChessMove = {};
 
     let { blackKingPos, whiteKingPos } = kingParameters;
 
@@ -225,7 +230,8 @@ class ChessPiece {
     // check if piece and king are on the same diagonal
     if (Math.abs(this.row - kingPos[0]) !== Math.abs(this.col - kingPos[1])) return;
 
-    let rowAdder, colAdder;
+    let rowAdder = 0,
+      colAdder = 0;
     let [kingRow, kingCol] = kingPos;
 
     // upper left king, go lower right
@@ -246,10 +252,10 @@ class ChessPiece {
       colAdder = -1;
     }
 
-    let row = this.row + rowAdder,
-      col = this.col + colAdder;
-    let isPinned = false,
-      pinningPiece;
+    let row = this.row + rowAdder;
+    let col = this.col + colAdder;
+    let isPinned = false;
+    let pinningPiece: ChessPiece | null = null;
 
     while (row > -1 && row < 8 && col > -1 && col < 8) {
       let piece = board[row][col];
@@ -264,7 +270,7 @@ class ChessPiece {
       col += colAdder;
     }
 
-    if (isPinned) {
+    if (isPinned && pinningPiece) {
       // only moves allowed is on the same diagonal that the piece and
       // king are on
 
@@ -279,7 +285,10 @@ class ChessPiece {
           newValidMoves[move] = this.moves[move];
         }
 
-        if (move === getStr(pinningPiece.row, pinningPiece.col)) {
+        if (
+          move ===
+          getStr((pinningPiece as ChessPiece).row, (pinningPiece as ChessPiece).col)
+        ) {
           newValidMoves[move] = this.moves[move];
         }
       });

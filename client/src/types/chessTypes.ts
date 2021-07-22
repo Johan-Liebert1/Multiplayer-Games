@@ -1,4 +1,4 @@
-import ChessPiece from "../classes/chess/test/ChessPiece";
+import ChessPiece from "../classes/chess/ChessPiece";
 
 export type ChessPieceColor = "white" | "black";
 export type ChessPieceName =
@@ -13,10 +13,12 @@ export type ChessPieceName =
 export type ValidMoveType = "valid";
 export type CapturingMoveType = "capturing";
 export type ProtectingMoveType = "protecting";
+export type CastlingMoveType = "castling";
 
 export type ValidChessMove = {
-  [key: string]: ValidMoveType | CapturingMoveType;
+  [key: string]: ValidMoveType | CapturingMoveType | CastlingMoveType;
 };
+
 export type ProtectingChessMove = {
   [key: string]: ProtectingMoveType;
 };
