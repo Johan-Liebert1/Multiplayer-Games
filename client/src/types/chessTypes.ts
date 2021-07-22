@@ -1,4 +1,5 @@
 import ChessPiece from "../classes/chess/ChessPiece";
+import { ClickedCellsType } from "./games";
 
 export type ChessDrawType = "Stalemate" | "Insufficient Pieces";
 
@@ -53,3 +54,11 @@ export type GenericKingParametersType = {
   pieceCheckingKing: ChessPiece | null;
   kingPos: PiecePosition;
 };
+
+export type MovePieceReturnType = {
+  cellsClicked: ClickedCellsType;
+  castlingDone: boolean;
+  pawnPromoted: boolean;
+};
+
+export type ShowValidMovesReturnType = undefined | ClickedCellsType | MovePieceReturnType;

@@ -1,10 +1,14 @@
+// react stuff
 import React, { useState, useEffect } from "react";
 import useWindowSize from "../hooks/useWindowSize";
 
+// components
 import Cell from "./Cell";
+import GameOverComponent from "./GameOverComponent";
+import PawnPromotionDialog from "./PawnPromotionDialog";
 
+// gameplay
 import ChessGame from "../classes/chess/ChessGame";
-
 import Pawn from "../classes/chess/Pawn";
 import Rook from "../classes/chess/Rook";
 import Knight from "../classes/chess/Knight";
@@ -13,7 +17,15 @@ import King from "../classes/chess/King";
 import Queen from "../classes/chess/Queen";
 import ChessPiece from "../classes/chess/ChessPiece";
 
-import { ChessBoardType, ChessPieceColor, ChessPieceName } from "../types/chessTypes";
+// types
+import {
+  ChessBoardType,
+  ChessPieceColor,
+  ChessPieceName,
+  ChessWinner
+} from "../types/chessTypes";
+import { CheckersPieceColor } from "../types/checkersTypes";
+import { ClickedCellsType } from "../types/games";
 
 const game = new ChessGame();
 
@@ -67,16 +79,24 @@ const ChessBoard: React.FC = () => {
 
   const windowSize = useWindowSize();
 
-  const [gameOver, setGameOver] = useState({
+  const [gameOver, setGameOver] = useState<{
+    gameOver: boolean;
+    winnerName: string;
+    winnerColor: ChessWinner;
+  }>({
     gameOver: false,
-    winnerName: null,
-    winnerColor: null
+    winnerName: "",
+    winnerColor: "" as ChessPieceColor
   });
 
-  const [showPawnPromotionDialog, setShowPawnPromotionDialog] = useState({
+  const [showPawnPromotionDialog, setShowPawnPromotionDialog] = useState<{
+    show: boolean;
+    cellsClicked: ClickedCellsType;
+    pawnColor: ChessPieceColor | "";
+  }>({
     show: false,
-    cellsClicked: null,
-    pawnColor: null
+    cellsClicked: {} as ClickedCellsType,
+    pawnColor: ""
   });
 
   useEffect(() => {
@@ -90,11 +110,15 @@ const ChessBoard: React.FC = () => {
     // socket.emit("pawnPromoted", { pieceName, cellsClicked });
 
     // the pawn has been moved at this point
-    // if (cellsClicked) game.promotePawn(tempBoard, pieceName, cellsClicked);
+    if (cellsClicked) game.promotePawn(tempBoard, pieceName, cellsClicked);
 
     setBoard(tempBoard);
 
-    setShowPawnPromotionDialog({ show: false, cellsClicked: null, pawnColor: null });
+    setShowPawnPromotionDialog({
+      show: false,
+      cellsClicked: {} as ClickedCellsType,
+      pawnColor: ""
+    });
   };
 
   const [chessPieceColor, setChessPieceColor] = useState<ChessPieceColor>("white");
@@ -103,10 +127,40 @@ const ChessBoard: React.FC = () => {
     if (!gameOver.gameOver) {
       let tempBoard = board.map(b => b);
       let returnedValue = game.showValidMoves(chessPieceColor, tempBoard, row, col);
-      setBoard(tempBoard);
 
       if (returnedValue) {
-        setChessPieceColor("black");
+        if ("cellsClicked" in returnedValue) {
+          const { cellsClicked, castlingDone, pawnPromoted } = returnedValue;
+
+          if (cellsClicked.rows.length === 2)
+            setChessPieceColor(old => (old === "white" ? "black" : "white"));
+
+          if (pawnPromoted) {
+            // the pawn has reached the other end of the board
+            // but hasn't yet been protomted and is still just a pawn
+            const pawn = tempBoard[cellsClicked.rows[1]][cellsClicked.cols[1]] as Pawn;
+
+            setShowPawnPromotionDialog({
+              show: true,
+              cellsClicked,
+              pawnColor: pawn.color
+            });
+          }
+        }
+      }
+
+      setBoard(tempBoard);
+
+      if (game.isGameOver(board)) {
+        let newGameOverObject = {
+          gameOver: true,
+          winnerColor: game.winner,
+          winnerName: game.winner
+        };
+
+        // socket.emit("gameOver", newGameOverObject);
+
+        setGameOver(newGameOverObject);
       }
     }
   };
@@ -162,23 +216,23 @@ const ChessBoard: React.FC = () => {
       <div style={{ height: "2rem" }}></div>
 
       <div id="checkersBoard" style={{ position: "relative" }}>
-        {/* {gameOver.gameOver && (
+        {gameOver.gameOver && (
           <GameOverComponent
-            winnerColor={gameOver.winnerColor}
+            winnerColor={gameOver.winnerColor as ChessPieceColor | CheckersPieceColor}
             winnerName={gameOver.winnerName}
           />
         )}
 
         {showPawnPromotionDialog.show && (
           <PawnPromotionDialog
-            pawnColor={showPawnPromotionDialog.pawnColor}
+            pawnColor={showPawnPromotionDialog.pawnColor as ChessPieceColor}
             handlePawnPromotion={handlePawnPromotion}
           />
-        )} */}
+        )}
         <div
           style={{
             display: "flex",
-            flexDirection: chessPieceColor === "white" ? "column" : "column-reverse"
+            flexDirection: chessPieceColor === "white" ? "column" : "column"
           }}
         >
           {showChessBoard()}

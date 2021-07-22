@@ -64,13 +64,13 @@ class SketchIO {
     if (!this.isPainting) {
       this.beginPath(x, y);
     } else {
-      this.drawPath(x, y, <string>this.ctx.strokeStyle);
+      this.drawPath(x, y, this.ctx.strokeStyle as string);
     }
   };
 
   handleCanvasClick = () => {
     if (this.isFilling) {
-      this.fill(<string>this.ctx.fillStyle);
+      this.fill(this.ctx.fillStyle as string);
     }
   };
 

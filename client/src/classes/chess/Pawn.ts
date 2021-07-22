@@ -34,7 +34,7 @@ class Pawn extends ChessPiece {
     kingParameters: KingParametersType,
     initialCall = false
   ) => {
-    console.log(kingParameters);
+    // console.log(kingParameters);
 
     this.resetMoves();
 

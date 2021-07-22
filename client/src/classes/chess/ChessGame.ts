@@ -7,8 +7,10 @@ import {
   ChessWinner,
   InvalidChessMove,
   KingParametersType,
+  MovePieceReturnType,
   PiecePosition,
   ProtectingChessMove,
+  ShowValidMovesReturnType,
   ValidChessMove,
   waysToDraw
 } from "../../types/chessTypes";
@@ -167,7 +169,7 @@ class ChessGame {
     board: ChessBoardType,
     row: number,
     col: number
-  ) => {
+  ): ShowValidMovesReturnType => {
     if (
       board[row][col] instanceof ChessPiece &&
       (board[row][col] as ChessPiece).color !== userColor &&
@@ -406,7 +408,7 @@ class ChessGame {
           });
 
           if (piece.color === "white") {
-            console.log("attackedCells = ", attackedCells);
+            // console.log("attackedCells = ", attackedCells);
             // this.cellsUnderAttackByWhite[str] = attackedCells;
           } else {
             // this.cellsUnderAttackByBlack[str] = attackedCells;
@@ -419,7 +421,11 @@ class ChessGame {
     this.isGameOver(board);
   };
 
-  select = (board: ChessBoardType, row: number, col: number) => {
+  select = (
+    board: ChessBoardType,
+    row: number,
+    col: number
+  ): ShowValidMovesReturnType => {
     if (this.numClicks === 0) {
       const cell = board[row][col];
 
@@ -464,7 +470,10 @@ class ChessGame {
     }
   };
 
-  movePiece = (board: ChessBoardType, clickedCells: ClickedCellsType) => {
+  movePiece = (
+    board: ChessBoardType,
+    clickedCells: ClickedCellsType
+  ): MovePieceReturnType => {
     // clicked cells is basically this.cellsClicked, but we take it as a
     // parameter so that we can also use it for sockets
     let castlingDone = false,

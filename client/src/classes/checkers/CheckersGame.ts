@@ -114,9 +114,9 @@ class CheckersGame {
       }
 
       let str = getStr(row, col);
-      let piece = <CheckersPiece>(
-        board[this.cellsClicked.rows[0]][this.cellsClicked.cols[0]]
-      );
+      let piece = board[this.cellsClicked.rows[0]][
+        this.cellsClicked.cols[0]
+      ] as CheckersPiece;
       const validPieceMoves = piece.validMoves(board);
 
       if (!(str in validPieceMoves)) {
@@ -147,7 +147,7 @@ class CheckersGame {
     const [coli, colf] = cols;
 
     // can be absolutely sure that rows and cols in clickedCells always contain a checker's piece
-    const piece = <CheckersPiece>board[rowi][coli];
+    const piece = board[rowi][coli] as CheckersPiece;
 
     if (!validPieceMoves) {
       validPieceMoves = piece.validMoves(board);
@@ -167,8 +167,7 @@ class CheckersGame {
       // is stored in the second position of the array
       const { row, col } = actualMove.capturing;
 
-      let capturedPiece = <CheckersPiece>board[row][col];
-
+      let capturedPiece = board[row][col] as CheckersPiece;
       piece.setRowCol(rowf, colf);
 
       if (capturedPiece.isKing) {
