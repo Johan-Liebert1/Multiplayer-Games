@@ -6,12 +6,14 @@ import {
   ChessBoardType,
   ChessPieceColor,
   GenericKingParametersType,
-  KingParametersType
+  InvalidChessMove,
+  KingParametersType,
+  ValidChessMove
 } from "../../types/chessTypes";
 
 class King extends ChessPiece {
   hasMoved: boolean;
-  invalidMoves: { [key: string]: "invalid" };
+  invalidMoves: InvalidChessMove;
   canCastleLeft: boolean | null;
   canCastleRight: boolean | null;
 
@@ -155,8 +157,10 @@ class King extends ChessPiece {
   };
 
   handleKingInCheckByRook = ({ pieceCheckingKing }: GenericKingParametersType) => {
-    let newValidMoves = {};
-    let rookSquares = {};
+    if (!pieceCheckingKing) return;
+
+    let newValidMoves: ValidChessMove = {};
+    let rookSquares = {} as { [key: string]: boolean };
 
     let row = pieceCheckingKing.row + 1,
       col = pieceCheckingKing.col;
@@ -205,8 +209,10 @@ class King extends ChessPiece {
   };
 
   handleKingInCheckByBishop = ({ pieceCheckingKing }: GenericKingParametersType) => {
+    if (!pieceCheckingKing) return;
+
     // go upper left (row--, col--)
-    let bishopSquares = {};
+    let bishopSquares = {} as { [key: string]: boolean };
 
     let row = pieceCheckingKing.row - 1,
       col = pieceCheckingKing.col - 1;
@@ -244,7 +250,7 @@ class King extends ChessPiece {
       col++;
     }
 
-    let newValidMoves = {};
+    let newValidMoves: ValidChessMove = {};
 
     Object.keys(this.moves).forEach(move => {
       if (!(move in bishopSquares)) {
@@ -306,7 +312,7 @@ class King extends ChessPiece {
       whiteKingPos
     } = kingParameters;
 
-    if (this.color === "white" && whiteKingInCheck) {
+    if (this.color === "white" && pieceCheckingWhiteKing) {
       let obj: GenericKingParametersType = {
         pieceCheckingKing: pieceCheckingWhiteKing,
         kingPos: whiteKingPos
@@ -319,7 +325,7 @@ class King extends ChessPiece {
       } else if (pieceCheckingWhiteKing.pieceName === "queen") {
         this.handleKingInCheckByQueen(obj);
       }
-    } else if (this.color === "black" && blackKingInCheck) {
+    } else if (this.color === "black" && pieceCheckingBlackKing) {
       let obj: GenericKingParametersType = {
         pieceCheckingKing: pieceCheckingBlackKing,
         kingPos: blackKingPos

@@ -1,7 +1,9 @@
 import {
   ChessBoardType,
   ChessPieceColor,
-  KingParametersType
+  KingParametersType,
+  PiecePosition,
+  ValidChessMove
 } from "../../types/chessTypes";
 import ChessPiece from "./ChessPiece";
 
@@ -36,14 +38,16 @@ class Bishop extends ChessPiece {
     }
   };
 
-  lowerRight = board => {
+  lowerRight = (board: ChessBoardType) => {
     let c = this.col;
     for (let r = this.row + 1; r < 8; r++) {
       if (c === 7) break;
       else c++;
 
-      if (board[r][c] !== 0) {
-        if (board[r][c].color === this.color) {
+      const piece = board[r][c];
+
+      if (piece instanceof ChessPiece) {
+        if (piece.color === this.color) {
           this.protectingMoves[getStr(r, c)] = "protecting";
           return;
         } else {
@@ -56,14 +60,15 @@ class Bishop extends ChessPiece {
     }
   };
 
-  upperLeft = board => {
+  upperLeft = (board: ChessBoardType) => {
     let c = this.col;
     for (let r = this.row - 1; r >= 0; r--) {
       if (c === 0) break;
       else c--;
+      const piece = board[r][c];
 
-      if (board[r][c] !== 0) {
-        if (board[r][c].color === this.color) {
+      if (piece instanceof ChessPiece) {
+        if (piece.color === this.color) {
           this.protectingMoves[getStr(r, c)] = "protecting";
           return;
         } else {
@@ -76,14 +81,15 @@ class Bishop extends ChessPiece {
     }
   };
 
-  lowerLeft = board => {
+  lowerLeft = (board: ChessBoardType) => {
     let c = this.col;
     for (let r = this.row + 1; r < 8; r++) {
       if (c === 0) break;
       else c--;
+      const piece = board[r][c];
 
-      if (board[r][c] !== 0) {
-        if (board[r][c].color === this.color) {
+      if (piece instanceof ChessPiece) {
+        if (piece.color === this.color) {
           this.protectingMoves[getStr(r, c)] = "protecting";
 
           return;
@@ -97,12 +103,13 @@ class Bishop extends ChessPiece {
     }
   };
 
-  getCellsBetweenPieces = (kingPos: number[]) => {
+  getCellsBetweenPieces = (kingPos: PiecePosition) => {
     let rowAdder = 0,
       colAdder = 0;
     let kingRow = kingPos[0],
       kingCol = kingPos[1];
-    let cellsBetweenPieces = {};
+
+    let cellsBetweenPieces: ValidChessMove = {};
 
     // upper left
     if (kingRow < this.row && kingCol < this.col) {
@@ -142,9 +149,9 @@ class Bishop extends ChessPiece {
     this.upperLeft(board);
     this.lowerLeft(board);
 
-    // this.checkIfKingInCheck(kingParameters);
-    // this.handlePiecePinnedByRook(kingParameters, board);
-    // this.handlePiecePinnedByBishop(kingParameters, board);
+    this.checkIfKingInCheck(kingParameters);
+    this.handlePiecePinnedByRook(kingParameters, board);
+    this.handlePiecePinnedByBishop(kingParameters, board);
 
     return this.moves;
   };

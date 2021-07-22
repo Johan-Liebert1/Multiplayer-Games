@@ -2,14 +2,16 @@ import React, { useState, useEffect } from "react";
 import useWindowSize from "../hooks/useWindowSize";
 
 import Cell from "./Cell";
-import Pawn from "../classes/chess/test/Pawn";
-import Rook from "../classes/chess/test/Rook";
-import Knight from "../classes/chess/test/Knight";
-import Bishop from "../classes/chess/test/Bishop";
-import King from "../classes/chess/test/King";
-import Queen from "../classes/chess/test/Queen";
-import ChessGame from "../classes/chess/test/ChessGame";
-import ChessPiece from "../classes/chess/test/ChessPiece";
+
+import ChessGame from "../classes/chess/ChessGame";
+
+import Pawn from "../classes/chess/Pawn";
+import Rook from "../classes/chess/Rook";
+import Knight from "../classes/chess/Knight";
+import Bishop from "../classes/chess/Bishop";
+import King from "../classes/chess/King";
+import Queen from "../classes/chess/Queen";
+import ChessPiece from "../classes/chess/ChessPiece";
 
 import { ChessBoardType, ChessPieceColor, ChessPieceName } from "../types/chessTypes";
 
@@ -88,7 +90,7 @@ const ChessBoard: React.FC = () => {
     // socket.emit("pawnPromoted", { pieceName, cellsClicked });
 
     // the pawn has been moved at this point
-    game.promotePawn(tempBoard, pieceName, cellsClicked);
+    // if (cellsClicked) game.promotePawn(tempBoard, pieceName, cellsClicked);
 
     setBoard(tempBoard);
 

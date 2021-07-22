@@ -3,7 +3,8 @@ import {
   ChessBoardType,
   ChessPieceColor,
   KingParametersType,
-  PiecePosition
+  PiecePosition,
+  ValidChessMove
 } from "../../types/chessTypes";
 import ChessPiece from "./ChessPiece";
 
@@ -24,7 +25,7 @@ class Rook extends ChessPiece {
     let kingRow = kingPos[0],
       kingCol = kingPos[1];
 
-    let cellsBetweenPieces = {};
+    let cellsBetweenPieces: ValidChessMove = {};
 
     // up
     if (kingRow < this.row && kingCol === this.col) {

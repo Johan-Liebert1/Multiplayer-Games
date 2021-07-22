@@ -1,5 +1,10 @@
 import { getStr } from "../../helpers/globalHelpers";
-import { ChessPieceColor } from "../../types/chessTypes";
+import {
+  ChessBoardType,
+  ChessPieceColor,
+  KingParametersType
+} from "../../types/chessTypes";
+import ChessPiece from "./ChessPiece";
 import Piece from "./ChessPiece";
 
 class Knight extends Piece {
@@ -9,7 +14,7 @@ class Knight extends Piece {
     this.image = `images/chess/${this.color}Knight.png`;
   }
 
-  validMoves = (board, kingParameters) => {
+  validMoves = (board: ChessBoardType, kingParameters: KingParametersType) => {
     this.resetMoves();
 
     let arrC = [-2, -1, 1, 2];
@@ -26,9 +31,9 @@ class Knight extends Piece {
 
           if (cell === 0) {
             this.moves[getStr(this.row - arrR[i], this.col + arrC[i])] = "valid";
-          } else if (cell.color !== this.color) {
+          } else if (cell instanceof ChessPiece && cell.color !== this.color) {
             this.moves[getStr(this.row - arrR[i], this.col + arrC[i])] = "capturing";
-          } else if (cell.color === this.color) {
+          } else if (cell instanceof ChessPiece && cell.color === this.color) {
             this.protectingMoves[getStr(this.row - arrR[i], this.col + arrC[i])] =
               "protecting";
           }
@@ -39,9 +44,9 @@ class Knight extends Piece {
 
           if (cell === 0) {
             this.moves[getStr(this.row + arrR[i], this.col + arrC[i])] = "valid";
-          } else if (cell.color !== this.color) {
+          } else if (cell instanceof ChessPiece && cell.color !== this.color) {
             this.moves[getStr(this.row + arrR[i], this.col + arrC[i])] = "capturing";
-          } else if (cell.color === this.color) {
+          } else if (cell instanceof ChessPiece && cell.color === this.color) {
             this.protectingMoves[getStr(this.row + arrR[i], this.col + arrC[i])] =
               "protecting";
           }

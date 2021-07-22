@@ -1,4 +1,8 @@
-import { ChessBoardType, ChessPieceColor } from "../../types/chessTypes";
+import {
+  ChessBoardType,
+  ChessPieceColor,
+  KingParametersType
+} from "../../types/chessTypes";
 import ChessPiece from "./ChessPiece";
 
 import { getStr } from "../../helpers/globalHelpers";
@@ -25,7 +29,13 @@ class Pawn extends ChessPiece {
     }
   };
 
-  validMoves = (board: ChessBoardType, kingParameters, initialCall = false) => {
+  validMoves = (
+    board: ChessBoardType,
+    kingParameters: KingParametersType,
+    initialCall = false
+  ) => {
+    console.log(kingParameters);
+
     this.resetMoves();
 
     const adder = this.color === "black" ? 1 : -1;
@@ -65,9 +75,9 @@ class Pawn extends ChessPiece {
       }
     }
 
-    // this.checkIfKingInCheck(kingParameters);
-    // this.handlePiecePinnedByRook(kingParameters, board);
-    // this.handlePiecePinnedByBishop(kingParameters, board);
+    this.checkIfKingInCheck(kingParameters);
+    this.handlePiecePinnedByRook(kingParameters, board);
+    this.handlePiecePinnedByBishop(kingParameters, board);
 
     return this.moves;
   };

@@ -30,11 +30,14 @@ class ChessPiece {
     this.protectingMoves = {};
     this.isBeingAttacked = false;
     this.isClicked = false;
-    this.pieceName = "";
+    this.pieceName = "pawn";
     this.image = "";
     this.isKing = false;
-    // this.setRowCol(row, col);
+    this.setRowCol(row, col);
   }
+
+  validMoves = (board: ChessBoardType, kingParameters: KingParametersType) =>
+    ({} as ValidChessMove);
 
   getCellsBetweenPieces = (kingPos: PiecePosition) => ({});
 
