@@ -98,4 +98,6 @@ def user_login_handler(details: UserLoginRequest, db: Session = Depends(get_db))
         algorithm=Config.JWT_ALGORITHM,
     )
 
-    return {"success": True, "token": token}
+    serialized_user = serialize([user])[0]
+
+    return {"success": True, "user": {"token": token, **serialized_user}}

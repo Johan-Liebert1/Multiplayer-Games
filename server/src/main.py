@@ -46,9 +46,23 @@ def connect(socket_id, data):
 
 
 @socket.event
-async def playedAMove(socket_id, move: "dict[str, List[int]]"):
-    new_line_print(f"emitting to {socket_id}, move = {move}")
-    await socket.emit(SocketConfig.OPPONENT_PLAYED_A_MOVE, move, skip_sid=socket_id)
+async def userPlayedAMove(socket_id, move: "dict[str, List[int]]"):
+    new_line_print(f"emitting to {socket_id}, move = {move}", 1)
+
+    # socket.rooms() returns all the rooms that the current socket is in
+    # first room is always the socket_id
+    await socket.emit(
+        SocketConfig.OPPONENT_PLAYED_A_MOVE,
+        move,
+        skip_sid=socket_id,
+        to=socket.rooms(socket_id)[1],
+    )
+
+
+@socket.event
+async def joinRoom(socket_id, data):
+    room_id = data["roomId"]
+    socket.enter_room(socket_id, room_id)
 
 
 @fast_app.get("/")

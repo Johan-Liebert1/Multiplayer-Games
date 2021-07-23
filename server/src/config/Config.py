@@ -9,4 +9,4 @@ class Config:
 
 
 class SocketConfig:
-    OPPONENT_PLAYED_A_MOVE = "opponentPlayedAMove"
+    OPPONENT_PLAYED_A_MOVE = "OPPONENT_PLAYED_A_MOVE"
