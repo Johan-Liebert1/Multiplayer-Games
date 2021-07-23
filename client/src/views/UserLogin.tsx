@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 import OutlinedInput from "@material-ui/core/OutlinedInput";
 
@@ -15,13 +16,18 @@ import InputLabel from "@material-ui/core/InputLabel";
 import InputAdornment from "@material-ui/core/InputAdornment";
 
 import useStyles from "../styles/UserLoginStyles";
-import { axiosInstance } from "../config/axiosConfig";
 import { RouteProps } from "../types/routeProps";
 import routes, { routeNames } from "../routes/router";
+import { userLoginAction } from "../store/actions/userActions";
+import { useTypedSelector } from "../hooks/useTypedSelector";
 
 interface UserLoginProps extends RouteProps {}
 
 const UserLogin: React.FC<UserLoginProps> = ({ history }) => {
+  const dispatch = useDispatch();
+
+  const { user } = useTypedSelector(state => state);
+
   const classes = useStyles();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -37,14 +43,16 @@ const UserLogin: React.FC<UserLoginProps> = ({ history }) => {
     });
   };
 
+  useEffect(() => {
+    if (user.token?.length) {
+      history.push(routes[routeNames.GAMES_SCREEN].path);
+    }
+  }, [user.token]);
+
   const loginUser = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
 
-    const loginRequest = await axiosInstance.post("/user/login", formDetails);
-
-    if (loginRequest.data.success) {
-      history.push(routes[routeNames.SKETCHIO_SCREEN].path);
-    }
+    dispatch(userLoginAction(formDetails));
   };
 
   return (

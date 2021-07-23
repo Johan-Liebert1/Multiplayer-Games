@@ -1,5 +1,6 @@
 // react stuff
 import React, { useState, useEffect } from "react";
+import { withRouter } from "react-router-dom";
 import useWindowSize from "../hooks/useWindowSize";
 
 // components
@@ -28,11 +29,17 @@ import { CheckersPieceColor } from "../types/checkersTypes";
 import { ClickedCellsType } from "../types/games";
 import { io, Socket } from "socket.io-client";
 import { DefaultEventsMap } from "socket.io-client/build/typed-events";
+import { RouteProps } from "../types/routeProps";
+import { socketEmitEvents, socketListenEvents } from "../types/socketEvents";
 
 const game = new ChessGame();
 let socket: Socket<DefaultEventsMap, DefaultEventsMap>;
 
-const ChessBoard: React.FC = () => {
+interface ChessBoardProps extends RouteProps {
+  roomId: string;
+}
+
+const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
   const [board, setBoard] = useState<ChessBoardType>([
     [
       new Rook("black", 0, 0),
@@ -82,15 +89,19 @@ const ChessBoard: React.FC = () => {
 
   useEffect(() => {
     socket = io("http://localhost:8000");
+
+    socket.emit(socketEmitEvents.JOIN_A_ROOM, { roomId: `chess_${roomId}` });
   }, []);
 
   useEffect(() => {
-    socket.on("opponentPlayedAMove", (cellsClicked: ClickedCellsType) => {
-      console.log("cellscli", cellsClicked);
-      let tempBoard = board.map(b => b);
-      game.movePiece(tempBoard, cellsClicked);
-      setBoard(tempBoard);
-    });
+    socket.on(
+      socketListenEvents.OPPONENT_PLAYED_A_MOVE,
+      (cellsClicked: ClickedCellsType) => {
+        let tempBoard = board.map(b => b);
+        game.movePiece(tempBoard, cellsClicked);
+        setBoard(tempBoard);
+      }
+    );
   }, []);
 
   const windowSize = useWindowSize();
@@ -148,7 +159,7 @@ const ChessBoard: React.FC = () => {
         if ("cellsClicked" in returnedValue) {
           const { cellsClicked, castlingDone, pawnPromoted } = returnedValue;
 
-          socket.emit("playedAMove", cellsClicked);
+          socket.emit(socketEmitEvents.USER_PLAYED_A_MOVE, cellsClicked);
 
           if (cellsClicked.rows.length === 2)
             setChessPieceColor(old => (old === "white" ? "black" : "white"));
@@ -263,4 +274,4 @@ const ChessBoard: React.FC = () => {
   );
 };
 
-export default ChessBoard;
+export default withRouter(ChessBoard);

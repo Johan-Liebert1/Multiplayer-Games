@@ -74,7 +74,14 @@ const Cell: React.FC<CellProps> = ({
     <div onClick={handleCellClick} style={divStyles}>
       <div style={innerDivStyles}>
         {(blueDot || redDot) && <div style={dotStyle}></div>}
-        {image && <img src={image} style={imgStyle} alt={image} draggable />}
+        {image && (
+          <img
+            src={window.location.origin + "/" + image}
+            style={imgStyle}
+            alt={image}
+            draggable
+          />
+        )}
       </div>
     </div>
   );

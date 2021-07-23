@@ -32,17 +32,17 @@ const routes = {
   },
   [routeNames.CHECKERS_SCREEN]: {
     name: routeNames.CHECKERS_SCREEN,
-    path: "/checkers",
+    path: "/checkers/:roomId",
     component: CheckersScreen
   },
   [routeNames.CHESS_SCREEN]: {
     name: routeNames.CHESS_SCREEN,
-    path: "/chess",
+    path: "/chess/:roomId",
     component: ChessScreen
   },
   [routeNames.SKETCHIO_SCREEN]: {
     name: routeNames.SKETCHIO_SCREEN,
-    path: "/sketchio",
+    path: "/sketchio/:roomId",
     component: SketchIOScreen
   }
 };
