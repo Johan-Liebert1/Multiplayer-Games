@@ -26,8 +26,11 @@ import {
 } from "../types/chessTypes";
 import { CheckersPieceColor } from "../types/checkersTypes";
 import { ClickedCellsType } from "../types/games";
+import { io, Socket } from "socket.io-client";
+import { DefaultEventsMap } from "socket.io-client/build/typed-events";
 
 const game = new ChessGame();
+let socket: Socket<DefaultEventsMap, DefaultEventsMap>;
 
 const ChessBoard: React.FC = () => {
   const [board, setBoard] = useState<ChessBoardType>([
@@ -76,6 +79,19 @@ const ChessBoard: React.FC = () => {
       new Rook("white", 7, 7)
     ]
   ]);
+
+  useEffect(() => {
+    socket = io("http://localhost:8000");
+  }, []);
+
+  useEffect(() => {
+    socket.on("opponentPlayedAMove", (cellsClicked: ClickedCellsType) => {
+      console.log("cellscli", cellsClicked);
+      let tempBoard = board.map(b => b);
+      game.movePiece(tempBoard, cellsClicked);
+      setBoard(tempBoard);
+    });
+  }, []);
 
   const windowSize = useWindowSize();
 
@@ -131,6 +147,8 @@ const ChessBoard: React.FC = () => {
       if (returnedValue) {
         if ("cellsClicked" in returnedValue) {
           const { cellsClicked, castlingDone, pawnPromoted } = returnedValue;
+
+          socket.emit("playedAMove", cellsClicked);
 
           if (cellsClicked.rows.length === 2)
             setChessPieceColor(old => (old === "white" ? "black" : "white"));

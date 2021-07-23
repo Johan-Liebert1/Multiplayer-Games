@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { io } from "socket.io-client";
 import ChessBoard from "../components/ChessBoard";
 import { RouteProps } from "../types/routeProps";
 
