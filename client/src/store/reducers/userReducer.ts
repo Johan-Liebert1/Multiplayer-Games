@@ -11,7 +11,10 @@ const initialState: UserState = {
   id: -1
 };
 
-export const userReducer = (state: UserState = initialState, action: AllActions) => {
+export const userReducer = (
+  state: UserState = initialState,
+  action: AllActions
+): UserState => {
   switch (action.type) {
     case ActionNames.USER_LOGIN:
       // log the user in

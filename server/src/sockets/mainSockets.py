@@ -1,13 +1,11 @@
-from main import socket
-
-print("socket = ", socket, "\n\n\n")
+from config.Config import Colors
 
 
-@socket.event
-def connect(socket_id, data):
-    print("\n\n ", socket_id, "\n\n")
+def get_bot_message(username: str, connected: bool) -> "dict[str, str]":
+    to_add = "joined" if connected else "left"
 
-
-@socket.event
-def hi(socket_id, data):
-    print("\n\n ", socket_id, "\n\n")
+    return {
+        "username": "BOT",
+        "color": Colors.BOT_COLOR,
+        "message": f"{username} just {to_add} the chat",
+    }

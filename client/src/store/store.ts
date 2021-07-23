@@ -4,9 +4,14 @@ import { composeWithDevTools } from "redux-devtools-extension";
 import thunk from "redux-thunk";
 import { UserState } from "../types/store/storeTypes";
 
+const initialState = {
+  user: {} as UserState,
+  socket: null
+};
+
 const store = createStore(
   combinedReducers,
-  { user: {} as UserState },
+  initialState,
   composeWithDevTools(applyMiddleware(thunk))
 );
 

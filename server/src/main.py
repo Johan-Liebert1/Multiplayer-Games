@@ -1,10 +1,11 @@
 # /media/pragyan/Local Disk/Python/MultiplayerGamesFastAPITS/server/env/bin/python3
 
 import os
+from sockets.mainSockets import get_bot_message
+from helpers.colors import COLORS
 from config.Config import Colors, GameNames, SocketEvents
 from helpers.printHelper import new_line_print
 import sys
-from typing import List
 
 from fastapi import FastAPI
 import socketio
@@ -12,6 +13,7 @@ import socketio
 from routes import userRoutes
 
 from fastapi.middleware.cors import CORSMiddleware
+import random
 
 
 BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
@@ -111,8 +113,6 @@ async def joinRoom(socket_id, data: "dict[str, str]"):
             SocketEvents.CHESS_COLOR_SELECTED, {"color": color}, to=socket_id
         )
 
-        return
-
     elif game_name == GameNames.CHECKERS:
         if len(ROOMS[game_name][room_id]) == 1:
             # first player in a chess room, assign them the color white
@@ -123,10 +123,19 @@ async def joinRoom(socket_id, data: "dict[str, str]"):
             color = Colors.RED
 
         await socket.emit(
-            SocketEvents.CHECKERS_COLOR_SELECTED, {"color": color}, to=socket_id
+            SocketEvents.CHECKERS_COLOR_SELECTED,
+            {"color": color},
+            to=socket_id,
         )
 
-        return
+    new_line_print("sending bot message yayay")
+    # emit a chat message from a bot
+    await socket.emit(
+        SocketEvents.RECEIVE_CHAT_MESSAGE,
+        get_bot_message("username", connected=True),
+        to=room_id,
+        skip_sid=socket_id,
+    )
 
 
 @fast_app.get("/")

@@ -6,5 +6,6 @@ export const socketEmitEvents = Object.freeze({
 export const socketListenEvents = Object.freeze({
   OPPONENT_PLAYED_A_MOVE: "OPPONENT_PLAYED_A_MOVE",
   CHESS_COLOR_SELECTED: "CHESS_COLOR_SELECTED",
-  CHECKERS_COLOR_SELECTED: "CHECKERS_COLOR_SELECTED"
+  CHECKERS_COLOR_SELECTED: "CHECKERS_COLOR_SELECTED",
+  RECEIVE_CHAT_MESSAGE: "RECEIVE_CHAT_MESSAGE" // this is the name in the backend
 });

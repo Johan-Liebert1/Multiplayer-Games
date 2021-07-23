@@ -12,6 +12,7 @@ class SocketEvents:
     OPPONENT_PLAYED_A_MOVE = "OPPONENT_PLAYED_A_MOVE"
     CHESS_COLOR_SELECTED = "CHESS_COLOR_SELECTED"
     CHECKERS_COLOR_SELECTED = "CHECKERS_COLOR_SELECTED"
+    RECEIVE_CHAT_MESSAGE = "RECEIVE_CHAT_MESSAGE"
 
 
 class GameNames:
@@ -24,3 +25,4 @@ class Colors:
     WHITE = "white"
     BLACK = "black"
     RED = "red"
+    BOT_COLOR = "#00FF7F"

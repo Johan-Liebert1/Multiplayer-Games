@@ -1,3 +1,5 @@
+import { Socket } from "socket.io-client";
+import { DefaultEventsMap } from "socket.io-client/build/typed-events";
 import { ActionNames } from "./actionNames";
 import { UserState } from "./storeTypes";
 
@@ -6,4 +8,9 @@ export interface LoginAction {
   payload: UserState;
 }
 
-export type AllActions = LoginAction;
+export interface SetSocketAction {
+  type: ActionNames.SET_SOCKET;
+  payload: Socket<DefaultEventsMap, DefaultEventsMap>;
+}
+
+export type AllActions = LoginAction | SetSocketAction;

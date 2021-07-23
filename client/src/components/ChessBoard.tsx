@@ -31,9 +31,12 @@ import { io, Socket } from "socket.io-client";
 import { DefaultEventsMap } from "socket.io-client/build/typed-events";
 import { RouteProps } from "../types/routeProps";
 import { socketEmitEvents, socketListenEvents } from "../types/socketEvents";
+import { SocketState } from "../types/store/storeTypes";
+import { setSocketAction } from "../store/actions/socketActions";
+import { useDispatch } from "react-redux";
 
 const game = new ChessGame();
-let socket: Socket<DefaultEventsMap, DefaultEventsMap>;
+let socket: SocketState;
 
 interface ChessBoardProps extends RouteProps {
   roomId: string;
@@ -87,12 +90,16 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
     ]
   ]);
 
+  const dispatch = useDispatch();
+
   const [userPieceColor, setUserPieceColor] = useState<ChessPieceColor>("white");
 
   useEffect(() => {
     socket = io("http://localhost:8000");
 
     socket.emit(socketEmitEvents.JOIN_A_ROOM, { roomId: `chess_${roomId}` });
+
+    dispatch(setSocketAction(socket));
   }, []);
 
   useEffect(() => {
@@ -107,7 +114,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
 
     socket.on(
       socketListenEvents.CHESS_COLOR_SELECTED,
-      (data: { color: ChessPieceColor }) => {
+      (data: { color: ChessPieceColor; chatColor: string }) => {
         setUserPieceColor(data.color);
       }
     );

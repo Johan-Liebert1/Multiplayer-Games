@@ -11,12 +11,13 @@ export const wrapperDivStyles: React.CSSProperties = {
 };
 
 export const boardStyles: React.CSSProperties = {
-  width: "70%",
+  width: "65%",
   display: "flex",
   justifyContent: "center"
 };
 
 export const chatStyles: React.CSSProperties = {
+  maxWidth: "35%",
   display: "flex",
   justifyContent: "center",
   flexDirection: "column",
@@ -25,6 +26,10 @@ export const chatStyles: React.CSSProperties = {
 
 export const roomIdInputStyles = makeStyles(theme => ({
   root: {
+    "& .MuiInputBase-root.MuiFilledInput-root.MuiInputBase-fullWidth": {
+      backgroundColor: "rgba(0, 0, 0, 0.5)"
+    },
+
     "& label.MuiInputLabel-formControl": {
       top: 5,
       left: 15
