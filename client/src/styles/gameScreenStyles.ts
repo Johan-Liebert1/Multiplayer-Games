@@ -16,7 +16,6 @@ export const boardStyles: React.CSSProperties = {
 };
 
 export const chatStyles: React.CSSProperties = {
-  width: "30%",
   display: "flex",
   justifyContent: "center",
   flexDirection: "column"

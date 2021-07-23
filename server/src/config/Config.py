@@ -8,5 +8,19 @@ class Config:
     JWT_ALGORITHM = "HS256"
 
 
-class SocketConfig:
+class SocketEvents:
     OPPONENT_PLAYED_A_MOVE = "OPPONENT_PLAYED_A_MOVE"
+    CHESS_COLOR_SELECTED = "CHESS_COLOR_SELECTED"
+    CHECKERS_COLOR_SELECTED = "CHECKERS_COLOR_SELECTED"
+
+
+class GameNames:
+    CHESS = "chess"
+    CHECKERS = "checkers"
+    SKETCHIO = "sketchio"
+
+
+class Colors:
+    WHITE = "white"
+    BLACK = "black"
+    RED = "red"

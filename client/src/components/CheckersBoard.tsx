@@ -1,13 +1,31 @@
+// react stuff
 import React, { useState, useEffect } from "react";
 import Cell from "./Cell";
 
+// components
+import GameOverComponent from "./GameOverComponent";
+
+// checkers
 import CheckersPiece from "../classes/checkers/CheckersPiece";
 import CheckersGame from "../classes/checkers/CheckersGame";
+
+// sockets
+import { io, Socket } from "socket.io-client";
+
+// types
+import { ClickedCellsType } from "../types/games";
+import { DefaultEventsMap } from "socket.io-client/build/typed-events";
+import { socketEmitEvents, socketListenEvents } from "../types/socketEvents";
 import { CheckersBoardType, CheckersPieceColor } from "../types/checkersTypes";
 
 const game = new CheckersGame();
+let socket: Socket<DefaultEventsMap, DefaultEventsMap>;
 
-const CheckersBoard: React.FC = () => {
+interface CheckersBoardProps {
+  roomId: string;
+}
+
+const CheckersBoard: React.FC<CheckersBoardProps> = ({ roomId }) => {
   // const { username, checkersPieceColor } = useSelector(state => state.user);
   // const { socket } = useSelector(state => state.socket);
   // const checkersSockets = useSelector(state => state.checkersSockets);
@@ -24,13 +42,17 @@ const CheckersBoard: React.FC = () => {
   ]);
 
   // const windowSize = useWindowSize();
-  const [gameOver, setGameOver] = useState({
+  const [gameOver, setGameOver] = useState<{
+    gameOver: boolean;
+    winnerName: string;
+    winnerColor: CheckersPieceColor;
+  }>({
     gameOver: false,
-    winnerName: null,
-    winnerColor: null
+    winnerName: "",
+    winnerColor: "" as CheckersPieceColor
   });
 
-  let [checkersPieceColor, setCheckersPieceColor] = useState<CheckersPieceColor>("white");
+  let [userPieceColor, setUserPieceColor] = useState<CheckersPieceColor>("white");
 
   useEffect(() => {
     let tempBoard = board.map(r => r);
@@ -58,46 +80,47 @@ const CheckersBoard: React.FC = () => {
     setBoard(tempBoard);
   }, []);
 
-  // useEffect(() => {
-  // 	socket.on("opponentPlayedAMove", ({ cellsClicked }) => {
-  // 		let tempBoard = board.map(b => b);
+  useEffect(() => {
+    socket = io("http://localhost:8000");
 
-  // 		game.movePiece(tempBoard, cellsClicked);
-
-  // 		setBoard(tempBoard);
-  // 	});
-
-  // 	socket.on("gameHasEnded", gameOverObject => setGameOver(gameOverObject));
-  // }, [socket]);
-
-  // const getPlayerName = player => {
-  // 	// player can be self or opponent
-  // 	if (player === "self") return username;
-
-  // 	for (let i = 0; i < checkersSockets.length; i++) {
-  // 		if (
-  // 			checkersSockets[i].checkersPieceColor &&
-  // 			checkersSockets[i].checkersPieceColor !== checkersPieceColor
-  // 		) {
-  // 			return checkersSockets[i].username;
-  // 		}
-  // 	}
-  // };
+    socket.emit(socketEmitEvents.JOIN_A_ROOM, { roomId: `checkers_${roomId}` });
+  }, []);
 
   useEffect(() => {
-    console.log("changed checkerspiece color to ", checkersPieceColor);
-  }, [checkersPieceColor]);
+    socket.on(
+      socketListenEvents.OPPONENT_PLAYED_A_MOVE,
+      (cellsClicked: ClickedCellsType) => {
+        let tempBoard = board.map(b => b);
+
+        game.movePiece(tempBoard, cellsClicked);
+
+        setBoard(tempBoard);
+      }
+    );
+
+    socket.on(
+      socketListenEvents.CHECKERS_COLOR_SELECTED,
+      (data: { color: CheckersPieceColor }) => {
+        setUserPieceColor(data.color);
+      }
+    );
+
+    socket.on("gameHasEnded", gameOverObject => setGameOver(gameOverObject));
+  }, []);
+
+  // useEffect(() => {
+  // console.log("changed checkerspiece color to ", checkersPieceColor);
+  // }, []);
 
   const showMoves = (row: number, col: number) => {
     if (!gameOver.gameOver) {
       let tempBoard = board.map(b => b);
-      let cellsClicked = game.showValidMoves(checkersPieceColor, tempBoard, row, col);
+      let cellsClicked = game.showValidMoves(userPieceColor, tempBoard, row, col);
       console.log(cellsClicked);
       setBoard(tempBoard);
 
       if (cellsClicked && cellsClicked.rows.length === 2) {
-        setCheckersPieceColor(oldVal => (oldVal === "white" ? "red" : "white"));
-        // socket.emit("movePlayed", { cellsClicked });
+        socket.emit(socketEmitEvents.USER_PLAYED_A_MOVE, cellsClicked);
       }
 
       // let isGameOver = game.isGameOver(board);
@@ -124,17 +147,17 @@ const CheckersBoard: React.FC = () => {
     <div>
       <div style={{ height: "2rem" }}>{/* <h3>{getPlayerName("opponent")}</h3> */}</div>
       <div id="checkersBoard" style={{ position: "relative" }}>
-        {/* {gameOver.gameOver && (
+        {gameOver.gameOver && (
           <GameOverComponent
             winnerColor={gameOver.winnerColor}
             winnerName={gameOver.winnerName}
           />
-        )} */}
+        )}
         <div
-        // style={{
-        //   display: "flex",
-        //   flexDirection: checkersPieceColor === "red" ? "column" : "column-reverse"
-        // }}
+          style={{
+            display: "flex",
+            flexDirection: userPieceColor === "red" ? "column" : "column-reverse"
+          }}
         >
           {board.map((row, ri) => {
             return (

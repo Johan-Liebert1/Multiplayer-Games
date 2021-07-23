@@ -6,11 +6,12 @@ import { RouteProps } from "../types/routeProps";
 interface GamesScreenProps extends RouteProps {}
 
 const GamesScreen: React.FC<GamesScreenProps> = () => {
-  const divStyles = {
+  const divStyles: React.CSSProperties = {
     width: window.innerWidth > 10000 ? "70%" : "100%",
     display: "flex",
     justifyContent: "space-between",
-    padding: "0 5rem"
+    padding: "0 5rem",
+    flexWrap: "wrap"
   };
 
   const gamesList: Games[] = ["chess", "checkers", "sketchio"];

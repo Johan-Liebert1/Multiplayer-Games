@@ -87,6 +87,8 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
     ]
   ]);
 
+  const [userPieceColor, setUserPieceColor] = useState<ChessPieceColor>("white");
+
   useEffect(() => {
     socket = io("http://localhost:8000");
 
@@ -100,6 +102,13 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
         let tempBoard = board.map(b => b);
         game.movePiece(tempBoard, cellsClicked);
         setBoard(tempBoard);
+      }
+    );
+
+    socket.on(
+      socketListenEvents.CHESS_COLOR_SELECTED,
+      (data: { color: ChessPieceColor }) => {
+        setUserPieceColor(data.color);
       }
     );
   }, []);
@@ -148,21 +157,16 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
     });
   };
 
-  const [chessPieceColor, setChessPieceColor] = useState<ChessPieceColor>("white");
-
   const showMoves = (row: number, col: number) => {
     if (!gameOver.gameOver) {
       let tempBoard = board.map(b => b);
-      let returnedValue = game.showValidMoves(chessPieceColor, tempBoard, row, col);
+      let returnedValue = game.showValidMoves(userPieceColor, tempBoard, row, col);
 
       if (returnedValue) {
         if ("cellsClicked" in returnedValue) {
           const { cellsClicked, castlingDone, pawnPromoted } = returnedValue;
 
           socket.emit(socketEmitEvents.USER_PLAYED_A_MOVE, cellsClicked);
-
-          if (cellsClicked.rows.length === 2)
-            setChessPieceColor(old => (old === "white" ? "black" : "white"));
 
           if (pawnPromoted) {
             // the pawn has reached the other end of the board
@@ -261,7 +265,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
         <div
           style={{
             display: "flex",
-            flexDirection: chessPieceColor === "white" ? "column" : "column"
+            flexDirection: userPieceColor === "white" ? "column" : "column-reverse"
           }}
         >
           {showChessBoard()}

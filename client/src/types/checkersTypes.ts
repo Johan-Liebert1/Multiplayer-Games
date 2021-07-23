@@ -8,3 +8,4 @@ export type CapturingCheckersMove = {
   [key: string]: { capturing: { row: number; col: number } };
 };
 export type CheckersMoveType = ValidCheckersMove | CapturingCheckersMove;
+export type CheckersWinner = CheckersPieceColor | "Draw" | "";

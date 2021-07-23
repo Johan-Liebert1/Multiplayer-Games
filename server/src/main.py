@@ -1,7 +1,7 @@
 # /media/pragyan/Local Disk/Python/MultiplayerGamesFastAPITS/server/env/bin/python3
 
 import os
-from config.Config import SocketConfig
+from config.Config import Colors, GameNames, SocketEvents
 from helpers.printHelper import new_line_print
 import sys
 from typing import List
@@ -29,6 +29,21 @@ fast_app.add_middleware(
 
 fast_app.include_router(userRoutes.userRouter, prefix="/api/user", tags=["user"])
 
+"""  
+{
+    game_name: {
+        room_id: [
+            user_1_username, user_2_username,....
+        ]
+    }
+}
+"""
+ROOMS: "dict[str, dict[str, List[str]]]" = {
+    GameNames.CHESS: {},
+    GameNames.CHECKERS: {},
+    GameNames.SKETCHIO: {},
+}
+
 
 socket = socketio.AsyncServer(
     async_mode="asgi",
@@ -47,22 +62,71 @@ def connect(socket_id, data):
 
 @socket.event
 async def userPlayedAMove(socket_id, move: "dict[str, List[int]]"):
-    new_line_print(f"emitting to {socket_id}, move = {move}", 1)
+    new_line_print(
+        f"emitting to {socket_id}, move = {move}, rooms={socket.rooms(socket_id)}", 1
+    )
+
+    for room in socket.rooms(socket_id):
+        if room != socket_id:
+            room_to_send_to: str = room
+            break
 
     # socket.rooms() returns all the rooms that the current socket is in
     # first room is always the socket_id
     await socket.emit(
-        SocketConfig.OPPONENT_PLAYED_A_MOVE,
+        SocketEvents.OPPONENT_PLAYED_A_MOVE,
         move,
         skip_sid=socket_id,
-        to=socket.rooms(socket_id)[1],
+        to=room_to_send_to,
     )
 
 
 @socket.event
-async def joinRoom(socket_id, data):
-    room_id = data["roomId"]
+async def joinRoom(socket_id, data: "dict[str, str]"):
+    # extract the game name from the room_id
+    # room_id = <gameName>_<actualRoomId>
+
+    game_name, room_id = data["roomId"].split("_")
     socket.enter_room(socket_id, room_id)
+
+    # add the new socket to the room
+    if not ROOMS[game_name].get(room_id):
+        # newly created room, only one player's in it
+        ROOMS[game_name][room_id] = ["player1"]
+
+    else:
+        # someone's already in the room so append the next player
+        ROOMS[game_name][room_id].append("player2")
+
+    if game_name == GameNames.CHESS:
+        if len(ROOMS[game_name][room_id]) == 1:
+            # first player in a chess room, assign them the color white
+            color = Colors.WHITE
+
+        else:
+            # one player is already in the room, so assign the color black
+            color = Colors.BLACK
+
+        await socket.emit(
+            SocketEvents.CHESS_COLOR_SELECTED, {"color": color}, to=socket_id
+        )
+
+        return
+
+    elif game_name == GameNames.CHECKERS:
+        if len(ROOMS[game_name][room_id]) == 1:
+            # first player in a chess room, assign them the color white
+            color = Colors.WHITE
+
+        else:
+            # one player is already in the room, so assign the color black
+            color = Colors.RED
+
+        await socket.emit(
+            SocketEvents.CHECKERS_COLOR_SELECTED, {"color": color}, to=socket_id
+        )
+
+        return
 
 
 @fast_app.get("/")
