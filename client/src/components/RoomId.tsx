@@ -5,9 +5,10 @@ import {
   IconButton,
   InputAdornment,
   InputLabel,
-  FormGroup
+  FormControl
 } from "@material-ui/core/";
 import SVG, { svgNames } from "../components/Svg";
+import { roomIdInputStyles } from "../styles/gameScreenStyles";
 
 interface RoomIdProps {
   roomId: string;
@@ -21,8 +22,10 @@ const RoomId: React.FC<RoomIdProps> = ({ roomId }) => {
     document.execCommand("copy");
   };
 
+  const roomIdStyles = roomIdInputStyles();
+
   return (
-    <FormGroup>
+    <FormControl className={roomIdStyles.root}>
       <InputLabel htmlFor="outlined-adornment-password">Room Id</InputLabel>
       <FilledInput
         id="standard-read-only-input"
@@ -38,7 +41,7 @@ const RoomId: React.FC<RoomIdProps> = ({ roomId }) => {
           </InputAdornment>
         }
       />
-    </FormGroup>
+    </FormControl>
   );
 };
 

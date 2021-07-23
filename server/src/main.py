@@ -38,7 +38,7 @@ fast_app.include_router(userRoutes.userRouter, prefix="/api/user", tags=["user"]
     }
 }
 """
-ROOMS: "dict[str, dict[str, List[str]]]" = {
+ROOMS: "dict[str, dict[str, list[str]]]" = {
     GameNames.CHESS: {},
     GameNames.CHECKERS: {},
     GameNames.SKETCHIO: {},
@@ -61,7 +61,7 @@ def connect(socket_id, data):
 
 
 @socket.event
-async def userPlayedAMove(socket_id, move: "dict[str, List[int]]"):
+async def userPlayedAMove(socket_id, move: "dict[str, list[int]]"):
     new_line_print(
         f"emitting to {socket_id}, move = {move}, rooms={socket.rooms(socket_id)}", 1
     )
