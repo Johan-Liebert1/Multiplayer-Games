@@ -36,7 +36,7 @@ const Chat: React.FC = () => {
 
   const sendMessage = () => {
     const newMessage: ChatMessage = {
-      username: "username1",
+      username: user.username,
       color: user.chatColor || "red",
       message: messageText
     };

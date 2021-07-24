@@ -27,8 +27,7 @@ import {
 } from "../types/chessTypes";
 import { CheckersPieceColor } from "../types/checkersTypes";
 import { ClickedCellsType } from "../types/games";
-import { io, Socket } from "socket.io-client";
-import { DefaultEventsMap } from "socket.io-client/build/typed-events";
+import { io } from "socket.io-client";
 import { RouteProps } from "../types/routeProps";
 import { socketEmitEvents, socketListenEvents } from "../types/socketEvents";
 import { SocketState } from "../types/store/storeTypes";
@@ -100,9 +99,13 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
   useEffect(() => {
     socket = io("http://localhost:8000");
 
-    socket.emit(socketEmitEvents.JOIN_A_ROOM, { roomId: `chess_${roomId}` });
+    socket.emit(socketEmitEvents.JOIN_A_ROOM, {
+      roomId: `chess_${roomId}`,
+      username: user.username
+    });
 
     dispatch(setSocketAction(socket));
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -122,6 +125,8 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
         dispatch(updateUserSocketDetails({ ...user, chatColor: data.chatColor }));
       }
     );
+
+    // eslint-disable-next-line
   }, []);
 
   const windowSize = useWindowSize();

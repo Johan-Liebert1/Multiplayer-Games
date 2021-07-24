@@ -2,7 +2,7 @@ import { makeStyles } from "@material-ui/core";
 import React from "react";
 
 export const wrapperDivStyles: React.CSSProperties = {
-  width: "90%",
+  width: "95%",
   height: "100%",
   display: "flex",
   justifyContent: "space-evenly",
@@ -17,7 +17,6 @@ export const boardStyles: React.CSSProperties = {
 };
 
 export const chatStyles: React.CSSProperties = {
-  maxWidth: "35%",
   display: "flex",
   justifyContent: "center",
   flexDirection: "column",

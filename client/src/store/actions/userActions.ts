@@ -10,10 +10,7 @@ export const userLoginAction = (userData: object) => async (dispatch: any) => {
       type: ActionNames.USER_LOGIN,
       payload: login.data.user
     });
-    return true;
   }
-
-  return false;
 };
 
 export const updateUserSocketDetails = (userData: UserState) => (dispatch: any) => {

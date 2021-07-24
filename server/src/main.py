@@ -89,6 +89,8 @@ async def joinRoom(socket_id, data: "dict[str, str]"):
     # room_id = <gameName>_<actualRoomId>
 
     game_name, room_id = data["roomId"].split("_")
+    username = data["username"]
+
     socket.enter_room(socket_id, room_id)
 
     random_chat_color = COLORS[random.randint(0, len(COLORS) - 1)]
@@ -132,11 +134,10 @@ async def joinRoom(socket_id, data: "dict[str, str]"):
             to=socket_id,
         )
 
-    new_line_print("sending bot message yayay")
     # emit a chat message from a bot
     await socket.emit(
         SocketEvents.RECEIVE_CHAT_MESSAGE,
-        get_bot_message("username", connected=True),
+        get_bot_message(username, connected=True),
         to=room_id,
         skip_sid=socket_id,
     )

@@ -47,7 +47,7 @@ const UserLogin: React.FC<UserLoginProps> = ({ history }) => {
     if (user.token?.length) {
       history.push(routes[routeNames.GAMES_SCREEN].path);
     }
-  }, [user.token]);
+  }, [user.token, history]);
 
   const loginUser = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();

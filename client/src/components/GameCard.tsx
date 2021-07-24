@@ -14,15 +14,12 @@ import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
-import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { InputLabel, OutlinedInput } from "@material-ui/core";
+import { OutlinedInput } from "@material-ui/core";
 import { RouteProps } from "../types/routeProps";
-import { routeNames } from "../routes/router";
 
 interface GameCardProps extends RouteProps {
   gameName: Games;

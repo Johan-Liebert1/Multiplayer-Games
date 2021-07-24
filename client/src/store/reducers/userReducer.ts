@@ -18,6 +18,7 @@ export const userReducer = (
   switch (action.type) {
     case ActionNames.USER_LOGIN:
       // log the user in
+      localStorage.setItem("user", JSON.stringify(action.payload));
       return action.payload;
 
     case ActionNames.UPDATE_USER_SOCKET_DETAILS:

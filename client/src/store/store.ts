@@ -3,9 +3,12 @@ import combinedReducers from "./reducers/combinedReducers";
 import { composeWithDevTools } from "redux-devtools-extension";
 import thunk from "redux-thunk";
 import { UserState } from "../types/store/storeTypes";
+import { getFromLocalStorage } from "../helpers/storeHelpers";
+
+const initialUserState = getFromLocalStorage<UserState>("user");
 
 const initialState = {
-  user: {} as UserState,
+  user: initialUserState,
   socket: null
 };
 
