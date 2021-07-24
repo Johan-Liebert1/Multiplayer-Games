@@ -8,9 +8,14 @@ export interface LoginAction {
   payload: UserState;
 }
 
+export interface UpadateUserDetailsAction {
+  type: ActionNames.UPDATE_USER_SOCKET_DETAILS;
+  payload: UserState;
+}
+
 export interface SetSocketAction {
   type: ActionNames.SET_SOCKET;
   payload: Socket<DefaultEventsMap, DefaultEventsMap>;
 }
 
-export type AllActions = LoginAction | SetSocketAction;
+export type AllActions = LoginAction | SetSocketAction | UpadateUserDetailsAction;

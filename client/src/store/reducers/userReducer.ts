@@ -1,5 +1,5 @@
 import { ActionNames } from "../../types/store/actionNames";
-import { AllActions } from "../../types/store/actionTypes";
+import { LoginAction, UpadateUserDetailsAction } from "../../types/store/actionTypes";
 import { UserState } from "../../types/store/storeTypes";
 
 const initialState: UserState = {
@@ -13,11 +13,14 @@ const initialState: UserState = {
 
 export const userReducer = (
   state: UserState = initialState,
-  action: AllActions
+  action: LoginAction | UpadateUserDetailsAction
 ): UserState => {
   switch (action.type) {
     case ActionNames.USER_LOGIN:
       // log the user in
+      return action.payload;
+
+    case ActionNames.UPDATE_USER_SOCKET_DETAILS:
       return action.payload;
 
     default:

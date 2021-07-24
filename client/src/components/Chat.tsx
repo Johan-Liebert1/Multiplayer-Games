@@ -10,7 +10,7 @@ import {
 } from "@material-ui/core";
 import { chatBoxStyles } from "../styles/gameScreenStyles";
 import { useTypedSelector } from "../hooks/useTypedSelector";
-import { socketListenEvents } from "../types/socketEvents";
+import { socketEmitEvents, socketListenEvents } from "../types/socketEvents";
 
 interface ChatMessage {
   username: string;
@@ -19,7 +19,7 @@ interface ChatMessage {
 }
 
 const Chat: React.FC = () => {
-  const { socket } = useTypedSelector(state => state);
+  const { socket, user } = useTypedSelector(state => state);
 
   const classes = chatBoxStyles();
 
@@ -27,19 +27,24 @@ const Chat: React.FC = () => {
   const [messageList, setMessageList] = useState<ChatMessage[]>([]);
 
   useEffect(() => {
-    console.log("setting up socket event listeneres outside", socket);
     if (socket) {
-      console.log("setting up socket event listeneres inside");
-
       socket.on(socketListenEvents.RECEIVE_CHAT_MESSAGE, (chatMessage: ChatMessage) => {
-        console.log({ chatMessage });
         setMessageList(m => [...m, chatMessage]);
       });
     }
   }, [socket]);
 
   const sendMessage = () => {
-    // setMessageList(m => [...m, messageText]);
+    const newMessage: ChatMessage = {
+      username: "username1",
+      color: user.chatColor || "red",
+      message: messageText
+    };
+
+    setMessageList(m => [...m, newMessage]);
+
+    socket?.emit(socketEmitEvents.SENT_CHAT_MESSAGE, newMessage);
+
     setMessageText("");
   };
 
@@ -48,7 +53,9 @@ const Chat: React.FC = () => {
       <List dense={true} className={classes.messagesContainer}>
         {messageList.map((msg: ChatMessage, idx) => (
           <ListItem key={idx} style={{ wordBreak: "break-all" }}>
-            <ListItemText primary={msg.username + msg.message + msg.color} />
+            {/* <ListItemText primary={msg.username + msg.message + msg.color} /> */}
+            <span style={{ color: msg.color, marginRight: "1rem" }}>{msg.username}</span>
+            <span>{msg.message}</span>
           </ListItem>
         ))}
       </List>

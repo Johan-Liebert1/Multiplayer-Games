@@ -34,6 +34,8 @@ import { socketEmitEvents, socketListenEvents } from "../types/socketEvents";
 import { SocketState } from "../types/store/storeTypes";
 import { setSocketAction } from "../store/actions/socketActions";
 import { useDispatch } from "react-redux";
+import { useTypedSelector } from "../hooks/useTypedSelector";
+import { updateUserSocketDetails } from "../store/actions/userActions";
 
 const game = new ChessGame();
 let socket: SocketState;
@@ -91,6 +93,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
   ]);
 
   const dispatch = useDispatch();
+  const user = useTypedSelector(state => state.user);
 
   const [userPieceColor, setUserPieceColor] = useState<ChessPieceColor>("white");
 
@@ -116,6 +119,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
       socketListenEvents.CHESS_COLOR_SELECTED,
       (data: { color: ChessPieceColor; chatColor: string }) => {
         setUserPieceColor(data.color);
+        dispatch(updateUserSocketDetails({ ...user, chatColor: data.chatColor }));
       }
     );
   }, []);

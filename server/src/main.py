@@ -91,6 +91,8 @@ async def joinRoom(socket_id, data: "dict[str, str]"):
     game_name, room_id = data["roomId"].split("_")
     socket.enter_room(socket_id, room_id)
 
+    random_chat_color = COLORS[random.randint(0, len(COLORS) - 1)]
+
     # add the new socket to the room
     if not ROOMS[game_name].get(room_id):
         # newly created room, only one player's in it
@@ -110,7 +112,9 @@ async def joinRoom(socket_id, data: "dict[str, str]"):
             color = Colors.BLACK
 
         await socket.emit(
-            SocketEvents.CHESS_COLOR_SELECTED, {"color": color}, to=socket_id
+            SocketEvents.CHESS_COLOR_SELECTED,
+            {"color": color, "chatColor": random_chat_color},
+            to=socket_id,
         )
 
     elif game_name == GameNames.CHECKERS:
@@ -124,7 +128,7 @@ async def joinRoom(socket_id, data: "dict[str, str]"):
 
         await socket.emit(
             SocketEvents.CHECKERS_COLOR_SELECTED,
-            {"color": color},
+            {"color": color, "chatColor": random_chat_color},
             to=socket_id,
         )
 
@@ -134,6 +138,28 @@ async def joinRoom(socket_id, data: "dict[str, str]"):
         SocketEvents.RECEIVE_CHAT_MESSAGE,
         get_bot_message("username", connected=True),
         to=room_id,
+        skip_sid=socket_id,
+    )
+
+
+@socket.event
+async def sentChatMessage(socket_id, data):
+    """
+    data = {
+        username: string;
+        color: string;
+        message: string;
+    }
+    """
+    for room in socket.rooms(socket_id):
+        if room != socket_id:
+            room_to_send_to = room
+            break
+
+    await socket.emit(
+        SocketEvents.RECEIVE_CHAT_MESSAGE,
+        data,
+        room=room_to_send_to,
         skip_sid=socket_id,
     )
 
