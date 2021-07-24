@@ -26,7 +26,7 @@ import {
   ChessWinner
 } from "../types/chessTypes";
 import { CheckersPieceColor } from "../types/checkersTypes";
-import { ClickedCellsType } from "../types/games";
+import { CELL_SIZE, ClickedCellsType } from "../types/games";
 import { io } from "socket.io-client";
 import { RouteProps } from "../types/routeProps";
 import { socketEmitEvents, socketListenEvents } from "../types/socketEvents";
@@ -217,9 +217,18 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
   const showChessBoard = () => {
     return board.map((row, ri) => {
       return (
-        <div style={{ margin: 0, padding: 0, display: "flex" }} key={`row${ri}`}>
+        <div
+          style={{
+            margin: 0,
+            padding: 0,
+            display: "flex"
+          }}
+          key={`row${ri}`}
+        >
           {row.map((col, ci) => {
-            let color = (ri + ci) % 2 !== 0 ? "rgb(195,105,56)" : "rgb(239, 206,163)";
+            let color =
+              (ri + ci) % 2 !== 0 ? "rgba(195,105,56,0)" : "rgba(239, 206,163,0)";
+            // (ri + ci) % 2 !== 0 ? "rgb(201, 10, 20)" : "rgba(139, 133, 133, 0.959)";
 
             let piece = board[ri][ci];
             let blueDot = false,
@@ -262,9 +271,19 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
 
   return (
     <div style={{ margin: windowSize[0] < 910 ? "2rem 0" : "" }}>
-      <div style={{ height: "2rem" }}></div>
+      <div style={{ height: "2rem" }}>
+        <h3>Other Player</h3>
+      </div>
 
-      <div id="checkersBoard" style={{ position: "relative" }}>
+      <div
+        id="checkersBoard"
+        style={{
+          position: "relative",
+          background: "url(/images/chess/chessBoard.jpg)",
+          objectFit: "contain",
+          backgroundSize: `${CELL_SIZE * board.length}px, ${CELL_SIZE * board.length}px`
+        }}
+      >
         {gameOver.gameOver && (
           <GameOverComponent
             winnerColor={gameOver.winnerColor as ChessPieceColor | CheckersPieceColor}
@@ -288,7 +307,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
         </div>
       </div>
       <div style={{ height: "2rem", padding: "0.5rem 0" }}>
-        {/* <h3>{getPlayerName("self")}</h3> */}
+        <h3>{user.username}</h3>
       </div>
     </div>
   );

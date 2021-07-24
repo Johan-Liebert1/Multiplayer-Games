@@ -22,7 +22,13 @@ const ChessScreen: React.FC<ChessScreenProps> = ({ match, history }) => {
         <ChessBoard roomId={match.params.roomId as string} />
       </div>
 
-      <div style={{ ...chatStyles, minWidth: bigScreen ? "35%" : "50%" }}>
+      <div
+        style={{
+          ...chatStyles,
+          minWidth: bigScreen ? "35%" : "50%",
+          maxWidth: bigScreen ? "35%" : "50%"
+        }}
+      >
         <RoomId roomId={match.params.roomId as string} />
         <Chat />
       </div>

@@ -35,6 +35,8 @@ const Chat: React.FC = () => {
   }, [socket]);
 
   const sendMessage = () => {
+    if (messageText === "") return;
+
     const newMessage: ChatMessage = {
       username: user.username,
       color: user.chatColor || "red",
@@ -53,9 +55,10 @@ const Chat: React.FC = () => {
       <List dense={true} className={classes.messagesContainer}>
         {messageList.map((msg: ChatMessage, idx) => (
           <ListItem key={idx} style={{ wordBreak: "break-all" }}>
-            {/* <ListItemText primary={msg.username + msg.message + msg.color} /> */}
-            <span style={{ color: msg.color, marginRight: "1rem" }}>{msg.username}</span>
-            <span>{msg.message}</span>
+            <span style={{ color: msg.color, marginRight: "0.5rem", width: "20%" }}>
+              {msg.username}
+            </span>
+            <span style={{ width: "80%" }}>{msg.message}</span>
           </ListItem>
         ))}
       </List>

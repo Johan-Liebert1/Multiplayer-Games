@@ -1,7 +1,7 @@
 # /media/pragyan/Local Disk/Python/MultiplayerGamesFastAPITS/server/env/bin/python3
 
 import os
-from sockets.mainSockets import get_bot_message
+from sockets.mainSockets import get_bot_message, get_room
 from helpers.colors import COLORS
 from config.Config import Colors, GameNames, SocketEvents
 from helpers.printHelper import new_line_print
@@ -68,10 +68,7 @@ async def userPlayedAMove(socket_id, move: "dict[str, list[int]]"):
         f"emitting to {socket_id}, move = {move}, rooms={socket.rooms(socket_id)}", 1
     )
 
-    for room in socket.rooms(socket_id):
-        if room != socket_id:
-            room_to_send_to: str = room
-            break
+    room_to_send_to = get_room(socket, socket_id)
 
     # socket.rooms() returns all the rooms that the current socket is in
     # first room is always the socket_id
@@ -152,14 +149,23 @@ async def sentChatMessage(socket_id, data):
         message: string;
     }
     """
-    for room in socket.rooms(socket_id):
-        if room != socket_id:
-            room_to_send_to = room
-            break
+    room_to_send_to = get_room(socket, socket_id)
 
     await socket.emit(
         SocketEvents.RECEIVE_CHAT_MESSAGE,
         data,
+        room=room_to_send_to,
+        skip_sid=socket_id,
+    )
+
+
+@socket.event
+async def checkersGameOver(socket_id, gameOverData):
+    room_to_send_to = get_room(socket, socket_id)
+
+    await socket.emit(
+        SocketEvents.CHECKERS_GAME_OVER,
+        gameOverData,
         room=room_to_send_to,
         skip_sid=socket_id,
     )

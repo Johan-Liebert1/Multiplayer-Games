@@ -1,52 +1,50 @@
 // react stuff
 import React, { useState, useEffect } from "react";
-import Cell from "./Cell";
+import { useTypedSelector } from "../hooks/useTypedSelector";
+import { useDispatch } from "react-redux";
+
+// actions
+import { setSocketAction } from "../store/actions/socketActions";
 
 // components
 import GameOverComponent from "./GameOverComponent";
+import Cell from "./Cell";
 
 // checkers
 import CheckersPiece from "../classes/checkers/CheckersPiece";
 import CheckersGame from "../classes/checkers/CheckersGame";
 
 // sockets
-import { io, Socket } from "socket.io-client";
+import { io } from "socket.io-client";
 
 // types
 import { ClickedCellsType } from "../types/games";
-import { DefaultEventsMap } from "socket.io-client/build/typed-events";
 import { socketEmitEvents, socketListenEvents } from "../types/socketEvents";
 import { CheckersBoardType, CheckersPieceColor } from "../types/checkersTypes";
+import { SocketState } from "../types/store/storeTypes";
 
 const game = new CheckersGame();
-let socket: Socket<DefaultEventsMap, DefaultEventsMap>;
+let socket: SocketState;
 
 interface CheckersBoardProps {
   roomId: string;
 }
 
+interface GameOverState {
+  gameOver: boolean;
+  winnerName: string;
+  winnerColor: CheckersPieceColor;
+}
+
 const CheckersBoard: React.FC<CheckersBoardProps> = ({ roomId }) => {
-  // const { username, checkersPieceColor } = useSelector(state => state.user);
-  // const { socket } = useSelector(state => state.socket);
-  // const checkersSockets = useSelector(state => state.checkersSockets);
+  const { user } = useTypedSelector(state => state);
+  const dispatch = useDispatch();
 
-  const [board, setBoard] = useState<CheckersBoardType>([
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0]
-  ]);
+  const [board, setBoard] = useState<CheckersBoardType>(
+    new Array(8).fill(0).map(e => new Array(8).fill(0))
+  );
 
-  // const windowSize = useWindowSize();
-  const [gameOver, setGameOver] = useState<{
-    gameOver: boolean;
-    winnerName: string;
-    winnerColor: CheckersPieceColor;
-  }>({
+  const [gameOver, setGameOver] = useState<GameOverState>({
     gameOver: false,
     winnerName: "",
     winnerColor: "" as CheckersPieceColor
@@ -83,7 +81,12 @@ const CheckersBoard: React.FC<CheckersBoardProps> = ({ roomId }) => {
   useEffect(() => {
     socket = io("http://localhost:8000");
 
-    socket.emit(socketEmitEvents.JOIN_A_ROOM, { roomId: `checkers_${roomId}` });
+    socket.emit(socketEmitEvents.JOIN_A_ROOM, {
+      roomId: `checkers_${roomId}`,
+      username: user.username
+    });
+
+    dispatch(setSocketAction(socket));
   }, []);
 
   useEffect(() => {
@@ -105,7 +108,9 @@ const CheckersBoard: React.FC<CheckersBoardProps> = ({ roomId }) => {
       }
     );
 
-    socket.on("gameHasEnded", gameOverObject => setGameOver(gameOverObject));
+    socket.on(socketListenEvents.CHECKERS_GAME_OVER, (gameOverObject: GameOverState) =>
+      setGameOver(gameOverObject)
+    );
   }, []);
 
   // useEffect(() => {
@@ -123,29 +128,28 @@ const CheckersBoard: React.FC<CheckersBoardProps> = ({ roomId }) => {
         socket.emit(socketEmitEvents.USER_PLAYED_A_MOVE, cellsClicked);
       }
 
-      // let isGameOver = game.isGameOver(board);
+      let isGameOver = game.isGameOver(board);
 
-      // if (isGameOver) {
-      //   let newGameOverObject = {
-      //     gameOver: true,
-      //     winnerColor: game.winner,
-      //     winnerName:
-      //       game.winner === checkersPieceColor
-      //         ? getPlayerName("self")
-      //         : getPlayerName("opponent")
-      //   };
+      if (isGameOver) {
+        let newGameOverObject = {
+          gameOver: true,
+          winnerColor: game.winner as CheckersPieceColor,
+          winnerName: game.winner === userPieceColor ? user.username : "opponent"
+        };
 
-      //   socket.emit("gameOver", newGameOverObject);
+        socket.emit(socketEmitEvents.CHECKERS_GAME_OVER, newGameOverObject);
 
-      //   setGameOver(newGameOverObject);
-      // }
+        setGameOver(newGameOverObject);
+      }
     }
   };
 
   return (
     // <div style={{ margin: windowSize[0] < 910 ? "2rem 0" : "" }}>
     <div>
-      <div style={{ height: "2rem" }}>{/* <h3>{getPlayerName("opponent")}</h3> */}</div>
+      <div style={{ height: "2rem" }}>
+        <h3>opponent</h3>
+      </div>
       <div id="checkersBoard" style={{ position: "relative" }}>
         {gameOver.gameOver && (
           <GameOverComponent
@@ -163,7 +167,7 @@ const CheckersBoard: React.FC<CheckersBoardProps> = ({ roomId }) => {
             return (
               <div style={{ margin: 0, padding: 0, display: "flex" }} key={`row${ri}`}>
                 {row.map((_col, ci) => {
-                  let color = (ri + ci) % 2 === 0 ? "black" : "red";
+                  let color = (ri + ci) % 2 === 0 ? "#222f3e" : "#e74c3c";
 
                   let image = "";
                   let piece = board[ri][ci];
@@ -200,7 +204,7 @@ const CheckersBoard: React.FC<CheckersBoardProps> = ({ roomId }) => {
         </div>
       </div>
       <div style={{ height: "2rem", padding: "0.5rem 0" }}>
-        {/* <h3>{getPlayerName("self")}</h3> */}
+        <h3>{user.username}</h3>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import React from "react";
-import { Games } from "../types/games";
+import { CELL_SIZE, Games } from "../types/games";
 
 interface CellProps {
   game: Games;
@@ -28,8 +28,8 @@ const Cell: React.FC<CellProps> = ({
   const imgDim = game === "chess" ? 70 : 50;
 
   const divStyles: React.CSSProperties = {
-    width: 70,
-    height: 70,
+    width: CELL_SIZE,
+    height: CELL_SIZE,
     backgroundColor: color,
     padding: 0,
     margin: 0,

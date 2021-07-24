@@ -1,4 +1,5 @@
 import React from "react";
+import Chat from "../components/Chat";
 import CheckersBoard from "../components/CheckersBoard";
 import RoomId from "../components/RoomId";
 import useUserPresent from "../hooks/useUserPresent";
@@ -20,8 +21,15 @@ const CheckersScreen: React.FC<CheckersScreenProps> = ({ match, history }) => {
         <CheckersBoard roomId={match.params.roomId as string} />
       </div>
 
-      <div style={{ ...chatStyles, minWidth: bigScreen ? "35%" : "50%" }}>
+      <div
+        style={{
+          ...chatStyles,
+          minWidth: bigScreen ? "35%" : "50%",
+          maxWidth: bigScreen ? "35%" : "50%"
+        }}
+      >
         <RoomId roomId={match.params.roomId as string} />
+        <Chat />
       </div>
     </div>
   );
