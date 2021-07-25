@@ -1,3 +1,5 @@
+import React from "react";
+
 export const svgNames: { [key: string]: string } = Object.freeze({
   copyIcon: "copyIcon",
   paintFill: "paintFill"
@@ -32,6 +34,14 @@ const svgs: { [key: string]: JSX.Element } = Object.freeze({
   )
 });
 
-const SVG = (svgName: string) => svgs[svgName];
+interface SVGProps {
+  svgName: string;
+}
+
+const SVG: React.FC<SVGProps> = ({ svgName }) => {
+  if (svgName in svgs) return svgs[svgName];
+
+  return <span>404</span>;
+};
 
 export default SVG;

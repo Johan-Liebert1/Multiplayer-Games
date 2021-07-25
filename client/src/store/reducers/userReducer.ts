@@ -8,7 +8,8 @@ const initialState: UserState = {
   firstName: "",
   lastName: "",
   email: "",
-  id: -1
+  id: -1,
+  profilePicUrl: ""
 };
 
 export const userReducer = (

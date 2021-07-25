@@ -10,6 +10,7 @@ export interface UserState {
   lastName: string;
   email: string;
   id: number;
+  profilePicUrl: string;
   chessPieceColor?: ChessPieceColor;
   checkersPieceColor?: CheckersPieceColor;
   chatColor?: string;

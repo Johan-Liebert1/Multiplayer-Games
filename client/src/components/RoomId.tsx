@@ -36,7 +36,7 @@ const RoomId: React.FC<RoomIdProps> = ({ roomId }) => {
         endAdornment={
           <InputAdornment position="end">
             <IconButton onClick={copyRoomId} edge="end">
-              {SVG(svgNames.copyIcon)}
+              <SVG svgName={svgNames.copyIcon} />
             </IconButton>
           </InputAdornment>
         }

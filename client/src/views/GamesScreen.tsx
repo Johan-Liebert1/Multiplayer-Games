@@ -14,7 +14,9 @@ const GamesScreen: React.FC<GamesScreenProps> = ({ history }) => {
     display: "flex",
     justifyContent: "space-between",
     padding: "0 5rem",
-    flexWrap: "wrap"
+    flexWrap: "wrap",
+    height: "92vh",
+    alignItems: "center"
   };
 
   const gamesList: Games[] = ["chess", "checkers", "sketchio"];
