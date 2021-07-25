@@ -83,6 +83,7 @@ class SketchIO {
     this.canvas.addEventListener("mouseup", this.setPaintingFalse);
     this.canvas.addEventListener("mouseleave", this.setPaintingFalse);
     this.canvas.addEventListener("click", this.handleCanvasClick);
+    this.changeCanvasColor("white");
   };
 
   disableCanvas = () => {
