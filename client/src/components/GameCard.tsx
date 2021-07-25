@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, withRouter } from "react-router-dom";
 
 import { Games } from "../types/games";
@@ -14,11 +14,10 @@ import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
-import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { OutlinedInput } from "@material-ui/core";
+import { OutlinedInput, InputLabel, FormControl } from "@material-ui/core";
 import { RouteProps } from "../types/routeProps";
 
 interface GameCardProps extends RouteProps {
@@ -42,8 +41,9 @@ const GameCard: React.FC<GameCardProps> = ({ gameName, history }) => {
   const classes = useStyles();
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [roomId, setRoomId] = useState<string>("");
+  const [enterButtonDisabled, setEnterButtonDisabled] = useState<boolean>(true);
 
-  const closeModal = () => {
+  const toggleModal = () => {
     setModalOpen(!modalOpen);
   };
 
@@ -56,11 +56,13 @@ const GameCard: React.FC<GameCardProps> = ({ gameName, history }) => {
   const newClasses = makeStyles(theme => ({
     root: {
       "& .MuiInputBase-input.MuiOutlinedInput-input": {
-        color: "black !important"
+        color: "black !important",
+        display: "flex"
       },
-      "& label.Mui-focused": {
-        color: "black"
-      },
+      "& label.MuiInputLabel-root.MuiInputLabel-formControl.MuiInputLabel-animated.MuiInputLabel-outlined":
+        {
+          color: "black !important"
+        },
       "& legend.PrivateNotchedOutline-legend-22": {
         color: "black"
       },
@@ -78,13 +80,20 @@ const GameCard: React.FC<GameCardProps> = ({ gameName, history }) => {
           borderColor: "black"
         }
       }
+    },
+    actionArea: {
+      display: "flex"
     }
   }))();
 
   const enterRoom = () => {
-    closeModal();
+    toggleModal();
     history.push(`${gameName}/${roomId}`);
   };
+
+  useEffect(() => {
+    setEnterButtonDisabled(roomId.trim().length === 0);
+  }, [roomId]);
 
   return (
     <>
@@ -99,9 +108,8 @@ const GameCard: React.FC<GameCardProps> = ({ gameName, history }) => {
             <Typography gutterBottom variant="h5" component="h2">
               {gameName}
             </Typography>
-            <Typography variant="body2" color="textSecondary" component="p">
-              Lizards are a widespread group of squamate reptiles, with over 6,000
-              species, ranging across all continents except Antarctica
+            <Typography variant="body2" color="textSecondary" component="h4">
+              Play {gameName}
             </Typography>
           </CardContent>
         </CardActionArea>
@@ -111,35 +119,55 @@ const GameCard: React.FC<GameCardProps> = ({ gameName, history }) => {
               Create Room
             </Button>
           </Link>
-          <Button size="small" style={{ color: "red" }} onClick={closeModal}>
+          <Button size="small" style={{ color: "red" }} onClick={toggleModal}>
             Join Room
           </Button>
         </CardActions>
       </Card>
 
-      <Dialog open={modalOpen} onClose={closeModal} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Enter Room Id</DialogTitle>
-        <DialogContent className={newClasses.root}>
-          <OutlinedInput
-            id="username"
-            type="text"
-            required
-            value={roomId}
-            onChange={e => setRoomId(e.target.value)}
-            labelWidth={70}
-            fullWidth
-            autoComplete="username"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closeModal} style={{ color: "red" }}>
-            Cancel
-          </Button>
-          <Button onClick={enterRoom} style={{ color: "green" }}>
-            Enter Room
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {modalOpen && (
+        <div
+          style={{
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            backgroundColor: "white",
+            borderRadius: "1rem",
+            boxShadow: "0 0 10px black",
+            zIndex: 100
+          }}
+          aria-labelledby="form-dialog-title"
+        >
+          <DialogTitle style={{ color: "black" }}>Enter Room Id</DialogTitle>
+          <DialogContent className={newClasses.root}>
+            <FormControl variant="outlined">
+              <InputLabel htmlFor="room-id">Room Id</InputLabel>
+              <OutlinedInput
+                id="room-id"
+                type="text"
+                required
+                value={roomId}
+                onChange={e => setRoomId(e.target.value)}
+                labelWidth={70}
+                fullWidth
+              />
+            </FormControl>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={toggleModal} style={{ color: "red" }}>
+              Cancel
+            </Button>
+            <Button
+              onClick={enterRoom}
+              style={{ color: "green", opacity: enterButtonDisabled ? 0.6 : 1 }}
+              disabled={enterButtonDisabled}
+            >
+              Enter Room
+            </Button>
+          </DialogActions>
+        </div>
+      )}
     </>
   );
 };

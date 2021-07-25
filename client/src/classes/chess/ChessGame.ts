@@ -35,8 +35,12 @@ class ChessGame {
   pieceCheckingBlackKing: ChessPiece | null;
   whiteKingPos: PiecePosition;
   blackKingPos: PiecePosition;
-  cellsUnderAttackByWhite: ValidChessMove | ProtectingChessMove;
-  cellsUnderAttackByBlack: ValidChessMove | ProtectingChessMove;
+  cellsUnderAttackByWhite: {
+    [key: string]: ValidChessMove | ProtectingChessMove | InvalidChessMove;
+  };
+  cellsUnderAttackByBlack: {
+    [key: string]: ValidChessMove | ProtectingChessMove | InvalidChessMove;
+  };
 
   kingParams: KingParametersType;
 
@@ -409,9 +413,9 @@ class ChessGame {
 
           if (piece.color === "white") {
             // console.log("attackedCells = ", attackedCells);
-            // this.cellsUnderAttackByWhite[str] = attackedCells;
+            this.cellsUnderAttackByWhite[str] = attackedCells;
           } else {
-            // this.cellsUnderAttackByBlack[str] = attackedCells;
+            this.cellsUnderAttackByBlack[str] = attackedCells;
           }
         }
       }

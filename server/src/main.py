@@ -95,11 +95,11 @@ async def joinRoom(socket_id, data: "dict[str, str]"):
     # add the new socket to the room
     if not ROOMS[game_name].get(room_id):
         # newly created room, only one player's in it
-        ROOMS[game_name][room_id] = ["player1"]
+        ROOMS[game_name][room_id] = [username]
 
     else:
         # someone's already in the room so append the next player
-        ROOMS[game_name][room_id].append("player2")
+        ROOMS[game_name][room_id].append(username)
 
     if game_name == GameNames.CHESS:
         if len(ROOMS[game_name][room_id]) == 1:
@@ -109,6 +109,13 @@ async def joinRoom(socket_id, data: "dict[str, str]"):
         else:
             # one player is already in the room, so assign the color black
             color = Colors.BLACK
+
+            # send a list of the two users who are playeing the game
+            await socket.emit(
+                SocketEvents.CHESS_PLAYER_2_JOINED,
+                {"users": ROOMS[game_name][room_id]},
+                to=room_id,
+            )
 
         await socket.emit(
             SocketEvents.CHESS_COLOR_SELECTED,
@@ -124,6 +131,13 @@ async def joinRoom(socket_id, data: "dict[str, str]"):
         else:
             # one player is already in the room, so assign the color black
             color = Colors.RED
+
+            # send a list of the two users who are playeing the game
+            await socket.emit(
+                SocketEvents.CHECKERS_PLAYER_2_JOINED,
+                {"users": ROOMS[game_name][room_id]},
+                to=room_id,
+            )
 
         await socket.emit(
             SocketEvents.CHECKERS_COLOR_SELECTED,

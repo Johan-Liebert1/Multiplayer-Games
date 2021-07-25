@@ -1,3 +1,5 @@
+import CheckersTestBoard from "../components/test/CheckersTest";
+import ChessBoardTest from "../components/test/ChessTest";
 import CheckersScreen from "../views/CheckersScreen";
 import ChessScreen from "../views/ChessScreen";
 import GamesScreen from "../views/GamesScreen";
@@ -44,6 +46,16 @@ const routes = {
     name: routeNames.SKETCHIO_SCREEN,
     path: "/sketchio/:roomId",
     component: SketchIOScreen
+  },
+  checkersTest: {
+    name: "checkersTest",
+    path: "/checkerstest",
+    component: CheckersTestBoard
+  },
+  chessTest: {
+    name: "chessTest",
+    path: "/chesstest",
+    component: ChessBoardTest
   }
 };
 

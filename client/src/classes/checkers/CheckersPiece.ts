@@ -43,7 +43,7 @@ export default class CheckersPiece {
     }
   };
 
-  getCaptuingMoves = (board: CheckersBoardType) => {
+  getCaptuingMoves = (board: CheckersBoardType): void => {
     let rowAdders: number[];
     const colAdders: number[] = [2, -2];
 

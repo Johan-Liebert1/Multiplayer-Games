@@ -24,8 +24,8 @@ class CheckersGame {
     this.numClicks = 0;
     this.turn = "white";
     this.selected = null;
-    this.redPiecesOnBoard = 8;
-    this.whitePiecesOnBoard = 8;
+    this.redPiecesOnBoard = 8 - 5;
+    this.whitePiecesOnBoard = 8 - 5;
     this.gameOver = false;
     this.winner = null;
   }
@@ -65,11 +65,8 @@ class CheckersGame {
     const cell = board[row][col];
 
     if (cell instanceof CheckersPiece) {
-      console.log("inside if", cell, userColor);
       if (cell.color !== userColor) return;
     }
-
-    console.log("outside if");
 
     this.clearDots(board);
 
@@ -191,6 +188,8 @@ class CheckersGame {
     this.clearDots(board);
     this.changeTurn();
 
+    console.log({ red: this.redPiecesOnBoard, white: this.whitePiecesOnBoard });
+
     return tcc;
   };
 
@@ -200,7 +199,9 @@ class CheckersGame {
         const cell = board[row][col];
 
         if (cell instanceof CheckersPiece && cell.color === color) {
-          if (Object.keys(cell.validMoves(board)).length > 0) {
+          const moves = cell.validMoves(board);
+          console.log(color, "moves = ", moves);
+          if (Object.keys(moves).length > 0) {
             return true;
           }
         }
@@ -223,20 +224,22 @@ class CheckersGame {
   };
 
   isGameOver = (board: CheckersBoardType) => {
-    if (this.redPiecesOnBoard === 0) {
-      return this.whiteWins();
-    }
-
-    if (this.whitePiecesOnBoard === 0) {
-      return this.redWins();
-    }
-
-    if (!this.colorHasMovesLeft(board, "white")) {
-      return this.redWins();
+    if (this.turn === "red") {
+      if (this.redPiecesOnBoard === 0) {
+        return this.whiteWins();
+      }
+    } else {
+      if (this.whitePiecesOnBoard === 0) {
+        return this.redWins();
+      }
     }
 
     if (!this.colorHasMovesLeft(board, "red")) {
       return this.whiteWins();
+    }
+
+    if (!this.colorHasMovesLeft(board, "white")) {
+      return this.redWins();
     }
 
     return false;

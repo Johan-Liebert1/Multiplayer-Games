@@ -46,8 +46,12 @@ export type KingParametersType = {
   pieceCheckingBlackKing: ChessPiece | null;
   whiteKingPos: PiecePosition;
   blackKingPos: PiecePosition;
-  cellsUnderAttackByWhite: ValidChessMove | ProtectingChessMove;
-  cellsUnderAttackByBlack: ValidChessMove | ProtectingChessMove;
+  cellsUnderAttackByWhite: {
+    [key: string]: ValidChessMove | ProtectingChessMove | InvalidChessMove;
+  };
+  cellsUnderAttackByBlack: {
+    [key: string]: ValidChessMove | ProtectingChessMove | InvalidChessMove;
+  };
 };
 
 export type GenericKingParametersType = {
@@ -62,3 +66,17 @@ export type MovePieceReturnType = {
 };
 
 export type ShowValidMovesReturnType = undefined | ClickedCellsType | MovePieceReturnType;
+
+export type FenChars =
+  | "r"
+  | "R"
+  | "k"
+  | "K"
+  | "n"
+  | "N"
+  | "q"
+  | "Q"
+  | "b"
+  | "B"
+  | "p"
+  | "P";

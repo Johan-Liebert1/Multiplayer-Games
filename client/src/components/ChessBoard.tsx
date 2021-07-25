@@ -95,6 +95,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
   const user = useTypedSelector(state => state.user);
 
   const [userPieceColor, setUserPieceColor] = useState<ChessPieceColor>("white");
+  const [player2Name, setPlayer2Name] = useState<string>('"No one else is here"');
 
   useEffect(() => {
     socket = io("http://localhost:8000");
@@ -125,6 +126,11 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
         dispatch(updateUserSocketDetails({ ...user, chatColor: data.chatColor }));
       }
     );
+
+    socket.on(socketListenEvents.CHESS_PLAYER_2_JOINED, (data: { users: string[] }) => {
+      console.log(socketListenEvents.CHESS_PLAYER_2_JOINED, data);
+      setPlayer2Name(data.users.filter(username => username !== user.username)[0]);
+    });
 
     // eslint-disable-next-line
   }, []);
@@ -272,7 +278,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
   return (
     <div style={{ margin: windowSize[0] < 910 ? "2rem 0" : "" }}>
       <div style={{ height: "2rem" }}>
-        <h3>Other Player</h3>
+        <h3>{player2Name}</h3>
       </div>
 
       <div

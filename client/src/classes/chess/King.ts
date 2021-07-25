@@ -38,22 +38,29 @@ class King extends ChessPiece {
 
   notAllowKingToMoveToAttackedCell = (kingParameters: KingParametersType) => {
     // not allow king to capture a protected piece
-    let newValidMoves = {};
+    let newValidMoves: ValidChessMove = {};
     let newInvalidMoves = {};
 
     const { cellsUnderAttackByWhite, cellsUnderAttackByBlack } = kingParameters;
     const cellsUnderAttack =
       this.color === "white" ? cellsUnderAttackByBlack : cellsUnderAttackByWhite;
 
+    // console.log({ cellsUnderAttack });
+
     const moveKeys = Object.keys(this.moves);
 
     for (const move of moveKeys) {
       if (move in cellsUnderAttack) {
         this.invalidMoves[move] = "invalid";
+        delete this.moves[move];
+      } else {
+        newValidMoves[move] = this.moves[move];
       }
     }
 
     this.invalidMoves = newInvalidMoves;
+
+    // console.log({ newInvalidMoves });
 
     return newValidMoves;
   };
@@ -303,14 +310,8 @@ class King extends ChessPiece {
     // castling
     this.addCastlingMoves(board, kingParameters);
 
-    const {
-      whiteKingInCheck,
-      blackKingInCheck,
-      pieceCheckingWhiteKing,
-      pieceCheckingBlackKing,
-      blackKingPos,
-      whiteKingPos
-    } = kingParameters;
+    const { pieceCheckingWhiteKing, pieceCheckingBlackKing, blackKingPos, whiteKingPos } =
+      kingParameters;
 
     if (this.color === "white" && pieceCheckingWhiteKing) {
       let obj: GenericKingParametersType = {
