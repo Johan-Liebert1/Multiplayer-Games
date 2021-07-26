@@ -200,7 +200,6 @@ class CheckersGame {
 
         if (cell instanceof CheckersPiece && cell.color === color) {
           const moves = cell.validMoves(board);
-          console.log(color, "moves = ", moves);
           if (Object.keys(moves).length > 0) {
             return true;
           }

@@ -31,6 +31,10 @@ const Chat: React.FC = () => {
       socket.on(socketListenEvents.RECEIVE_CHAT_MESSAGE, (chatMessage: ChatMessage) => {
         setMessageList(m => [...m, chatMessage]);
       });
+
+      socket.on("disconnect", () => {
+        socket.emit("userDisconnected", { username: user.username });
+      });
     }
   }, [socket]);
 
@@ -58,7 +62,19 @@ const Chat: React.FC = () => {
             <span style={{ color: msg.color, marginRight: "0.5rem", width: "20%" }}>
               {msg.username}
             </span>
-            <span style={{ width: "80%" }}>{msg.message}</span>
+            <span
+              style={{
+                width: "80%",
+                color:
+                  msg.username === "BOT"
+                    ? msg.message.includes("joined")
+                      ? "green"
+                      : "red"
+                    : "inherit"
+              }}
+            >
+              {msg.message}
+            </span>
           </ListItem>
         ))}
       </List>

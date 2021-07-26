@@ -1,5 +1,5 @@
 // react stuff
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { withRouter } from "react-router-dom";
 import useWindowSize from "../hooks/useWindowSize";
 
@@ -96,6 +96,8 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
 
   const [userPieceColor, setUserPieceColor] = useState<ChessPieceColor>("white");
   const [player2Name, setPlayer2Name] = useState<string>('"No one else is here"');
+
+  const chessBoardRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     socket = io("http://localhost:8000");
@@ -267,6 +269,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
                 key={`row${ri}-col${ci}`}
                 image={piece instanceof ChessPiece ? piece.image : ""}
                 showMoves={showMoves}
+                boardRef={chessBoardRef}
               />
             );
           })}
@@ -308,6 +311,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
             display: "flex",
             flexDirection: userPieceColor === "white" ? "column" : "column-reverse"
           }}
+          ref={chessBoardRef}
         >
           {showChessBoard()}
         </div>

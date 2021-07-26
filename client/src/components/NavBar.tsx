@@ -3,11 +3,10 @@ import { Link, withRouter } from "react-router-dom";
 import { useTypedSelector } from "../hooks/useTypedSelector";
 import { RouteProps } from "../types/routeProps";
 import ProfilePic from "./ProfilePic";
-import SVG from "./Svg";
 import ArrowDropDownRoundedIcon from "@material-ui/icons/ArrowDropDownRounded";
 import ExitToAppRoundedIcon from "@material-ui/icons/ExitToAppRounded";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-import { List, ListItemText, ListItem } from "@material-ui/core";
+import { ListItem } from "@material-ui/core";
 
 import "../styles/NavBarStyles.css";
 import routes, { routeNames } from "../routes/router";
@@ -79,7 +78,7 @@ const NavBar: React.FC<NavBarProps> = () => {
               >
                 <ExitToAppRoundedIcon style={{ fill: "red" }} />
                 <span className="ml-2">
-                  <Link to="" className="react-link">
+                  <Link to="/" className="react-link">
                     Logout
                   </Link>
                 </span>

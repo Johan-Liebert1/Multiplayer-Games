@@ -22,6 +22,7 @@ import { ClickedCellsType } from "../types/games";
 import { socketEmitEvents, socketListenEvents } from "../types/socketEvents";
 import { CheckersBoardType, CheckersPieceColor } from "../types/checkersTypes";
 import { SocketState } from "../types/store/storeTypes";
+import { useRef } from "react";
 
 const game = new CheckersGame();
 let socket: SocketState;
@@ -51,6 +52,8 @@ const CheckersBoard: React.FC<CheckersBoardProps> = ({ roomId }) => {
   });
 
   let [userPieceColor, setUserPieceColor] = useState<CheckersPieceColor>("white");
+
+  const checkersBoardRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     let tempBoard = board.map(r => r);
@@ -112,16 +115,11 @@ const CheckersBoard: React.FC<CheckersBoardProps> = ({ roomId }) => {
       setGameOver(gameOverObject)
     );
   }, []);
-
-  // useEffect(() => {
-  // console.log("changed checkerspiece color to ", checkersPieceColor);
-  // }, []);
-
   const showMoves = (row: number, col: number) => {
+    console.log("showmoves", row, col);
     if (!gameOver.gameOver) {
       let tempBoard = board.map(b => b);
       let cellsClicked = game.showValidMoves(userPieceColor, tempBoard, row, col);
-      console.log(cellsClicked);
       setBoard(tempBoard);
 
       if (cellsClicked && cellsClicked.rows.length === 2) {
@@ -162,6 +160,7 @@ const CheckersBoard: React.FC<CheckersBoardProps> = ({ roomId }) => {
             display: "flex",
             flexDirection: userPieceColor === "red" ? "column" : "column-reverse"
           }}
+          ref={checkersBoardRef}
         >
           {board.map((row, ri) => {
             return (
@@ -195,6 +194,7 @@ const CheckersBoard: React.FC<CheckersBoardProps> = ({ roomId }) => {
                       key={`row${ri}-col${ci}`}
                       image={image}
                       showMoves={showMoves}
+                      boardRef={checkersBoardRef}
                     />
                   );
                 })}

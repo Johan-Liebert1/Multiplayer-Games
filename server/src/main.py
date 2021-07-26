@@ -31,6 +31,16 @@ fast_app.add_middleware(
 
 fast_app.include_router(userRoutes.userRouter, prefix="/api/user", tags=["user"])
 
+
+socket = socketio.AsyncServer(
+    async_mode="asgi",
+    cors_allowed_origins="*",
+)
+
+app = socketio.ASGIApp(
+    socketio_server=socket, other_asgi_app=fast_app, socketio_path="/socket.io/"
+)
+
 """  
 {
     game_name: {
@@ -46,15 +56,16 @@ ROOMS: "dict[str, dict[str, list[str]]]" = {
     GameNames.SKETCHIO: {},
 }
 
-
-socket = socketio.AsyncServer(
-    async_mode="asgi",
-    cors_allowed_origins="*",
-)
-
-app = socketio.ASGIApp(
-    socketio_server=socket, other_asgi_app=fast_app, socketio_path="/socket.io/"
-)
+"""  
+{
+    socket_id: {
+        username: username,
+        room_id: room_id,
+        game_name: game_name
+    }
+}
+"""
+socket_id_to_username: "dict[str, dict[str, str]]" = {}
 
 
 @socket.event
@@ -63,15 +74,37 @@ def connect(socket_id, data):
 
 
 @socket.event
-async def userPlayedAMove(socket_id, move: "dict[str, list[int]]"):
-    new_line_print(
-        f"emitting to {socket_id}, move = {move}, rooms={socket.rooms(socket_id)}", 1
+async def disconnect(socket_id):
+    socket_info = socket_id_to_username[socket_id]
+    username = socket_info["username"]
+    game_name = socket_info["game_name"]
+    room_id = socket_info["room_id"]
+
+    message = get_bot_message(username, False)
+
+    # delete the user from the room
+    ROOMS[game_name][room_id] = list(
+        filter(
+            lambda x: x != username,
+            ROOMS[game_name][room_id],
+        )
     )
 
+    # free up some memory
+    del socket_id_to_username[socket_id]
+
+    await socket.emit(
+        SocketEvents.RECEIVE_CHAT_MESSAGE,
+        message,
+        to=room_id,
+        skip_sid=socket_id,
+    )
+
+
+@socket.event
+async def userPlayedAMove(socket_id, move: "dict[str, list[int]]"):
     room_to_send_to = get_room(socket, socket_id)
 
-    # socket.rooms() returns all the rooms that the current socket is in
-    # first room is always the socket_id
     await socket.emit(
         SocketEvents.OPPONENT_PLAYED_A_MOVE,
         move,
@@ -87,6 +120,12 @@ async def joinRoom(socket_id, data: "dict[str, str]"):
 
     game_name, room_id = data["roomId"].split("_")
     username = data["username"]
+
+    socket_id_to_username[socket_id] = {
+        "username": username,
+        "game_name": game_name,
+        "room_id": room_id,
+    }
 
     socket.enter_room(socket_id, room_id)
 
