@@ -195,6 +195,7 @@ const CheckersBoard: React.FC<CheckersBoardProps> = ({ roomId }) => {
                       image={image}
                       showMoves={showMoves}
                       boardRef={checkersBoardRef}
+                      userCheckersColor={userPieceColor}
                     />
                   );
                 })}

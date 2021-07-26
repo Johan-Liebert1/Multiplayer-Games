@@ -1,8 +1,4 @@
-# /media/pragyan/Local Disk/Python/MultiplayerGamesFastAPITS/server/env/bin/python3
-
 import os
-from helpers.colors import COLORS
-from config.Config import Colors, GameNames, SocketEvents
 from helpers.printHelper import new_line_print
 import sys
 
@@ -12,7 +8,6 @@ import socketio
 from routes import userRoutes
 
 from fastapi.middleware.cors import CORSMiddleware
-import random
 
 from sockets.mainSockets import SocketHandler
 
@@ -75,18 +70,23 @@ async def checkersGameOver(socket_id, gameOverData):
 
 
 @socket.event
+async def startSketchioGame(socket_id, data):
+    await socket_handler.startSketchioGame(socket_id, data)
+
+
+@socket.event
 async def beganPath(socket_id, data):
-    socket_handler.beganPath(socket_id, data)
+    await socket_handler.beganPath(socket_id, data)
 
 
 @socket.event
 async def strokedPath(socket_id, data):
-    socket_handler.strokedPath(socket_id, data)
+    await socket_handler.strokedPath(socket_id, data)
 
 
 @socket.event
 async def startedFilling(socket_id, data):
-    socket_handler.startedFilling(socket_id, data)
+    await socket_handler.startedFilling(socket_id, data)
 
 
 @fast_app.get("/")

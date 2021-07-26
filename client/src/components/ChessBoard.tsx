@@ -270,6 +270,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
                 image={piece instanceof ChessPiece ? piece.image : ""}
                 showMoves={showMoves}
                 boardRef={chessBoardRef}
+                userChessColor={userPieceColor}
               />
             );
           })}

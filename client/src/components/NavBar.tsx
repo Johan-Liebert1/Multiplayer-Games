@@ -68,7 +68,7 @@ const NavBar: React.FC<NavBarProps> = () => {
                     onClick={() => setShowProfileModal(false)}
                     className="react-link"
                   >
-                    Profile
+                    {user.username}
                   </Link>
                 </span>
               </ListItem>

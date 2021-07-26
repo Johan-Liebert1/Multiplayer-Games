@@ -1,6 +1,8 @@
 import React, { useRef } from "react";
 import { CELL_SIZE, Games } from "../types/games";
 import { motion, PanInfo } from "framer-motion";
+import { ChessPieceColor } from "../types/chessTypes";
+import { CheckersPieceColor } from "../types/checkersTypes";
 
 interface CellProps {
   game: Games;
@@ -12,6 +14,8 @@ interface CellProps {
   blueDot: boolean;
   redDot?: boolean;
   boardRef?: React.MutableRefObject<HTMLDivElement | null>;
+  userChessColor?: ChessPieceColor;
+  userCheckersColor?: CheckersPieceColor;
   showMoves: (row: number, col: number) => void;
 }
 
@@ -25,6 +29,8 @@ const Cell: React.FC<CellProps> = ({
   blueDot,
   redDot,
   boardRef,
+  userChessColor,
+  userCheckersColor,
   showMoves
 }) => {
   const cellRef = useRef<HTMLDivElement | null>(null);
@@ -76,16 +82,40 @@ const Cell: React.FC<CellProps> = ({
     showMoves(row, col);
   };
 
-  const dragEnded = (info: PanInfo) => {
-    const { x, y } = info.point;
+  const dragEnded = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    // const { x, y } = info.point;
+    // console.log(info, event);
+
+    const { clientX: x, clientY: y } = event as MouseEvent;
 
     if (boardRef?.current) {
+      console.log(boardRef);
       const boardRect = boardRef.current.getBoundingClientRect();
 
-      const col1 = Math.floor(Math.abs(boardRect.left - x) / CELL_SIZE);
       const row1 = Math.floor(Math.abs(boardRect.top - y) / CELL_SIZE);
+      const col1 = Math.floor(Math.abs(boardRect.left - x) / CELL_SIZE);
 
-      showMoves(row1, col1);
+      if (userChessColor) {
+        switch (userChessColor) {
+          case "white":
+            showMoves(row1, col1);
+            break;
+
+          case "black":
+            showMoves(Math.abs(7 - row1), col1);
+            break;
+        }
+      } else if (userCheckersColor) {
+        switch (userCheckersColor) {
+          case "red":
+            showMoves(row1, col1);
+            break;
+
+          case "white":
+            showMoves(Math.abs(7 - row1), col1);
+            break;
+        }
+      }
     }
   };
 
@@ -103,7 +133,7 @@ const Cell: React.FC<CellProps> = ({
             dragElastic={1}
             dragMomentum={false}
             dragTransition={{ bounceStiffness: 600, bounceDamping: 30 }}
-            onDragEnd={(_event, info) => dragEnded(info)}
+            onDragEnd={(event, info) => dragEnded(event, info)}
           />
         )}
       </div>

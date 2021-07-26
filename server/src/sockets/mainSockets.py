@@ -13,14 +13,19 @@ ROOMS = {
         ]
     }
 }
-"""
 
-"""  
 socket_id_to_username = {
     socket_id: {
         username: username,
         room_id: room_id,
         game_name: game_name
+    }
+}
+
+sketch_io_info = {
+    room_id: {
+        current_painter: username_index in ROOMS -> game_name -> room_id,
+        word: word_to_paint
     }
 }
 """
@@ -35,6 +40,33 @@ class SocketHandler:
             GameNames.CHECKERS: {},
             GameNames.SKETCHIO: {},
         }
+        self.sketch_io_info = {}
+
+    async def disconnect(self, socket_id):
+        socket_info = self.socket_id_to_username[socket_id]
+        username = socket_info["username"]
+        game_name = socket_info["game_name"]
+        room_id = socket_info["room_id"]
+
+        message = self.get_bot_message(username, False)
+
+        # delete the user from the room
+        self.ROOMS[game_name][room_id] = list(
+            filter(
+                lambda x: x != username,
+                self.ROOMS[game_name][room_id],
+            )
+        )
+
+        # free up some memory
+        del self.socket_id_to_username[socket_id]
+
+        await self.socket.emit(
+            SocketEvents.RECEIVE_CHAT_MESSAGE,
+            message,
+            to=room_id,
+            skip_sid=socket_id,
+        )
 
     async def joinRoom(self, socket_id, data: "dict[str, str]"):
         # extract the game name from the room_id
@@ -106,6 +138,8 @@ class SocketHandler:
                 to=socket_id,
             )
 
+        # elif game_name == GameNames.SKETCHIO:
+
         # emit a chat message from a bot
         await self.socket.emit(
             SocketEvents.RECEIVE_CHAT_MESSAGE,
@@ -151,31 +185,29 @@ class SocketHandler:
             skip_sid=socket_id,
         )
 
-    async def disconnect(self, socket_id):
-        socket_info = self.socket_id_to_username[socket_id]
-        username = socket_info["username"]
-        game_name = socket_info["game_name"]
-        room_id = socket_info["room_id"]
+    # ========================== sketch io ========================================
+    async def startSketchioGame(self, socket_id, data):
+        """
+        data = {room_id}
+        """
+        room_id = data["room_id"]
+        all_users_in_room = self.ROOMS[GameNames.SKETCHIO][room_id]
 
-        message = self.get_bot_message(username, False)
+        # add room data to dictionary if not already present
+        if not self.sketch_io_info.get(room_id):
+            self.sketch_io_info[room_id] = {"current_painter_index": -1, "word": ""}
 
-        # delete the user from the room
-        self.ROOMS[game_name][room_id] = list(
-            filter(
-                lambda x: x != username,
-                self.ROOMS[game_name][room_id],
+        self.sketch_io_info[room_id]["current_painter_index"] += 1
+
+        if self.sketch_io_info[room_id]["current_painter_index"] == len(
+            all_users_in_room
+        ):
+            await self.socket.emit(
+                SocketEvents.SKETCH_IO_GAME_OVER,
+                {},
+                to=room_id,
             )
-        )
-
-        # free up some memory
-        del self.socket_id_to_username[socket_id]
-
-        await self.socket.emit(
-            SocketEvents.RECEIVE_CHAT_MESSAGE,
-            message,
-            to=room_id,
-            skip_sid=socket_id,
-        )
+            return
 
     async def beganPath(self, socket_id, data):
         room_to_send_to = self.get_room(socket_id)
