@@ -43,7 +43,9 @@ export const chatBoxStyles = makeStyles(theme => ({
   },
   messagesContainer: {
     height: "90%",
-    backgroundColor: "#222f3e"
+    maxHeight: "90%",
+    backgroundColor: "#222f3e",
+    overflow: "auto"
   },
   inputContainer: {
     "& .MuiFilledInput-underline:after": {

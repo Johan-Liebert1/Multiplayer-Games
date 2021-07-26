@@ -224,6 +224,42 @@ async def checkersGameOver(socket_id, gameOverData):
     )
 
 
+@socket.event
+async def beganPath(socket_id, data):
+    room_to_send_to = get_room(socket, socket_id)
+
+    await socket.emit(
+        SocketEvents.BEGAN_PATH,
+        data,
+        room=room_to_send_to,
+        skip_sid=socket_id,
+    )
+
+
+@socket.event
+async def strokedPath(socket_id, data):
+    room_to_send_to = get_room(socket, socket_id)
+
+    await socket.emit(
+        SocketEvents.STROKED_PATH,
+        data,
+        room=room_to_send_to,
+        skip_sid=socket_id,
+    )
+
+
+@socket.event
+async def startedFilling(socket_id, data):
+    room_to_send_to = get_room(socket, socket_id)
+
+    await socket.emit(
+        SocketEvents.STARTED_FILLING,
+        data,
+        room=room_to_send_to,
+        skip_sid=socket_id,
+    )
+
+
 @fast_app.get("/")
 def read_root():
     return {"Hello": "World"}

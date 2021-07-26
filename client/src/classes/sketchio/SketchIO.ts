@@ -1,14 +1,23 @@
+import { socketEmitEvents } from "../../types/socketEvents";
+import { SocketState } from "../../types/store/storeTypes";
+
 class SketchIO {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
+  socket: SocketState;
   initialFillStyle: string;
   initialStrokeStyle: string;
   isPainting: boolean;
   isFilling: boolean;
 
-  constructor(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D) {
+  constructor(
+    canvas: HTMLCanvasElement,
+    context: CanvasRenderingContext2D,
+    socket: SocketState
+  ) {
     this.canvas = canvas;
     this.ctx = context;
+    this.socket = socket;
     this.initialFillStyle = "white";
     this.initialStrokeStyle = "black";
     this.isPainting = false;
@@ -63,14 +72,21 @@ class SketchIO {
 
     if (!this.isPainting) {
       this.beginPath(x, y);
+      this.socket.emit(socketEmitEvents.BEGAN_PATH, { x, y });
     } else {
       this.drawPath(x, y, this.ctx.strokeStyle as string);
+      this.socket.emit(socketEmitEvents.STROKED_PATH, {
+        x,
+        y,
+        color: this.ctx.strokeStyle
+      });
     }
   };
 
   handleCanvasClick = () => {
     if (this.isFilling) {
       this.fill(this.ctx.fillStyle as string);
+      this.socket.emit(socketEmitEvents.STARTED_FILLING, { color: this.ctx.fillStyle });
     }
   };
 
