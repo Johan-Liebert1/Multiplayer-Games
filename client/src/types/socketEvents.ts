@@ -6,7 +6,8 @@ export const socketEmitEvents = Object.freeze({
   CHESS_GAME_OVER: "chessGameOver",
   BEGAN_PATH: "beganPath",
   STROKED_PATH: "strokedPath",
-  STARTED_FILLING: "startedFilling"
+  STARTED_FILLING: "startedFilling",
+  START_SKETCHIO_GAME: "startSketchioGame"
 });
 
 export const socketListenEvents = Object.freeze({
@@ -19,5 +20,7 @@ export const socketListenEvents = Object.freeze({
   CHESS_PLAYER_2_JOINED: "CHESS_PLAYER_2_JOINED",
   BEGAN_PATH: "BEGAN_PATH",
   STROKED_PATH: "STROKED_PATH",
-  STARTED_FILLING: "STARTED_FILLING"
+  STARTED_FILLING: "STARTED_FILLING",
+  STARTED_SKETCHIO_GAME: "STARTED_SKETCHIO_GAME",
+  SKETCHIO_PLAYER_JOINED: "SKETCHIO_PLAYER_JOINED"
 });

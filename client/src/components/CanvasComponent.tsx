@@ -39,7 +39,10 @@ const CanvasComponent: React.FC<CanvasComponentProps> = ({ roomId }) => {
     width: 0,
     height: windowHeight * 0.8
   });
-  const [chosenColor, setChosenColor] = useState("white");
+
+  const [playersInRoom, setPlayersInRoom] = useState<
+    { username: string; points: number }[]
+  >([{ username: user.username, points: 0 }]);
 
   const colors = [
     "white",
@@ -79,6 +82,14 @@ const CanvasComponent: React.FC<CanvasComponentProps> = ({ roomId }) => {
     }
   };
 
+  const changeCanvasColor = (color: string) => {
+    sketchIO.changeCanvasColor(color);
+  };
+
+  const startSketchioGame = () => {
+    socket.emit(socketEmitEvents.START_SKETCHIO_GAME, {});
+  };
+
   useEffect(() => {
     if (canvasContainer.current) {
       setCanvasDimensions({
@@ -87,11 +98,6 @@ const CanvasComponent: React.FC<CanvasComponentProps> = ({ roomId }) => {
       });
     }
   }, [canvasContainer, windowHeight, windowWidth]);
-
-  const changeCanvasColor = (color: string) => {
-    setChosenColor(color);
-    sketchIO.changeCanvasColor(color);
-  };
 
   useEffect(() => {
     socket = io("http://localhost:8000");
@@ -117,6 +123,14 @@ const CanvasComponent: React.FC<CanvasComponentProps> = ({ roomId }) => {
   }, []);
 
   useEffect(() => {
+    socket.on(
+      socketListenEvents.SKETCHIO_PLAYER_JOINED,
+      (data: { allUsersInRoom: { username: string; points: number }[] }) => {
+        console.log(data);
+        setPlayersInRoom(data.allUsersInRoom);
+      }
+    );
+
     socket.on(socketListenEvents.BEGAN_PATH, (data: { x: number; y: number }) => {
       sketchIO.beginPath(data.x, data.y);
     });
@@ -142,11 +156,38 @@ const CanvasComponent: React.FC<CanvasComponentProps> = ({ roomId }) => {
           alignSelf: "flex-start",
           height: canvasDimensions.height + "px",
           minWidth: "10rem",
-          width: "20%"
+          width: "20%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between"
         }}
       >
-        <ListItem style={{ wordBreak: "break-all" }}>
-          <h2>Points</h2>
+        <div>
+          <ListItem style={{ wordBreak: "break-all", marginBottom: "3rem" }}>
+            <h2>Points</h2>
+          </ListItem>
+
+          {playersInRoom.map(player => (
+            <ListItem
+              style={{ wordBreak: "break-all", borderBottom: "1px solid white" }}
+              key={player.username}
+            >
+              <h3 style={{ width: "75%" }}>{player.username}</h3>
+              <div style={{ width: "5%" }}></div>
+              <h3 style={{ width: "20%" }}>{player.points}</h3>
+            </ListItem>
+          ))}
+        </div>
+
+        <ListItem style={{ justifySelf: "flex-end", alignSelf: "flex-end" }}>
+          <Button
+            fullWidth
+            variant="contained"
+            style={{ backgroundColor: "#128277", color: "white" }}
+            onClick={startSketchioGame}
+          >
+            Start Game
+          </Button>
         </ListItem>
       </List>
 

@@ -7,9 +7,26 @@ import random
 
 """  
 ROOMS = {
-    game_name: {
+    GameNames.CHESS: {
         room_id: [
             user_1_username, user_2_username,....
+        ]
+    },
+    GameNames.CHECKERS: {
+        room_id: [
+            user_1_username, user_2_username,....
+        ]
+    },
+    GameNames.SKETCHIO: {
+        room_id: [
+            {
+                username: user_1_username,
+                points: user_1_points
+            }, 
+            {
+                username: user_2_username,
+                points: user_2_points
+            },....
         ]
     }
 }
@@ -40,7 +57,7 @@ class SocketHandler:
             GameNames.CHECKERS: {},
             GameNames.SKETCHIO: {},
         }
-        self.sketch_io_info = {}
+        self.sketch_io_info: "dict[str, dict[str, str]]" = {}
 
     async def disconnect(self, socket_id):
         socket_info = self.socket_id_to_username[socket_id]
@@ -48,15 +65,24 @@ class SocketHandler:
         game_name = socket_info["game_name"]
         room_id = socket_info["room_id"]
 
-        message = self.get_bot_message(username, False)
+        message = self.get_bot_message_for_user_join_leave(username, False)
 
         # delete the user from the room
-        self.ROOMS[game_name][room_id] = list(
-            filter(
-                lambda x: x != username,
-                self.ROOMS[game_name][room_id],
+        if game_name == GameNames.SKETCHIO:
+            self.ROOMS[game_name][room_id] = list(
+                filter(
+                    lambda x: x["username"] != username,
+                    self.ROOMS[game_name][room_id],
+                )
             )
-        )
+
+        else:
+            self.ROOMS[game_name][room_id] = list(
+                filter(
+                    lambda x: x != username,
+                    self.ROOMS[game_name][room_id],
+                )
+            )
 
         # free up some memory
         del self.socket_id_to_username[socket_id]
@@ -87,9 +113,10 @@ class SocketHandler:
 
         # add the new socket to the room
         if not self.ROOMS[game_name].get(room_id):
-            # newly created room, only one player's in it
-            self.ROOMS[game_name][room_id] = [username]
+            self.ROOMS[game_name][room_id] = []
 
+        if game_name == GameNames.SKETCHIO:
+            self.ROOMS[game_name][room_id].append({"username": username, "points": 0})
         else:
             # someone's already in the room so append the next player
             self.ROOMS[game_name][room_id].append(username)
@@ -138,12 +165,17 @@ class SocketHandler:
                 to=socket_id,
             )
 
-        # elif game_name == GameNames.SKETCHIO:
+        elif game_name == GameNames.SKETCHIO:
+            await self.socket.emit(
+                SocketEvents.SKETCHIO_PLAYER_JOINED,
+                {"allUsersInRoom": self.ROOMS[GameNames.SKETCHIO][room_id]},
+                to=room_id,
+            )
 
         # emit a chat message from a bot
         await self.socket.emit(
             SocketEvents.RECEIVE_CHAT_MESSAGE,
-            self.get_bot_message(username, connected=True),
+            self.get_bot_message_for_user_join_leave(username, connected=True),
             to=room_id,
             skip_sid=socket_id,
         )
@@ -168,12 +200,25 @@ class SocketHandler:
         """
         room_to_send_to = self.get_room(socket_id)
 
-        await self.socket.emit(
-            SocketEvents.RECEIVE_CHAT_MESSAGE,
-            data,
-            room=room_to_send_to,
-            skip_sid=socket_id,
-        )
+        game_name = self.socket_id_to_username[socket_id]["game_name"]
+
+        send_message_to_other_users = True
+
+        # in sketchio we have to check if the message is the word_to_paint
+        if game_name == GameNames.SKETCHIO:
+            send_message_to_other_users = await self.handle_sketch_io_message(
+                socket_id, room_to_send_to, data
+            )
+
+        # if someone has correctly guessed the word then we don't want others to know
+        # what the word was, so we refrain from sending that word to other players in the game
+        if send_message_to_other_users:
+            await self.socket.emit(
+                SocketEvents.RECEIVE_CHAT_MESSAGE,
+                data,
+                room=room_to_send_to,
+                skip_sid=socket_id,
+            )
 
     async def checkersGameOver(self, socket_id, gameOverData):
         room_to_send_to = self.get_room(socket_id)
@@ -207,7 +252,27 @@ class SocketHandler:
                 {},
                 to=room_id,
             )
-            return
+
+    async def handle_sketch_io_message(self, socket_id, room_id, message):
+        chat_message: str = message["message"]
+        username: str = message["username"]
+
+        sketchio_game_info = self.sketch_io_info[room_id]
+
+        if chat_message.strip().lower() == sketchio_game_info["word"].strip().lower():
+            # someone has guessed the correct word
+            await self.socket.emit(
+                SocketEvents.RECEIVE_CHAT_MESSAGE,
+                self.get_custom_bot_message(
+                    f"{username} has correctly guessed the word"
+                ),
+                to=room_id,
+            )
+
+            # signifies whether to send this message to other users or not
+            return False
+
+        return True
 
     async def beganPath(self, socket_id, data):
         room_to_send_to = self.get_room(socket_id)
@@ -239,14 +304,20 @@ class SocketHandler:
             skip_sid=socket_id,
         )
 
-    def get_bot_message(self, username: str, connected: bool) -> "dict[str, str]":
-        to_add = "joined" if connected else "left"
-
+    # ============================ helpers ===================================
+    def get_custom_bot_message(self, message) -> "dict[str, str]":
         return {
             "username": "BOT",
             "color": Colors.BOT_COLOR,
-            "message": f"{username} just {to_add} the chat",
+            "message": message,
         }
+
+    def get_bot_message_for_user_join_leave(
+        self, username: str, connected: bool
+    ) -> "dict[str, str]":
+        to_add = "joined" if connected else "left"
+
+        return self.get_custom_bot_message(f"{username} just {to_add} the chat")
 
     def get_room(self, socket_id) -> str:
         for room in self.socket.rooms(socket_id):
