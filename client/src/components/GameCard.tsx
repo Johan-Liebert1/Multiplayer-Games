@@ -110,12 +110,6 @@ const GameCard: React.FC<GameCardProps> = ({ gameName, history }) => {
             </Typography>
             <Typography variant="body2" color="textSecondary" component="h4">
               Play {gameName}
-              <Link to="/chesstest" style={{ color: "black" }}>
-                chess test{"        "}
-              </Link>
-              <Link to="/checkerstest" style={{ color: "black" }}>
-                checkers test
-              </Link>
             </Typography>
           </CardContent>
         </CardActionArea>

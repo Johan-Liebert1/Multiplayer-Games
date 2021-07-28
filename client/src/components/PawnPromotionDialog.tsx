@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { gameOverDiv } from "../animations/animations";
 import { ChessPieceColor, ChessPieceName } from "../types/chessTypes";
+import { CELL_SIZE } from "../types/games";
 
 interface PawnPromotionDialogProps {
   pawnColor: ChessPieceColor;
@@ -23,8 +24,8 @@ const PawnPromotionDialog: React.FC<PawnPromotionDialogProps> = ({
   return (
     <div
       style={{
-        width: 560,
-        height: 560,
+        width: CELL_SIZE * 8 + "px",
+        height: CELL_SIZE * 8 + "px",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",

@@ -32,14 +32,17 @@ const NavBar: React.FC<NavBarProps> = () => {
         </Link>
       </div>
       <div className="navbar-navlink">
-        <Link className="nav-link react-link" to={`/home`}>
-          Likn23
+        <Link className="nav-link react-link" to={routes[routeNames.CHESS_TEST].path}>
+          Chess Board
         </Link>
       </div>
       {user.username && (
         <div className="navbar-navlink">
-          <Link className="nav-link react-link" to={`/${user.id}/channel`}>
-            Link 1
+          <Link
+            className="nav-link react-link"
+            to={routes[routeNames.CHECKERS_TEST].path}
+          >
+            Checkers Board
           </Link>
         </div>
       )}

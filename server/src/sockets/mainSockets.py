@@ -232,19 +232,8 @@ class SocketHandler:
         )
 
     # ========================== sketch io ========================================
-    def get_next_painter():
-        pass
-
-    async def startSketchioGame(self, socket_id, data):
-        """
-        data = {room_id}
-        """
-        room_id = data["room_id"]
+    async def choose_new_painter(self, room_id):
         all_users_in_room = self.ROOMS[GameNames.SKETCHIO][room_id]
-
-        # add room data to dictionary if not already present
-        if not self.sketch_io_info.get(room_id):
-            self.sketch_io_info[room_id] = {"current_painter_index": -1, "word": ""}
 
         self.sketch_io_info[room_id]["current_painter_index"] += 1
 
@@ -259,7 +248,7 @@ class SocketHandler:
             )
 
         else:
-            new_painter = self.ROOMS[GameNames.SKETCHIO][room_id][painter_index]
+            new_painter = all_users_in_room[painter_index]
             new_word = get_random_word()
 
             await self.socket.emit(
@@ -267,6 +256,18 @@ class SocketHandler:
                 {"newPainter": new_painter, "newWord": new_word},
                 to=room_id,
             )
+
+    async def startSketchioGame(self, socket_id, data):
+        """
+        data = {room_id}
+        """
+        room_id = data["room_id"]
+
+        # add room data to dictionary if not already present
+        if not self.sketch_io_info.get(room_id):
+            self.sketch_io_info[room_id] = {"current_painter_index": -1, "word": ""}
+
+        await self.choose_new_painter(room_id)
 
     async def handle_sketch_io_message(self, socket_id, room_id, message):
         chat_message: str = message["message"]
@@ -283,6 +284,8 @@ class SocketHandler:
                 ),
                 to=room_id,
             )
+
+            await self.choose_new_painter(room_id)
 
             # signifies whether to send this message to other users or not
             return False

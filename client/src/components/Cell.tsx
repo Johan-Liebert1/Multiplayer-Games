@@ -64,7 +64,7 @@ const Cell: React.FC<CellProps> = ({
   const imgStyle: React.CSSProperties = {
     height: imgDim,
     width: imgDim,
-    zIndex: 1000
+    zIndex: 500
   };
 
   const dotStyle: React.CSSProperties = {

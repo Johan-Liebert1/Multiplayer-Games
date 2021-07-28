@@ -247,37 +247,39 @@ const CanvasComponent: React.FC<CanvasComponentProps> = ({ roomId }) => {
           ref={canvasRef}
         />
       </div>
-      <div
-        className="colorsContainer"
-        style={
-          bigScreen
-            ? { maxWidth: "10%", height: canvasDimensions.height + "px" }
-            : {
-                width: "100%",
-                flexDirection: "row"
-              }
-        }
-      >
-        {colors.map(color => (
-          <div
-            onClick={() => changeCanvasColor(color)}
-            className="color"
-            style={{ backgroundColor: color }}
-            key={color}
-          ></div>
-        ))}
-        <div id="sketchIOButton">
-          <Button
-            ref={paintFillButton}
-            onClick={handleButtonClick}
-            variant="contained"
-            color="primary"
-            style={{ marginLeft: "5px" }}
-          >
-            Fill
-          </Button>
+      {isUserPainter && (
+        <div
+          className="colorsContainer"
+          style={
+            bigScreen
+              ? { maxWidth: "10%", height: canvasDimensions.height + "px" }
+              : {
+                  width: "100%",
+                  flexDirection: "row"
+                }
+          }
+        >
+          {colors.map(color => (
+            <div
+              onClick={() => changeCanvasColor(color)}
+              className="color"
+              style={{ backgroundColor: color }}
+              key={color}
+            ></div>
+          ))}
+          <div id="sketchIOButton">
+            <Button
+              ref={paintFillButton}
+              onClick={handleButtonClick}
+              variant="contained"
+              color="primary"
+              style={{ marginLeft: "5px" }}
+            >
+              Fill
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

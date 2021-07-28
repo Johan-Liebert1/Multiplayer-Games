@@ -3,6 +3,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { gameOverDiv } from "../animations/animations";
 import { ChessPieceColor } from "../types/chessTypes";
 import { CheckersPieceColor } from "../types/checkersTypes";
+import { Button } from "@material-ui/core";
+import { CELL_SIZE } from "../types/games";
 
 interface GameOverComponentProps {
   winnerColor: ChessPieceColor | CheckersPieceColor;
@@ -26,12 +28,12 @@ const GameOverComponent: React.FC<GameOverComponentProps> = ({
   return (
     <div
       style={{
-        width: 560,
-        height: 560,
+        width: CELL_SIZE * 8 + "px",
+        height: CELL_SIZE * 8 + "px",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        zIndex: 99,
+        zIndex: 900,
         position: "absolute",
         top: 0,
         left: 0
@@ -43,7 +45,7 @@ const GameOverComponent: React.FC<GameOverComponentProps> = ({
           style={{
             height: "300px",
             width: "300px",
-            backgroundColor: "rgb(40, 40, 40)",
+            backgroundColor: "#02203A",
             zIndex: 99,
             display: hideDiv ? "none" : "flex",
             flexDirection: "column",
@@ -63,7 +65,12 @@ const GameOverComponent: React.FC<GameOverComponentProps> = ({
             {winnerName} ({getWinnerColor()}) Won
           </h2>
 
-          <button>Rematch</button>
+          <Button
+            variant="contained"
+            style={{ backgroundColor: "#2980B9", color: "white" }}
+          >
+            Rematch
+          </Button>
         </motion.div>
       </AnimatePresence>
     </div>

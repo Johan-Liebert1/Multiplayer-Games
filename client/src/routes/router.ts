@@ -13,7 +13,9 @@ export const routeNames = Object.freeze({
   GAMES_SCREEN: "GAMES_SCREEN",
   CHECKERS_SCREEN: "CHECKERS_SCREEN",
   CHESS_SCREEN: "CHESS_SCREEN",
-  SKETCHIO_SCREEN: "SKETCHIO_SCREEN"
+  SKETCHIO_SCREEN: "SKETCHIO_SCREEN",
+  CHECKERS_TEST: "CHECKERS_TEST",
+  CHESS_TEST: "CHESS_TEST"
 });
 
 const routes = {
@@ -47,12 +49,12 @@ const routes = {
     path: "/sketchio/:roomId",
     component: SketchIOScreen
   },
-  checkersTest: {
+  [routeNames.CHECKERS_TEST]: {
     name: "checkersTest",
     path: "/checkerstest",
     component: CheckersTestBoard
   },
-  chessTest: {
+  [routeNames.CHESS_TEST]: {
     name: "chessTest",
     path: "/chesstest",
     component: ChessBoardTest
