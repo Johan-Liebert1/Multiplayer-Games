@@ -9,42 +9,68 @@ import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import EditIcon from "@material-ui/icons/Edit";
 
 import useStyles from "../../styles/UserLoginStyles";
-import { FormControl, FormHelperText, IconButton } from "@material-ui/core";
+import { FormControl, FormHelperText, IconButton, makeStyles } from "@material-ui/core";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 import InputLabel from "@material-ui/core/InputLabel";
 import InputAdornment from "@material-ui/core/InputAdornment";
 
-import { axiosInstance } from "../../config/axiosConfig";
 import ProfilePic from "./ProfilePic";
+
+export type UserInformation = {
+  username: string;
+  password: string;
+  confirmPassword: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  profilePictureUrl: string;
+};
 
 interface UserDetailsProps {
   isForRegister: boolean;
-  userInfo?: {
-    username: string;
-    password: string;
-    confirmPassword: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    profilePictureUrl: string;
-  };
+  submitHandler: (userInfo: UserInformation) => Promise<void>;
+  userInfo?: UserInformation;
 }
 
-const UserDetails: React.FC<UserDetailsProps> = ({ isForRegister, userInfo }) => {
+const useMoreStyles = makeStyles(() => ({
+  editIconContainer: {
+    padding: "1rem",
+    position: "relative"
+  },
+
+  editIcon: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    "&:hover": {
+      fill: "white",
+      cursor: "pointer"
+    }
+  }
+}));
+
+const UserDetails: React.FC<UserDetailsProps> = ({
+  isForRegister,
+  userInfo,
+  submitHandler
+}) => {
   const classes = useStyles();
+  const moreClasses = useMoreStyles();
 
   const [showPassword, setShowPassword] = useState({ password: false, confirm: false });
   const [wasUsernameChanged, setWasUsernameChanged] = useState(false);
 
-  const [formDetails, setFormDetails] = useState({
+  const [formDetails, setFormDetails] = useState<UserInformation>({
     username: userInfo?.username || "",
     password: userInfo?.password || "",
     confirmPassword: userInfo?.confirmPassword || "",
     firstName: userInfo?.firstName || "",
     lastName: userInfo?.lastName || "",
-    email: userInfo?.email || ""
+    email: userInfo?.email || "",
+    profilePictureUrl: userInfo?.profilePictureUrl || ""
   });
 
   const [passwordsMatch, setPasswordsMatch] = useState(true);
@@ -75,11 +101,16 @@ const UserDetails: React.FC<UserDetailsProps> = ({ isForRegister, userInfo }) =>
     event.preventDefault();
 
     if (areFormDetailsValid()) {
-      const createRequest = await axiosInstance.post("/user/register", formDetails);
-      console.log(createRequest);
+      submitHandler(formDetails);
     } else {
       console.log("nooooooooo");
     }
+  };
+
+  const openFileUploader = () => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.click();
   };
 
   return (
@@ -99,15 +130,20 @@ const UserDetails: React.FC<UserDetailsProps> = ({ isForRegister, userInfo }) =>
           <Avatar className={classes.avatar}>
             <LockOutlinedIcon />
           </Avatar>
-        ) : userInfo.profilePictureUrl.length ? (
-          <ProfilePic
-            src={userInfo.profilePictureUrl}
-            navbar={false}
-            width="125"
-            height="125"
-          />
         ) : (
-          <AccountCircleIcon style={{ width: "125", height: "125" }} />
+          <div className={moreClasses.editIconContainer}>
+            <EditIcon onClick={openFileUploader} className={moreClasses.editIcon} />
+            {userInfo.profilePictureUrl.length ? (
+              <ProfilePic
+                src={userInfo.profilePictureUrl}
+                navbar={false}
+                width="125"
+                height="125"
+              />
+            ) : (
+              <AccountCircleIcon style={{ width: "125", height: "125" }} />
+            )}
+          </div>
         )}
         <Typography component="h1" variant="h5">
           {isForRegister ? "Sign Up" : "Profile"}
@@ -148,7 +184,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({ isForRegister, userInfo }) =>
 
           <div className={classes.formGroup}>
             <FormControl className={classes.textField} variant="outlined">
-              <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+              <InputLabel htmlFor="outlined-adornment-password">New Password</InputLabel>
               <OutlinedInput
                 id="outlined-adornment-password"
                 required
@@ -185,7 +221,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({ isForRegister, userInfo }) =>
 
             <FormControl className={classes.textField} variant="outlined">
               <InputLabel htmlFor="outlined-adornment-confirm-password">
-                Confirm Password
+                Confirm New Password
               </InputLabel>
               <OutlinedInput
                 required

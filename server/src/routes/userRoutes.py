@@ -1,6 +1,8 @@
 # fast-api stuff
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from fastapi.param_functions import Depends
+from sqlalchemy.orm.query import Query
+
 
 # sqlalchemy
 from sqlalchemy.orm.session import Session
@@ -9,6 +11,7 @@ from sqlalchemy.orm.session import Session
 from helpers.printHelper import new_line_print
 from helpers.returnHelpers import default_response
 from helpers.serializers import serialize
+from helpers.decorators import login_required
 
 # db models
 from db.connection import get_db
@@ -101,3 +104,30 @@ def user_login_handler(details: UserLoginRequest, db: Session = Depends(get_db))
     serialized_user = serialize([user])[0]
 
     return {"success": True, "user": {"token": token, **serialized_user}}
+
+
+@userRouter.put("/editdetails")
+@login_required
+def edit_user_details(
+    details: UserCreateRequest, request: Request, db: Session = Depends(get_db)
+):
+    user = details.user
+
+    user_model = db.query(UserModel).filter(UserModel.id == user["id"]).first()
+
+    if not user_model:
+        return default_response(False, "User does not exist")
+
+    user_model.username = details.username or user_model.username
+    user_model.firstName = details.firstName or user_model.firstName
+    user_model.lastName = details.lastName or user_model.lastName
+    user_model.email = details.email or user_model.email
+
+    if len(details.password) > 0:
+        salt = user_model.salt
+        password = bcrypt.hashpw(details.password.encode("utf-8"), salt)
+        user_model.password = password
+
+    db.commit()
+
+    return default_response(True, "Updated User")

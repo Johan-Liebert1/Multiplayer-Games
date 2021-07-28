@@ -11,6 +11,9 @@ export default makeStyles(theme => ({
     "& .MuiInput-underline:after": {
       borderBottomColor: "white"
     },
+    "& .MuiInputBase-input.MuiOutlinedInput-input": {
+      color: "#fff !important"
+    },
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
         borderColor: "rgb(175, 175, 175)"
