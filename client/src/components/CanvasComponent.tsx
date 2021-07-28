@@ -1,19 +1,27 @@
+// react
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
+import { withRouter } from "react-router-dom";
 
-import SketchIO from "../classes/sketchio/SketchIO";
+// hooks
 import { useTypedSelector } from "../hooks/useTypedSelector";
 import useWindowSize from "../hooks/useWindowSize";
-import "../styles/Canvas.css";
-import { chatBoxStyles } from "../styles/gameScreenStyles";
 
+//styles
+import { chatBoxStyles } from "../styles/gameScreenStyles";
+import "../styles/Canvas.css";
 import { Button, List, ListItem } from "@material-ui/core";
-import { SocketState } from "../types/store/storeTypes";
-import { io } from "socket.io-client";
-import { socketEmitEvents, socketListenEvents } from "../types/socketEvents";
+
+// redux
 import { setSocketAction } from "../store/actions/socketActions";
-import { withRouter } from "react-router-dom";
+
+// types
+import { SocketState } from "../types/store/storeTypes";
+import { socketEmitEvents, socketListenEvents } from "../types/socketEvents";
 import { RouteProps } from "../types/routeProps";
+
+import SketchIO from "../classes/sketchio/SketchIO";
+import { io } from "socket.io-client";
 
 let sketchIO: SketchIO;
 let socket: SocketState;

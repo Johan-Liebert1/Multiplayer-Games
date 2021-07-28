@@ -1,10 +1,11 @@
 from socketio.asyncio_server import AsyncServer
 from config.Config import Colors, GameNames, SocketEvents
 
+import random
+
 from helpers.colors import COLORS
 from helpers.printHelper import new_line_print
 from sockets.words import get_random_word
-import random
 
 
 class SocketHandler:
