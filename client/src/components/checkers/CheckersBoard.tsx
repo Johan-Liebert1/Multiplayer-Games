@@ -1,29 +1,29 @@
 // react stuff
 import React, { useState, useEffect } from "react";
-import { useTypedSelector } from "../hooks/useTypedSelector";
+import { useTypedSelector } from "../../hooks/useTypedSelector";
 import { useDispatch } from "react-redux";
 
 // actions
-import { setSocketAction } from "../store/actions/socketActions";
+import { setSocketAction } from "../../store/actions/socketActions";
 
 // components
-import GameOverComponent from "./GameOverComponent";
-import Cell from "./Cell";
+import GameOverComponent from "../allGames/GameOverComponent";
+import Cell from "../allGames/Cell";
 
 // checkers
-import CheckersPiece from "../classes/checkers/CheckersPiece";
-import CheckersGame from "../classes/checkers/CheckersGame";
+import CheckersPiece from "../../classes/checkers/CheckersPiece";
+import CheckersGame from "../../classes/checkers/CheckersGame";
 
 // sockets
 import { io } from "socket.io-client";
 
 // types
-import { ClickedCellsType } from "../types/games";
-import { socketEmitEvents, socketListenEvents } from "../types/socketEvents";
-import { CheckersBoardType, CheckersPieceColor } from "../types/checkersTypes";
-import { SocketState } from "../types/store/storeTypes";
+import { ClickedCellsType } from "../../types/games";
+import { socketEmitEvents, socketListenEvents } from "../../types/socketEvents";
+import { CheckersBoardType, CheckersPieceColor } from "../../types/checkersTypes";
+import { SocketState } from "../../types/store/storeTypes";
 import { useRef } from "react";
-import { getNewCheckersBoard } from "../helpers/checkersBoard";
+import { getNewCheckersBoard } from "../../helpers/checkersBoard";
 
 const game = new CheckersGame();
 let socket: SocketState;

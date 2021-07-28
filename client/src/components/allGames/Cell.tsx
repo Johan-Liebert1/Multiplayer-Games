@@ -1,8 +1,8 @@
 import React, { useRef } from "react";
-import { CELL_SIZE, Games } from "../types/games";
+import { CELL_SIZE, Games } from "../../types/games";
 import { motion, PanInfo } from "framer-motion";
-import { ChessPieceColor } from "../types/chessTypes";
-import { CheckersPieceColor } from "../types/checkersTypes";
+import { ChessPieceColor } from "../../types/chessTypes";
+import { CheckersPieceColor } from "../../types/checkersTypes";
 
 interface CellProps {
   game: Games;

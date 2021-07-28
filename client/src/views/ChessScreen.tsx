@@ -1,10 +1,10 @@
 import React from "react";
-import ChessBoard from "../components/ChessBoard";
+import ChessBoard from "../components/chess/ChessBoard";
 import { RouteProps } from "../types/routeProps";
 
 import { boardStyles, chatStyles, wrapperDivStyles } from "../styles/gameScreenStyles";
-import RoomId from "../components/RoomId";
-import Chat from "../components/Chat";
+import RoomId from "../components/allGames/RoomId";
+import Chat from "../components/allGames/Chat";
 import useUserPresent from "../hooks/useUserPresent";
 import useWindowSize from "../hooks/useWindowSize";
 

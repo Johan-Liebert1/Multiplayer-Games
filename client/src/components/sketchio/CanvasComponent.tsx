@@ -4,23 +4,23 @@ import { useDispatch } from "react-redux";
 import { withRouter } from "react-router-dom";
 
 // hooks
-import { useTypedSelector } from "../hooks/useTypedSelector";
-import useWindowSize from "../hooks/useWindowSize";
+import { useTypedSelector } from "../../hooks/useTypedSelector";
+import useWindowSize from "../../hooks/useWindowSize";
 
 //styles
-import { chatBoxStyles } from "../styles/gameScreenStyles";
-import "../styles/Canvas.css";
+import { chatBoxStyles } from "../../styles/gameScreenStyles";
+import "../../styles/Canvas.css";
 import { Button, List, ListItem } from "@material-ui/core";
 
 // redux
-import { setSocketAction } from "../store/actions/socketActions";
+import { setSocketAction } from "../../store/actions/socketActions";
 
 // types
-import { SocketState } from "../types/store/storeTypes";
-import { socketEmitEvents, socketListenEvents } from "../types/socketEvents";
-import { RouteProps } from "../types/routeProps";
+import { SocketState } from "../../types/store/storeTypes";
+import { socketEmitEvents, socketListenEvents } from "../../types/socketEvents";
+import { RouteProps } from "../../types/routeProps";
 
-import SketchIO from "../classes/sketchio/SketchIO";
+import SketchIO from "../../classes/sketchio/SketchIO";
 import { io } from "socket.io-client";
 
 let sketchIO: SketchIO;

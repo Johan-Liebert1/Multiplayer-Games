@@ -2,17 +2,17 @@
 import React, { useState, useEffect, useRef } from "react";
 
 // components
-import GameOverComponent from "./GameOverComponent";
-import Cell from "./Cell";
+import GameOverComponent from "../allGames/GameOverComponent";
+import Cell from "../allGames/Cell";
 
 // checkers
-import CheckersPiece from "../classes/checkers/CheckersPiece";
-import CheckersGame from "../classes/checkers/CheckersGame";
+import CheckersPiece from "../../classes/checkers/CheckersPiece";
+import CheckersGame from "../../classes/checkers/CheckersGame";
 
 // types
-import { CheckersBoardType, CheckersPieceColor } from "../types/checkersTypes";
-import { RouteProps } from "../types/routeProps";
-import { getNewCheckersBoard } from "../helpers/checkersBoard";
+import { CheckersBoardType, CheckersPieceColor } from "../../types/checkersTypes";
+import { RouteProps } from "../../types/routeProps";
+import { getNewCheckersBoard } from "../../helpers/checkersBoard";
 
 const game = new CheckersGame();
 

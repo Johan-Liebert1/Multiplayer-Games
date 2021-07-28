@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { gameOverDiv } from "../animations/animations";
-import { ChessPieceColor } from "../types/chessTypes";
-import { CheckersPieceColor } from "../types/checkersTypes";
+import { gameOverDiv } from "../../animations/animations";
+import { ChessPieceColor } from "../../types/chessTypes";
+import { CheckersPieceColor } from "../../types/checkersTypes";
 import { Button } from "@material-ui/core";
-import { CELL_SIZE } from "../types/games";
+import { CELL_SIZE } from "../../types/games";
 
 interface GameOverComponentProps {
   winnerColor: ChessPieceColor | CheckersPieceColor;

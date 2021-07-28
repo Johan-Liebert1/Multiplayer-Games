@@ -1,5 +1,5 @@
 import React from "react";
-import SVG from "./Svg";
+import SVG from "../Svg";
 
 interface ProfilePicInterface {
   src: string;

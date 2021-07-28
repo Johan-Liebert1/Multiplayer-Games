@@ -8,9 +8,9 @@ import {
   ListItemText,
   ListItem
 } from "@material-ui/core";
-import { chatBoxStyles } from "../styles/gameScreenStyles";
-import { useTypedSelector } from "../hooks/useTypedSelector";
-import { socketEmitEvents, socketListenEvents } from "../types/socketEvents";
+import { chatBoxStyles } from "../../styles/gameScreenStyles";
+import { useTypedSelector } from "../../hooks/useTypedSelector";
+import { socketEmitEvents, socketListenEvents } from "../../types/socketEvents";
 
 interface ChatMessage {
   username: string;

@@ -1,5 +1,5 @@
-import CheckersTestBoard from "../components/CheckersTest";
-import ChessBoardTest from "../components/ChessTest";
+import CheckersTestBoard from "../components/checkers/CheckersTest";
+import ChessBoardTest from "../components/chess/ChessTest";
 import CheckersScreen from "../views/CheckersScreen";
 import ChessScreen from "../views/ChessScreen";
 import GamesScreen from "../views/GamesScreen";

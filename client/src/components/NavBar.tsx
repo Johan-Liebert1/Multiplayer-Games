@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, withRouter } from "react-router-dom";
 import { useTypedSelector } from "../hooks/useTypedSelector";
 import { RouteProps } from "../types/routeProps";
-import ProfilePic from "./ProfilePic";
+import ProfilePic from "./user/ProfilePic";
 import ArrowDropDownRoundedIcon from "@material-ui/icons/ArrowDropDownRounded";
 import ExitToAppRoundedIcon from "@material-ui/icons/ExitToAppRounded";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";

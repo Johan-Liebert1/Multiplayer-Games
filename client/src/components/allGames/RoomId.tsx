@@ -7,8 +7,8 @@ import {
   InputLabel,
   FormControl
 } from "@material-ui/core/";
-import SVG, { svgNames } from "../components/Svg";
-import { roomIdInputStyles } from "../styles/gameScreenStyles";
+import SVG, { svgNames } from "../Svg";
+import { roomIdInputStyles } from "../../styles/gameScreenStyles";
 
 interface RoomIdProps {
   roomId: string;

@@ -1,7 +1,7 @@
 import React from "react";
-import CanvasComponent from "../components/CanvasComponent";
-import Chat from "../components/Chat";
-import RoomId from "../components/RoomId";
+import CanvasComponent from "../components/sketchio/CanvasComponent";
+import Chat from "../components/allGames/Chat";
+import RoomId from "../components/allGames/RoomId";
 import useWindowSize from "../hooks/useWindowSize";
 import { chatStyles } from "../styles/gameScreenStyles";
 import { RouteProps } from "../types/routeProps";

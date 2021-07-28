@@ -1,7 +1,7 @@
 import React from "react";
-import Chat from "../components/Chat";
-import CheckersBoard from "../components/CheckersBoard";
-import RoomId from "../components/RoomId";
+import Chat from "../components/allGames/Chat";
+import CheckersBoard from "../components/checkers/CheckersBoard";
+import RoomId from "../components/allGames/RoomId";
 import useUserPresent from "../hooks/useUserPresent";
 import useWindowSize from "../hooks/useWindowSize";
 import { boardStyles, chatStyles, wrapperDivStyles } from "../styles/gameScreenStyles";

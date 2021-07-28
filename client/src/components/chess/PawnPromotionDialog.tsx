@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { gameOverDiv } from "../animations/animations";
-import { ChessPieceColor, ChessPieceName } from "../types/chessTypes";
-import { CELL_SIZE } from "../types/games";
+import { gameOverDiv } from "../../animations/animations";
+import { ChessPieceColor, ChessPieceName } from "../../types/chessTypes";
+import { CELL_SIZE } from "../../types/games";
 
 interface PawnPromotionDialogProps {
   pawnColor: ChessPieceColor;
