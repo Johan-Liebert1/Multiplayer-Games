@@ -5,11 +5,13 @@ import ChessScreen from "../views/ChessScreen";
 import GamesScreen from "../views/GamesScreen";
 import SketchIOScreen from "../views/SketchIOScreen";
 import UserLogin from "../views/UserLogin";
+import UserProfileScreen from "../views/UserProfileScreen";
 import UserRegister from "../views/UserRegister";
 
 export const routeNames = Object.freeze({
   LOGIN: "LOGIN",
   REGISTER: "REGISTER",
+  PROFILE: "PROFILE",
   GAMES_SCREEN: "GAMES_SCREEN",
   CHECKERS_SCREEN: "CHECKERS_SCREEN",
   CHESS_SCREEN: "CHESS_SCREEN",
@@ -58,6 +60,11 @@ const routes = {
     name: "chessTest",
     path: "/chesstest",
     component: ChessBoardTest
+  },
+  [routeNames.PROFILE]: {
+    name: "profile",
+    path: "/profile",
+    component: UserProfileScreen
   }
 };
 

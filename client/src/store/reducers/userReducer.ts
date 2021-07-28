@@ -9,7 +9,7 @@ const initialState: UserState = {
   lastName: "",
   email: "",
   id: -1,
-  profilePicUrl: ""
+  profilePictureUrl: ""
 };
 
 export const userReducer = (

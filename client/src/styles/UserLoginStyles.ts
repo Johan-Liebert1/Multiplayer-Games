@@ -41,6 +41,9 @@ export default makeStyles(theme => ({
     borderColor: "rgba(52, 152, 219,1.0)",
     color: "white",
     borderWidth: "3px",
+    maxWidth: "25%",
+    paddingTop: "0.5rem",
+    paddingBottom: "0.5rem",
     "&:hover": {
       backgroundColor: "rgba(52, 152, 219,0.6)",
       borderColor: "#2980b9"
