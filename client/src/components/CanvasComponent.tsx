@@ -22,6 +22,16 @@ interface CanvasComponentProps extends RouteProps {
   roomId: string;
 }
 
+interface SketchIOUserInfo {
+  username: string;
+  points: number;
+}
+
+interface CurrentPainterInfo {
+  newPainter: SketchIOUserInfo;
+  newWord: string;
+}
+
 const CanvasComponent: React.FC<CanvasComponentProps> = ({ roomId }) => {
   const dispatch = useDispatch();
   const { user } = useTypedSelector(state => state);
@@ -40,9 +50,86 @@ const CanvasComponent: React.FC<CanvasComponentProps> = ({ roomId }) => {
     height: windowHeight * 0.8
   });
 
-  const [playersInRoom, setPlayersInRoom] = useState<
-    { username: string; points: number }[]
-  >([{ username: user.username, points: 0 }]);
+  const [playersInRoom, setPlayersInRoom] = useState<SketchIOUserInfo[]>([
+    { username: user.username, points: 0 }
+  ]);
+
+  const [currentPainter, setCurrentPainter] = useState<CurrentPainterInfo>(
+    {} as CurrentPainterInfo
+  );
+
+  const [gameStarted, setGameStarted] = useState(false);
+  const [isUserPainter, setIsUserPainter] = useState(false);
+
+  useEffect(() => {
+    console.log("use effect to set isuserpainter");
+    if (currentPainter.newPainter)
+      setIsUserPainter(currentPainter.newPainter.username === user.username);
+    else setIsUserPainter(false);
+  }, [currentPainter, user]);
+
+  useEffect(() => {
+    if (canvasContainer.current) {
+      setCanvasDimensions({
+        width: canvasContainer.current.offsetWidth,
+        height: windowHeight * 0.9
+      });
+    }
+  }, [canvasContainer, windowHeight, windowWidth]);
+
+  useEffect(() => {
+    socket = io("http://localhost:8000");
+
+    socket.emit(socketEmitEvents.JOIN_A_ROOM, {
+      roomId: `sketchio_${roomId}`,
+      username: user.username
+    });
+
+    dispatch(setSocketAction(socket));
+
+    const canvas = document.getElementById("drawingCanvas") as HTMLCanvasElement;
+    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+
+    setCanvasCursor("paint");
+
+    sketchIO = new SketchIO(canvas, ctx, socket);
+    sketchIO.enableCanvas();
+
+    return () => {
+      sketchIO.disableCanvas();
+    };
+  }, []);
+
+  useEffect(() => {
+    socket.on(
+      socketListenEvents.SKETCHIO_PLAYER_JOINED,
+      (data: { allUsersInRoom: SketchIOUserInfo[] }) => {
+        console.log(data);
+        setPlayersInRoom(data.allUsersInRoom);
+      }
+    );
+
+    socket.on(socketListenEvents.NEW_PAINTER_SELECTED, (data: CurrentPainterInfo) => {
+      setCurrentPainter(data);
+
+      if (!gameStarted) setGameStarted(true);
+    });
+
+    socket.on(socketListenEvents.BEGAN_PATH, (data: { x: number; y: number }) => {
+      sketchIO.beginPath(data.x, data.y);
+    });
+
+    socket.on(
+      socketListenEvents.STROKED_PATH,
+      (data: { x: number; y: number; color: string }) => {
+        sketchIO.drawPath(data.x, data.y, data.color);
+      }
+    );
+
+    socket.on(socketListenEvents.STARTED_FILLING, (data: { color: string }) => {
+      sketchIO.fill(data.color);
+    });
+  }, []);
 
   const colors = [
     "white",
@@ -87,65 +174,9 @@ const CanvasComponent: React.FC<CanvasComponentProps> = ({ roomId }) => {
   };
 
   const startSketchioGame = () => {
-    socket.emit(socketEmitEvents.START_SKETCHIO_GAME, {});
+    socket.emit(socketEmitEvents.START_SKETCHIO_GAME, { room_id: roomId });
+    setGameStarted(true);
   };
-
-  useEffect(() => {
-    if (canvasContainer.current) {
-      setCanvasDimensions({
-        width: canvasContainer.current.offsetWidth,
-        height: windowHeight * 0.9
-      });
-    }
-  }, [canvasContainer, windowHeight, windowWidth]);
-
-  useEffect(() => {
-    socket = io("http://localhost:8000");
-
-    socket.emit(socketEmitEvents.JOIN_A_ROOM, {
-      roomId: `sketchio_${roomId}`,
-      username: user.username
-    });
-
-    dispatch(setSocketAction(socket));
-
-    const canvas = document.getElementById("drawingCanvas") as HTMLCanvasElement;
-    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
-
-    setCanvasCursor("paint");
-
-    sketchIO = new SketchIO(canvas, ctx, socket);
-    sketchIO.enableCanvas();
-
-    return () => {
-      sketchIO.disableCanvas();
-    };
-  }, []);
-
-  useEffect(() => {
-    socket.on(
-      socketListenEvents.SKETCHIO_PLAYER_JOINED,
-      (data: { allUsersInRoom: { username: string; points: number }[] }) => {
-        console.log(data);
-        setPlayersInRoom(data.allUsersInRoom);
-      }
-    );
-
-    socket.on(socketListenEvents.BEGAN_PATH, (data: { x: number; y: number }) => {
-      sketchIO.beginPath(data.x, data.y);
-    });
-
-    socket.on(
-      socketListenEvents.STROKED_PATH,
-      (data: { x: number; y: number; color: string }) => {
-        sketchIO.drawPath(data.x, data.y, data.color);
-      }
-    );
-
-    socket.on(socketListenEvents.STARTED_FILLING, (data: { color: string }) => {
-      sketchIO.fill(data.color);
-    });
-  }, []);
 
   return (
     <div className="canvasSuperContainer">
@@ -162,8 +193,24 @@ const CanvasComponent: React.FC<CanvasComponentProps> = ({ roomId }) => {
           justifyContent: "space-between"
         }}
       >
-        <div>
-          <ListItem style={{ wordBreak: "break-all", marginBottom: "3rem" }}>
+        <div style={{ maxHeight: "10%" }}>
+          {gameStarted && (
+            <ListItem
+              style={{
+                wordBreak: "break-all",
+                marginBottom: "2rem",
+                color: isUserPainter ? "#27ae60" : "#d63031"
+              }}
+            >
+              {isUserPainter
+                ? `You are Painting. Paint ${currentPainter.newWord}`
+                : `${currentPainter.newPainter.username} is painting`}
+            </ListItem>
+          )}
+        </div>
+
+        <div style={{ minHeight: "80%" }}>
+          <ListItem style={{ wordBreak: "break-all", margin: "2rem 0" }}>
             <h2>Points</h2>
           </ListItem>
 

@@ -2,6 +2,7 @@ from socketio.asyncio_server import AsyncServer
 from config.Config import Colors, GameNames, SocketEvents
 
 from helpers.colors import COLORS
+from sockets.words import get_random_word
 import random
 
 
@@ -52,7 +53,7 @@ class SocketHandler:
     def __init__(self, socket: AsyncServer) -> None:
         self.socket = socket
         self.socket_id_to_username: "dict[str, dict[str, str]]" = {}
-        self.ROOMS: "dict[str, dict[str, list[str]]]" = {
+        self.ROOMS: "dict[str, dict[str, (list[str] | dict[str, str])]]" = {
             GameNames.CHESS: {},
             GameNames.CHECKERS: {},
             GameNames.SKETCHIO: {},
@@ -231,6 +232,9 @@ class SocketHandler:
         )
 
     # ========================== sketch io ========================================
+    def get_next_painter():
+        pass
+
     async def startSketchioGame(self, socket_id, data):
         """
         data = {room_id}
@@ -244,12 +248,23 @@ class SocketHandler:
 
         self.sketch_io_info[room_id]["current_painter_index"] += 1
 
-        if self.sketch_io_info[room_id]["current_painter_index"] == len(
-            all_users_in_room
-        ):
+        painter_index = self.sketch_io_info[room_id]["current_painter_index"]
+
+        if painter_index == len(all_users_in_room):
+            # game over
             await self.socket.emit(
                 SocketEvents.SKETCH_IO_GAME_OVER,
                 {},
+                to=room_id,
+            )
+
+        else:
+            new_painter = self.ROOMS[GameNames.SKETCHIO][room_id][painter_index]
+            new_word = get_random_word()
+
+            await self.socket.emit(
+                SocketEvents.NEW_PAINTER_SELECTED,
+                {"newPainter": new_painter, "newWord": new_word},
                 to=room_id,
             )
 

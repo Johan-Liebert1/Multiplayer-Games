@@ -80,9 +80,9 @@ const Chat: React.FC = () => {
       </List>
       <div className={classes.inputContainer}>
         <FormControl style={{ width: "100%" }} variant="filled">
-          <InputLabel htmlFor="standard-read-only-input">Type you message</InputLabel>
+          <InputLabel htmlFor="chat-message-input-box">Type you message</InputLabel>
           <FilledInput
-            id="standard-read-only-input"
+            id="chat-message-input-box"
             fullWidth
             value={messageText}
             onChange={e => setMessageText(e.target.value)}
