@@ -67,7 +67,7 @@ const Chat: React.FC = () => {
                 width: "80%",
                 color:
                   msg.username === "BOT"
-                    ? msg.message.includes("joined")
+                    ? msg.message.includes("joined") || msg.message.includes("correctly")
                       ? "green"
                       : "red"
                     : "inherit"

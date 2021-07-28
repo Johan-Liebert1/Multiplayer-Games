@@ -2,51 +2,9 @@ from socketio.asyncio_server import AsyncServer
 from config.Config import Colors, GameNames, SocketEvents
 
 from helpers.colors import COLORS
+from helpers.printHelper import new_line_print
 from sockets.words import get_random_word
 import random
-
-
-"""  
-ROOMS = {
-    GameNames.CHESS: {
-        room_id: [
-            user_1_username, user_2_username,....
-        ]
-    },
-    GameNames.CHECKERS: {
-        room_id: [
-            user_1_username, user_2_username,....
-        ]
-    },
-    GameNames.SKETCHIO: {
-        room_id: [
-            {
-                username: user_1_username,
-                points: user_1_points
-            }, 
-            {
-                username: user_2_username,
-                points: user_2_points
-            },....
-        ]
-    }
-}
-
-socket_id_to_username = {
-    socket_id: {
-        username: username,
-        room_id: room_id,
-        game_name: game_name
-    }
-}
-
-sketch_io_info = {
-    room_id: {
-        current_painter: username_index in ROOMS -> game_name -> room_id,
-        word: word_to_paint
-    }
-}
-"""
 
 
 class SocketHandler:
@@ -58,7 +16,7 @@ class SocketHandler:
             GameNames.CHECKERS: {},
             GameNames.SKETCHIO: {},
         }
-        self.sketch_io_info: "dict[str, dict[str, str]]" = {}
+        self.sketch_io_info: "dict[str, dict[str, str | int]]" = {}
 
     async def disconnect(self, socket_id):
         socket_info = self.socket_id_to_username[socket_id]
@@ -167,11 +125,7 @@ class SocketHandler:
             )
 
         elif game_name == GameNames.SKETCHIO:
-            await self.socket.emit(
-                SocketEvents.SKETCHIO_PLAYER_JOINED,
-                {"allUsersInRoom": self.ROOMS[GameNames.SKETCHIO][room_id]},
-                to=room_id,
-            )
+            await self.send_all_sketchio_user_info(room_id)
 
         # emit a chat message from a bot
         await self.socket.emit(
@@ -207,9 +161,34 @@ class SocketHandler:
 
         # in sketchio we have to check if the message is the word_to_paint
         if game_name == GameNames.SKETCHIO:
-            send_message_to_other_users = await self.handle_sketch_io_message(
-                socket_id, room_to_send_to, data
+            # if the user who's currently painting guessed the word, then
+            # don't count it
+            new_line_print(f"{self.sketch_io_info=}")
+            new_line_print(f"{self.ROOMS=}")
+
+            current_painter_index: int = self.sketch_io_info[room_to_send_to].get(
+                "current_painter_index"
             )
+
+            current_painter = self.ROOMS[GameNames.SKETCHIO][room_to_send_to][
+                current_painter_index
+            ]["username"]
+
+            username = self.socket_id_to_username[socket_id]["username"]
+            word_to_paint = self.sketch_io_info[room_to_send_to]["word"]
+            message: str = data["message"].strip().lower()
+
+            if (
+                current_painter
+                and current_painter == username
+                and message in word_to_paint.strip().lower()
+            ):
+                send_message_to_other_users = False
+
+            else:
+                send_message_to_other_users = await self.handle_sketch_io_message(
+                    socket_id, room_to_send_to, data
+                )
 
         # if someone has correctly guessed the word then we don't want others to know
         # what the word was, so we refrain from sending that word to other players in the game
@@ -232,6 +211,17 @@ class SocketHandler:
         )
 
     # ========================== sketch io ========================================
+    async def send_all_sketchio_user_info(self, room_id):
+        all_users_in_room = self.ROOMS[GameNames.SKETCHIO][room_id]
+
+        new_line_print(f"{all_users_in_room=}")
+
+        await self.socket.emit(
+            SocketEvents.SKETCHIO_PLAYER_JOINED,
+            {"allUsersInRoom": all_users_in_room},
+            to=room_id,
+        )
+
     async def choose_new_painter(self, room_id):
         all_users_in_room = self.ROOMS[GameNames.SKETCHIO][room_id]
 
@@ -250,6 +240,8 @@ class SocketHandler:
         else:
             new_painter = all_users_in_room[painter_index]
             new_word = get_random_word()
+
+            self.sketch_io_info[room_id]["word"] = new_word
 
             await self.socket.emit(
                 SocketEvents.NEW_PAINTER_SELECTED,
@@ -275,8 +267,23 @@ class SocketHandler:
 
         sketchio_game_info = self.sketch_io_info[room_id]
 
+        new_line_print(f"{sketchio_game_info=}")
+
         if chat_message.strip().lower() == sketchio_game_info["word"].strip().lower():
             # someone has guessed the correct word
+
+            username = self.socket_id_to_username[socket_id]["username"]
+
+            # increase the points of the user as they correctly guessed the word
+            self.ROOMS[GameNames.SKETCHIO][room_id] = list(
+                map(
+                    lambda x: {**x, "points": x["points"] + 1}
+                    if x["username"] == username
+                    else x,
+                    self.ROOMS[GameNames.SKETCHIO][room_id],
+                )
+            )
+
             await self.socket.emit(
                 SocketEvents.RECEIVE_CHAT_MESSAGE,
                 self.get_custom_bot_message(
@@ -285,6 +292,7 @@ class SocketHandler:
                 to=room_id,
             )
 
+            await self.send_all_sketchio_user_info(room_id)
             await self.choose_new_painter(room_id)
 
             # signifies whether to send this message to other users or not

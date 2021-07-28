@@ -194,12 +194,12 @@ const CanvasComponent: React.FC<CanvasComponentProps> = ({ roomId }) => {
         }}
       >
         <div style={{ maxHeight: "10%" }}>
-          {gameStarted && (
+          {currentPainter.newPainter && (
             <ListItem
               style={{
                 wordBreak: "break-all",
                 marginBottom: "2rem",
-                color: isUserPainter ? "#27ae60" : "#d63031"
+                color: isUserPainter ? "#27ae60" : "#f1c40f"
               }}
             >
               {isUserPainter
@@ -230,8 +230,13 @@ const CanvasComponent: React.FC<CanvasComponentProps> = ({ roomId }) => {
           <Button
             fullWidth
             variant="contained"
-            style={{ backgroundColor: "#128277", color: "white" }}
+            style={{
+              backgroundColor: "#128277",
+              color: "white",
+              opacity: gameStarted ? 0.6 : 1
+            }}
             onClick={startSketchioGame}
+            disabled={gameStarted}
           >
             Start Game
           </Button>
@@ -273,7 +278,6 @@ const CanvasComponent: React.FC<CanvasComponentProps> = ({ roomId }) => {
               onClick={handleButtonClick}
               variant="contained"
               color="primary"
-              style={{ marginLeft: "5px" }}
             >
               Fill
             </Button>
