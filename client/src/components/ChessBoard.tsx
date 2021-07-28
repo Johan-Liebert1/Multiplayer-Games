@@ -11,11 +11,6 @@ import PawnPromotionDialog from "./PawnPromotionDialog";
 // gameplay
 import ChessGame from "../classes/chess/ChessGame";
 import Pawn from "../classes/chess/Pawn";
-import Rook from "../classes/chess/Rook";
-import Knight from "../classes/chess/Knight";
-import Bishop from "../classes/chess/Bishop";
-import King from "../classes/chess/King";
-import Queen from "../classes/chess/Queen";
 import ChessPiece from "../classes/chess/ChessPiece";
 
 // types
@@ -35,6 +30,7 @@ import { setSocketAction } from "../store/actions/socketActions";
 import { useDispatch } from "react-redux";
 import { useTypedSelector } from "../hooks/useTypedSelector";
 import { updateUserSocketDetails } from "../store/actions/userActions";
+import { getNewChessBoard } from "../helpers/chessHelpers";
 
 const game = new ChessGame();
 let socket: SocketState;
@@ -44,58 +40,32 @@ interface ChessBoardProps extends RouteProps {
 }
 
 const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
-  const [board, setBoard] = useState<ChessBoardType>([
-    [
-      new Rook("black", 0, 0),
-      new Knight("black", 0, 1),
-      new Bishop("black", 0, 2),
-      new Queen("black", 0, 3),
-      new King("black", 0, 4),
-      new Bishop("black", 0, 5),
-      new Knight("black", 0, 6),
-      new Rook("black", 0, 7)
-    ],
-    [
-      new Pawn("black", 1, 0),
-      new Pawn("black", 1, 1),
-      new Pawn("black", 1, 2),
-      new Pawn("black", 1, 3),
-      new Pawn("black", 1, 4),
-      new Pawn("black", 1, 5),
-      new Pawn("black", 1, 6),
-      new Pawn("black", 1, 7)
-    ],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [
-      new Pawn("white", 6, 0),
-      new Pawn("white", 6, 1),
-      new Pawn("white", 6, 2),
-      new Pawn("white", 6, 3),
-      new Pawn("white", 6, 4),
-      new Pawn("white", 6, 5),
-      new Pawn("white", 6, 6),
-      new Pawn("white", 6, 7)
-    ],
-    [
-      new Rook("white", 7, 0),
-      new Knight("white", 7, 1),
-      new Bishop("white", 7, 2),
-      new Queen("white", 7, 3),
-      new King("white", 7, 4),
-      new Bishop("white", 7, 5),
-      new Knight("white", 7, 6),
-      new Rook("white", 7, 7)
-    ]
-  ]);
-
   const dispatch = useDispatch();
   const user = useTypedSelector(state => state.user);
 
+  const [board, setBoard] = useState<ChessBoardType>(() => getNewChessBoard());
   const [userPieceColor, setUserPieceColor] = useState<ChessPieceColor>("white");
   const [player2Name, setPlayer2Name] = useState<string>('"No one else is here"');
+
+  const [gameOver, setGameOver] = useState<{
+    gameOver: boolean;
+    winnerName: string;
+    winnerColor: ChessWinner;
+  }>({
+    gameOver: false,
+    winnerName: "",
+    winnerColor: "" as ChessPieceColor
+  });
+
+  const [showPawnPromotionDialog, setShowPawnPromotionDialog] = useState<{
+    show: boolean;
+    cellsClicked: ClickedCellsType;
+    pawnColor: ChessPieceColor | "";
+  }>({
+    show: false,
+    cellsClicked: {} as ClickedCellsType,
+    pawnColor: ""
+  });
 
   const chessBoardRef = useRef<HTMLDivElement | null>(null);
 
@@ -138,26 +108,6 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
   }, []);
 
   const windowSize = useWindowSize();
-
-  const [gameOver, setGameOver] = useState<{
-    gameOver: boolean;
-    winnerName: string;
-    winnerColor: ChessWinner;
-  }>({
-    gameOver: false,
-    winnerName: "",
-    winnerColor: "" as ChessPieceColor
-  });
-
-  const [showPawnPromotionDialog, setShowPawnPromotionDialog] = useState<{
-    show: boolean;
-    cellsClicked: ClickedCellsType;
-    pawnColor: ChessPieceColor | "";
-  }>({
-    show: false,
-    cellsClicked: {} as ClickedCellsType,
-    pawnColor: ""
-  });
 
   useEffect(() => {
     game.setInitiallyAttackedCells(board);
@@ -236,7 +186,6 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
           {row.map((col, ci) => {
             let color =
               (ri + ci) % 2 !== 0 ? "rgba(195,105,56,0)" : "rgba(239, 206,163,0)";
-            // (ri + ci) % 2 !== 0 ? "rgb(201, 10, 20)" : "rgba(139, 133, 133, 0.959)";
 
             let piece = board[ri][ci];
             let blueDot = false,

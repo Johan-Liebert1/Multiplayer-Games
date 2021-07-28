@@ -23,6 +23,7 @@ import { socketEmitEvents, socketListenEvents } from "../types/socketEvents";
 import { CheckersBoardType, CheckersPieceColor } from "../types/checkersTypes";
 import { SocketState } from "../types/store/storeTypes";
 import { useRef } from "react";
+import { getNewCheckersBoard } from "../helpers/checkersBoard";
 
 const game = new CheckersGame();
 let socket: SocketState;
@@ -41,9 +42,7 @@ const CheckersBoard: React.FC<CheckersBoardProps> = ({ roomId }) => {
   const { user } = useTypedSelector(state => state);
   const dispatch = useDispatch();
 
-  const [board, setBoard] = useState<CheckersBoardType>(
-    new Array(8).fill(0).map(e => new Array(8).fill(0))
-  );
+  const [board, setBoard] = useState<CheckersBoardType>(() => getNewCheckersBoard());
 
   const [gameOver, setGameOver] = useState<GameOverState>({
     gameOver: false,
@@ -54,32 +53,6 @@ const CheckersBoard: React.FC<CheckersBoardProps> = ({ roomId }) => {
   let [userPieceColor, setUserPieceColor] = useState<CheckersPieceColor>("white");
 
   const checkersBoardRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    let tempBoard = board.map(r => r);
-
-    for (let row = 0; row < tempBoard.length; row++) {
-      for (let col = 0; col < tempBoard.length; col++) {
-        if (row < 2) {
-          if (row === 0 && col % 2 === 0) {
-            tempBoard[row][col] = new CheckersPiece("white", [row, col]);
-          } else if (row === 1 && col % 2 !== 0) {
-            tempBoard[row][col] = new CheckersPiece("white", [row, col]);
-          }
-        }
-
-        if (row > 5) {
-          if (row === 6 && col % 2 === 0) {
-            tempBoard[row][col] = new CheckersPiece("red", [row, col]);
-          } else if (row === 7 && col % 2 !== 0) {
-            tempBoard[row][col] = new CheckersPiece("red", [row, col]);
-          }
-        }
-      }
-    }
-
-    setBoard(tempBoard);
-  }, []);
 
   useEffect(() => {
     socket = io("http://localhost:8000");
