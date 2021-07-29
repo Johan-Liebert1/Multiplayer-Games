@@ -1,7 +1,6 @@
 # fast-api stuff
 from fastapi import APIRouter, Request
 from fastapi.param_functions import Depends
-from sqlalchemy.orm.query import Query
 
 
 # sqlalchemy
@@ -23,10 +22,10 @@ from schemas.schemas import UserCreateRequest, UserLoginRequest
 import bcrypt
 import jwt
 
-userRouter = APIRouter()
+user_router = APIRouter()
 
 
-@userRouter.get("/all")
+@user_router.get("/all")
 def get_all_users(db: Session = Depends(get_db)):
     all_users = db.query(UserModel).all()
 
@@ -35,7 +34,7 @@ def get_all_users(db: Session = Depends(get_db)):
     return {"success": True, "all_users": serialized_users}
 
 
-@userRouter.post("/register")
+@user_router.post("/register")
 def user_register_handler(details: UserCreateRequest, db: Session = Depends(get_db)):
     # username should be unique
     user_exists = db.query(UserModel).filter(UserModel.username == details.username)
@@ -73,7 +72,7 @@ def user_register_handler(details: UserCreateRequest, db: Session = Depends(get_
         raise e
 
 
-@userRouter.post("/login")
+@user_router.post("/login")
 def user_login_handler(details: UserLoginRequest, db: Session = Depends(get_db)):
     user_exists = db.query(UserModel).filter(UserModel.username == details.username)
 
@@ -106,7 +105,7 @@ def user_login_handler(details: UserLoginRequest, db: Session = Depends(get_db))
     return {"success": True, "user": {"token": token, **serialized_user}}
 
 
-@userRouter.put("/editdetails")
+@user_router.put("/editdetails")
 @login_required
 def edit_user_details(
     details: UserCreateRequest, request: Request, db: Session = Depends(get_db)

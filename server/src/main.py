@@ -5,7 +5,9 @@ import sys
 from fastapi import FastAPI
 import socketio
 
-from routes import userRoutes
+from routes.userRoutes import user_router
+from routes.gameDetailsRoutes import games_router
+
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -24,7 +26,8 @@ fast_app.add_middleware(
     allow_headers=["*"],
 )
 
-fast_app.include_router(userRoutes.userRouter, prefix="/api/user", tags=["user"])
+fast_app.include_router(user_router, prefix="/api/user", tags=["user"])
+fast_app.include_router(games_router, prefix="/api/games", tags=["games"])
 
 
 socket = socketio.AsyncServer(
