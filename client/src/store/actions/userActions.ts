@@ -20,3 +20,10 @@ export const updateUserSocketDetails = (userData: UserState) => (dispatch: any) 
     payload: userData
   });
 };
+
+export const updateProfilePicAction = (profilePictureUrl: string) => (dispatch: any) => {
+  dispatch({
+    type: ActionNames.UPDATE_USER_PROFILE_PICTURE,
+    payload: profilePictureUrl
+  });
+};

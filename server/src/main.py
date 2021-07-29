@@ -1,4 +1,5 @@
 import os
+
 from helpers.printHelper import new_line_print
 import sys
 
@@ -6,6 +7,7 @@ from fastapi import FastAPI
 import socketio
 
 from routes.userRoutes import user_router
+from routes.uploadRouter import upload_router
 from routes.gameDetailsRoutes import games_router
 
 
@@ -27,6 +29,7 @@ fast_app.add_middleware(
 )
 
 fast_app.include_router(user_router, prefix="/api/user", tags=["user"])
+fast_app.include_router(upload_router, prefix="/api/upload", tags=["upload"])
 fast_app.include_router(games_router, prefix="/api/games", tags=["games"])
 
 

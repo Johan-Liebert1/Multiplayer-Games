@@ -13,6 +13,11 @@ export interface UpadateUserDetailsAction {
   payload: UserState;
 }
 
+export interface UpdateUserProfilePictureAction {
+  type: ActionNames.UPDATE_USER_PROFILE_PICTURE;
+  payload: string;
+}
+
 export interface SetSocketAction {
   type: ActionNames.SET_SOCKET;
   payload: Socket<DefaultEventsMap, DefaultEventsMap>;

@@ -18,6 +18,10 @@ import InputLabel from "@material-ui/core/InputLabel";
 import InputAdornment from "@material-ui/core/InputAdornment";
 
 import ProfilePic from "./ProfilePic";
+import { useTypedSelector } from "../../hooks/useTypedSelector";
+import { axiosInstance } from "../../config/axiosConfig";
+import { useDispatch } from "react-redux";
+import { updateProfilePicAction } from "../../store/actions/userActions";
 
 export type UserInformation = {
   username: string;
@@ -59,6 +63,10 @@ const UserDetails: React.FC<UserDetailsProps> = ({
 }) => {
   const classes = useStyles();
   const moreClasses = useMoreStyles();
+
+  const dispatch = useDispatch();
+
+  const { user } = useTypedSelector(state => state);
 
   const [showPassword, setShowPassword] = useState({ password: false, confirm: false });
   const [wasUsernameChanged, setWasUsernameChanged] = useState(false);
@@ -111,6 +119,56 @@ const UserDetails: React.FC<UserDetailsProps> = ({
     const input = document.createElement("input");
     input.setAttribute("type", "file");
     input.click();
+
+    input.onchange = async (e: Event) => {
+      e.preventDefault();
+
+      if (!e || !e.target) return;
+
+      let selectedFile = (e.target as HTMLInputElement).files;
+
+      if (!selectedFile) return;
+
+      // Create an object of formData
+      const formData = new FormData();
+
+      // Update the formData object
+      formData.append("myFile", selectedFile[0], selectedFile[0].name);
+
+      // Details of the uploaded file
+      console.log(selectedFile);
+
+      // for (let i of formData.entries()) {
+      //   console.log(i);
+      // }
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+          "content-type": "multipart/formdata"
+        }
+      };
+
+      try {
+        // Request made to the backend api
+        // Send formData object
+        const response = await axiosInstance.post(
+          `/upload/profile-picture`,
+          formData,
+          config
+        );
+
+        if (response.data.success) {
+          console.log(response.data);
+          dispatch(updateProfilePicAction(response.data.profilePictureUrl));
+          // toastrSuccess("Profile Picture Changed", response.data.message);
+        } else {
+          // toastrError("Error", response.data.message);
+        }
+      } catch (err) {
+        // toastrError("Error", err);
+      }
+    };
   };
 
   return (

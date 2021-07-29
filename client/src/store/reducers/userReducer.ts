@@ -1,5 +1,9 @@
 import { ActionNames } from "../../types/store/actionNames";
-import { LoginAction, UpadateUserDetailsAction } from "../../types/store/actionTypes";
+import {
+  LoginAction,
+  UpadateUserDetailsAction,
+  UpdateUserProfilePictureAction
+} from "../../types/store/actionTypes";
 import { UserState } from "../../types/store/storeTypes";
 
 const initialState: UserState = {
@@ -14,7 +18,7 @@ const initialState: UserState = {
 
 export const userReducer = (
   state: UserState = initialState,
-  action: LoginAction | UpadateUserDetailsAction
+  action: LoginAction | UpadateUserDetailsAction | UpdateUserProfilePictureAction
 ): UserState => {
   switch (action.type) {
     case ActionNames.USER_LOGIN:
@@ -24,6 +28,12 @@ export const userReducer = (
 
     case ActionNames.UPDATE_USER_SOCKET_DETAILS:
       return action.payload;
+
+    case ActionNames.UPDATE_USER_PROFILE_PICTURE:
+      return {
+        ...state,
+        profilePictureUrl: action.payload
+      };
 
     default:
       return state;

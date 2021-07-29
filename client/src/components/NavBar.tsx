@@ -67,7 +67,7 @@ const NavBar: React.FC<NavBarProps> = () => {
                 <AccountCircleIcon style={{ fill: "#0984e3" }} />
                 <span className="ml-2">
                   <Link
-                    to={`/${user.id}/profile`}
+                    to={`/profile`}
                     onClick={() => setShowProfileModal(false)}
                     className="react-link"
                   >
