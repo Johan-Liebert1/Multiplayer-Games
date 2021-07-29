@@ -17,7 +17,7 @@ class UserLoginRequest(BaseModel):
 
 
 class GameDetailsUpdateRequest(BaseModel):
-    won: Union[bool, None]
-    lost: Union[bool, None]
-    drawn: Union[bool, None]
-    started: Union[bool, None]
+    won: bool
+    lost: bool
+    drawn: bool
+    started: bool

@@ -211,6 +211,36 @@ class SocketHandler:
             skip_sid=socket_id,
         )
 
+    async def chessGameOver(self, socket_id, gameOverData):
+        room_to_send_to = self.get_room(socket_id)
+
+        await self.socket.emit(
+            SocketEvents.CHESS_GAME_OVER,
+            gameOverData,
+            room=room_to_send_to,
+            skip_sid=socket_id,
+        )
+
+    async def castled(self, socket_id, data):
+        room_to_send_to = self.get_room(socket_id)
+
+        await self.socket.emit(
+            SocketEvents.OPPONENT_CASTLED,
+            data,
+            room=room_to_send_to,
+            skip_sid=socket_id,
+        )
+
+    async def pawnPromoted(self, socket_id, data):
+        room_to_send_to = self.get_room(socket_id)
+
+        await self.socket.emit(
+            SocketEvents.OPPONENT_PROMOTED_PAWN,
+            data,
+            room=room_to_send_to,
+            skip_sid=socket_id,
+        )
+
     # ========================== sketch io ========================================
     async def send_all_sketchio_user_info(self, room_id):
         all_users_in_room = self.ROOMS[GameNames.SKETCHIO][room_id]

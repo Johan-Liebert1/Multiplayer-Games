@@ -92,6 +92,16 @@ async def startedFilling(socket_id, data):
     await socket_handler.startedFilling(socket_id, data)
 
 
+@socket.event
+async def castled(socket_id, data):
+    await socket_handler.castled(socket_id, data)
+
+
+@socket.event
+async def pawnPromoted(socket_id, data):
+    await socket_handler.pawnPromoted(socket_id, data)
+
+
 @fast_app.get("/")
 def read_root():
     return {"Hello": "World"}

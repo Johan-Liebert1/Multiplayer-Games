@@ -21,7 +21,7 @@ import {
   ChessWinner
 } from "../../types/chessTypes";
 import { CheckersPieceColor } from "../../types/checkersTypes";
-import { CELL_SIZE, ClickedCellsType } from "../../types/games";
+import { CELL_SIZE, ClickedCellsType, UpdateGameDetails } from "../../types/games";
 import { io } from "socket.io-client";
 import { RouteProps } from "../../types/routeProps";
 import { socketEmitEvents, socketListenEvents } from "../../types/socketEvents";
@@ -39,6 +39,12 @@ interface ChessBoardProps extends RouteProps {
   roomId: string;
 }
 
+interface GameOverInterface {
+  gameOver: boolean;
+  winnerName: string;
+  winnerColor: ChessWinner;
+}
+
 const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
   const dispatch = useDispatch();
   const user = useTypedSelector(state => state.user);
@@ -47,11 +53,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
   const [userPieceColor, setUserPieceColor] = useState<ChessPieceColor>("white");
   const [player2Name, setPlayer2Name] = useState<string>('"No one else is here"');
 
-  const [gameOver, setGameOver] = useState<{
-    gameOver: boolean;
-    winnerName: string;
-    winnerColor: ChessWinner;
-  }>({
+  const [gameOver, setGameOver] = useState<GameOverInterface>({
     gameOver: false,
     winnerName: "",
     winnerColor: "" as ChessPieceColor
@@ -99,8 +101,28 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
       }
     );
 
+    socket.on(socketListenEvents.CHESS_GAME_OVER, (data: GameOverInterface) => {
+      setGameOver(data);
+    });
+
+    socket.on(
+      socketListenEvents.OPPONENT_PROMOTED_PAWN,
+      (data: { pieceName: ChessPieceName; cellsClicked: ClickedCellsType }) => {
+        const { pieceName, cellsClicked } = data;
+
+        let tempBoard = board.map(b => b);
+        game.promotePawn(tempBoard, pieceName, cellsClicked);
+        setBoard(tempBoard);
+      }
+    );
+
+    socket.on(socketListenEvents.OPPONENT_CASTLED, (cellsClicked: ClickedCellsType) => {
+      let tempBoard = board.map(b => b);
+      game.movePiece(tempBoard, cellsClicked);
+      setBoard(tempBoard);
+    });
+
     socket.on(socketListenEvents.CHESS_PLAYER_2_JOINED, (data: { users: string[] }) => {
-      console.log(socketListenEvents.CHESS_PLAYER_2_JOINED, data);
       setPlayer2Name(data.users.filter(username => username !== user.username)[0]);
     });
 
@@ -117,7 +139,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
     let { cellsClicked } = showPawnPromotionDialog;
     let tempBoard = board.map(b => b);
 
-    // socket.emit("pawnPromoted", { pieceName, cellsClicked });
+    socket.emit(socketEmitEvents.PAWN_PROMOTED, { pieceName, cellsClicked });
 
     // the pawn has been moved at this point
     if (cellsClicked) game.promotePawn(tempBoard, pieceName, cellsClicked);
@@ -140,8 +162,14 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
         if ("cellsClicked" in returnedValue) {
           const { cellsClicked, castlingDone, pawnPromoted } = returnedValue;
 
-          socket.emit(socketEmitEvents.USER_PLAYED_A_MOVE, cellsClicked);
+          // socket.emit(socketEmitEvents.USER_PLAYED_A_MOVE, cellsClicked);
 
+          if (!castlingDone && !pawnPromoted) {
+            socket.emit(socketEmitEvents.USER_PLAYED_A_MOVE, cellsClicked);
+          }
+          if (castlingDone) {
+            socket.emit(socketEmitEvents.CASTLED, cellsClicked);
+          }
           if (pawnPromoted) {
             // the pawn has reached the other end of the board
             // but hasn't yet been protomted and is still just a pawn
@@ -162,10 +190,17 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
         let newGameOverObject = {
           gameOver: true,
           winnerColor: game.winner,
-          winnerName: game.winner
+          winnerName: game.winner === userPieceColor ? user.username : player2Name
         };
 
-        // socket.emit("gameOver", newGameOverObject);
+        socket.emit(socketEmitEvents.CHESS_GAME_OVER, newGameOverObject);
+
+        const requestObject: UpdateGameDetails = {
+          won: true,
+          lost: false,
+          drawn: false,
+          started: false
+        };
 
         setGameOver(newGameOverObject);
       }
