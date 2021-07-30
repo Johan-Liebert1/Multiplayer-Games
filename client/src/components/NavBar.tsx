@@ -10,18 +10,20 @@ import { ListItem } from "@material-ui/core";
 
 import "../styles/NavBarStyles.css";
 import routes, { routeNames } from "../routes/router";
+import { userLogoutAction } from "../store/actions/userActions";
+import { useDispatch } from "react-redux";
 
 interface NavBarProps extends RouteProps {}
 
-const NavBar: React.FC<NavBarProps> = () => {
+const NavBar: React.FC<NavBarProps> = ({ history }) => {
   const [showProfileModal, setShowProfileModal] = useState(false);
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const { user } = useTypedSelector(state => state);
 
   const logoutAction = () => {
     setShowProfileModal(false);
-    // dispatch(logout());
-    // history.push("/");
+    dispatch(userLogoutAction());
+    history.push("/");
   };
 
   return (
@@ -53,7 +55,7 @@ const NavBar: React.FC<NavBarProps> = () => {
             className="nav-profile-icon"
             onClick={() => setShowProfileModal(!showProfileModal)}
           >
-            {user.profilePictureUrl ? (
+            {user.profilePictureUrl.length > 0 ? (
               <ProfilePic src={user.profilePictureUrl} navbar />
             ) : (
               <AccountCircleIcon />

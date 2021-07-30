@@ -97,7 +97,7 @@ const GameCard: React.FC<GameCardProps> = ({ gameName, history }) => {
 
   return (
     <>
-      <Card className={classes.root}>
+      <Card className={classes.root} style={{ margin: "1rem 0" }}>
         <CardActionArea className={classes.actionArea}>
           <CardMedia
             className={classes.media}

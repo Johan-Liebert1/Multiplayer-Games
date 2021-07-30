@@ -8,6 +8,10 @@ export interface LoginAction {
   payload: UserState;
 }
 
+export interface LogoutAction {
+  type: ActionNames.USER_LOGOUT;
+}
+
 export interface UpadateUserDetailsAction {
   type: ActionNames.UPDATE_USER_SOCKET_DETAILS;
   payload: UserState;
@@ -23,4 +27,10 @@ export interface SetSocketAction {
   payload: Socket<DefaultEventsMap, DefaultEventsMap>;
 }
 
-export type AllActions = LoginAction | SetSocketAction | UpadateUserDetailsAction;
+export type UserActions =
+  | LoginAction
+  | LogoutAction
+  | UpadateUserDetailsAction
+  | UpdateUserProfilePictureAction;
+
+export type AllActions = UserActions;

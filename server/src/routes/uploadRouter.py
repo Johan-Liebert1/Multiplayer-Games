@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Request
 from fastapi.param_functions import Depends
 
-from helpers.printHelper import new_line_print
 from helpers.awsHelpers import upload_file
 
 from config.Config import Config

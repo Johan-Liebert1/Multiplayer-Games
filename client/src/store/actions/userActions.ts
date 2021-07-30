@@ -27,3 +27,9 @@ export const updateProfilePicAction = (profilePictureUrl: string) => (dispatch: 
     payload: profilePictureUrl
   });
 };
+
+export const userLogoutAction = () => (dispatch: any) => {
+  dispatch({
+    type: ActionNames.USER_LOGOUT
+  });
+};

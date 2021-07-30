@@ -3,6 +3,7 @@ env
 .vscode
 
 test
+TODO.txt
 
 # dependencies
 node_modules

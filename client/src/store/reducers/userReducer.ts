@@ -1,9 +1,5 @@
 import { ActionNames } from "../../types/store/actionNames";
-import {
-  LoginAction,
-  UpadateUserDetailsAction,
-  UpdateUserProfilePictureAction
-} from "../../types/store/actionTypes";
+import { UserActions } from "../../types/store/actionTypes";
 import { UserState } from "../../types/store/storeTypes";
 
 const initialState: UserState = {
@@ -18,7 +14,7 @@ const initialState: UserState = {
 
 export const userReducer = (
   state: UserState = initialState,
-  action: LoginAction | UpadateUserDetailsAction | UpdateUserProfilePictureAction
+  action: UserActions
 ): UserState => {
   switch (action.type) {
     case ActionNames.USER_LOGIN:
@@ -34,6 +30,10 @@ export const userReducer = (
         ...state,
         profilePictureUrl: action.payload
       };
+
+    case ActionNames.USER_LOGOUT:
+      localStorage.clear();
+      return {} as UserState;
 
     default:
       return state;

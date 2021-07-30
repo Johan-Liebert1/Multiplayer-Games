@@ -18,19 +18,7 @@ const ProfilePic: React.FC<ProfilePicInterface> = ({
 }) => {
   const imgSrc = src?.length > 0 ? src : "defaultPic";
 
-  return imgSrc === src && !navbar ? (
-    <img
-      src={imgSrc}
-      width={width}
-      height={height}
-      style={{
-        objectFit: "cover",
-        borderRadius
-      }}
-    />
-  ) : navbar ? (
-    <SVG svgName="" />
-  ) : (
+  return (
     <img
       src={imgSrc}
       width={width}
