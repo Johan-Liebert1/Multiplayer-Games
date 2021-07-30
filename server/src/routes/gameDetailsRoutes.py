@@ -16,8 +16,30 @@ from db.connection import get_db
 
 # helpers
 from helpers.returnHelpers import default_response
+from helpers.serializers import serialize
+
 
 games_router = APIRouter()
+
+
+@games_router.get("/{username}")
+def get_user_games_info(username: str, db: Session = Depends(get_db)):
+    chess_info = db.query(ChessGames).filter(ChessGames.username == username).first()
+    checkers_info = (
+        db.query(CheckersGames).filter(CheckersGames.username == username).first()
+    )
+
+    if not chess_info or not checkers_info:
+        return default_response(False, f"Data for {username} not found")
+
+    chess_info = serialize([chess_info])
+    checkers_info = serialize([checkers_info])
+
+    return {
+        "success": True,
+        "chess_info": chess_info[0],
+        "checkers_info": checkers_info[0],
+    }
 
 
 def update_model_details(
@@ -27,19 +49,6 @@ def update_model_details(
     db: Session,
 ):
     user_game_model = db.query(model).filter(model.username == username).first()
-
-    if not user_game_model:
-        # create a ChessGames model for the user
-        to_create = model(
-            username=username,
-            games_started=0,
-            games_won=0,
-            games_lost=0,
-            games_drawn=0,
-        )
-        db.add(to_create)
-
-        user_game_model = to_create
 
     if update_details.started:
         user_game_model.games_started += 1

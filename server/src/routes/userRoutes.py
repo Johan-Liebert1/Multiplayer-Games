@@ -15,6 +15,8 @@ from helpers.decorators import login_required
 # db models
 from db.connection import get_db
 from db.models.User import UserModel
+from db.models.CheckersGames import CheckersGames
+from db.models.ChessGames import ChessGames
 
 from config.Config import Config
 from schemas.schemas import UserCreateRequest, UserLoginRequest
@@ -58,7 +60,25 @@ def user_register_handler(details: UserCreateRequest, db: Session = Depends(get_
             email=details.email,
         )
 
+        to_create_chess = ChessGames(
+            username=details.username,
+            games_started=0,
+            games_won=0,
+            games_lost=0,
+            games_drawn=0,
+        )
+
+        to_create_checkers = CheckersGames(
+            username=details.username,
+            games_started=0,
+            games_won=0,
+            games_lost=0,
+            games_drawn=0,
+        )
+
         db.add(to_create)
+        db.add(to_create_chess)
+        db.add(to_create_checkers)
         db.commit()
 
         user = serialize([to_create])
@@ -103,6 +123,27 @@ def user_login_handler(details: UserLoginRequest, db: Session = Depends(get_db))
     serialized_user = serialize([user])[0]
 
     return {"success": True, "user": {"token": token, **serialized_user}}
+
+
+@user_router.get("/{user_id}")
+def get_user_info(user_id: str, db: Session = Depends(get_db)):
+    q = (
+        db.query(UserModel, ChessGames, CheckersGames)
+        .filter(UserModel.id == user_id)
+        .filter(
+            ChessGames.username == UserModel.username,
+        )
+        .filter(
+            CheckersGames.username == UserModel.username,
+        )
+        .all()
+    )
+
+    new_line_print(q)
+
+    serialized = serialize(q[0])
+
+    return {"info": serialized, "list_order": ["chess", "checkers"]}
 
 
 @user_router.put("/editdetails")

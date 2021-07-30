@@ -31,6 +31,7 @@ import { useDispatch } from "react-redux";
 import { useTypedSelector } from "../../hooks/useTypedSelector";
 import { updateUserSocketDetails } from "../../store/actions/userActions";
 import { getNewChessBoard } from "../../helpers/chessHelpers";
+import { updateGameDetailsApiCall } from "../../helpers/updateGameDetails";
 
 const game = new ChessGame();
 let socket: SocketState;
@@ -187,20 +188,27 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
       setBoard(tempBoard);
 
       if (game.isGameOver(board)) {
+        const winnerName = game.winner === userPieceColor ? user.username : player2Name;
+
         let newGameOverObject = {
           gameOver: true,
           winnerColor: game.winner,
-          winnerName: game.winner === userPieceColor ? user.username : player2Name
+          winnerName
         };
 
         socket.emit(socketEmitEvents.CHESS_GAME_OVER, newGameOverObject);
 
-        const requestObject: UpdateGameDetails = {
-          won: true,
-          lost: false,
-          drawn: false,
-          started: false
-        };
+        updateGameDetailsApiCall(user.username, "chess", {
+          won: winnerName === user.username,
+          lost: winnerName !== user.username,
+          drawn: !["white", "black"].includes(game.winner)
+        });
+
+        updateGameDetailsApiCall(player2Name, "chess", {
+          won: winnerName === player2Name,
+          lost: winnerName !== player2Name,
+          drawn: !["white", "black"].includes(game.winner)
+        });
 
         setGameOver(newGameOverObject);
       }

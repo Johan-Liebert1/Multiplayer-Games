@@ -7,7 +7,7 @@ import ArrowDropDownRoundedIcon from "@material-ui/icons/ArrowDropDownRounded";
 import ExitToAppRoundedIcon from "@material-ui/icons/ExitToAppRounded";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import { ListItem } from "@material-ui/core";
-
+import BarChartIcon from "@material-ui/icons/BarChart";
 import "../styles/NavBarStyles.css";
 import routes, { routeNames } from "../routes/router";
 import { userLogoutAction } from "../store/actions/userActions";
@@ -27,27 +27,29 @@ const NavBar: React.FC<NavBarProps> = ({ history }) => {
   };
 
   return (
-    <nav className="navbar-container">
-      <div className="navbar-logo">
-        <Link to={routes[routeNames.GAMES_SCREEN].path} className="react-link">
-          <h3>Multiplayer Games</h3>
-        </Link>
-      </div>
+    <nav
+      className="navbar-container"
+      style={{
+        justifyContent: user?.username ? "space-between" : "space-around"
+      }}
+    >
+      {user?.username && (
+        <div className="navbar-logo">
+          <Link to={routes[routeNames.GAMES_SCREEN].path} className="react-link">
+            <h3>Multiplayer Games</h3>
+          </Link>
+        </div>
+      )}
       <div className="navbar-navlink">
         <Link className="nav-link react-link" to={routes[routeNames.CHESS_TEST].path}>
           Chess Board
         </Link>
       </div>
-      {user.username && (
-        <div className="navbar-navlink">
-          <Link
-            className="nav-link react-link"
-            to={routes[routeNames.CHECKERS_TEST].path}
-          >
-            Checkers Board
-          </Link>
-        </div>
-      )}
+      <div className="navbar-navlink">
+        <Link className="nav-link react-link" to={routes[routeNames.CHECKERS_TEST].path}>
+          Checkers Board
+        </Link>
+      </div>
 
       {user.username && (
         <div className="nav-profile-container">
@@ -77,6 +79,20 @@ const NavBar: React.FC<NavBarProps> = ({ history }) => {
                   </Link>
                 </span>
               </ListItem>
+
+              <ListItem className="d-flex align-items-center profile-list-group-item">
+                <BarChartIcon style={{ fill: "#fff" }} />
+                <span className="ml-2">
+                  <Link
+                    to={`/stats`}
+                    onClick={() => setShowProfileModal(false)}
+                    className="react-link"
+                  >
+                    Statistics
+                  </Link>
+                </span>
+              </ListItem>
+
               <ListItem
                 onClick={logoutAction}
                 className="d-flex align-items-center profile-list-group-item"

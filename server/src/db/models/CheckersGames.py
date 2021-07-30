@@ -1,5 +1,6 @@
 from sqlalchemy import Integer
 from sqlalchemy.sql.schema import Column, ForeignKey
+from sqlalchemy.sql.sqltypes import String
 
 from ..connection import Base
 
@@ -10,7 +11,7 @@ class CheckersGames(Base):
     __tablename__ = "checkers_games"
 
     game_id = Column(Integer, autoincrement=True, primary_key=True)
-    user_id = Column(ForeignKey(UserModel.id))
+    username = Column(String, ForeignKey(UserModel.username))
     games_started = Column(Integer, nullable=False, default=0)
     games_won = Column(Integer, nullable=False, default=0)
     games_lost = Column(Integer, nullable=False, default=0)
