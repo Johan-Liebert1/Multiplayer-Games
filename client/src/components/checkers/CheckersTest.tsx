@@ -73,7 +73,7 @@ const CheckersTestBoard: React.FC<CheckersBoardProps> = () => {
         <div
           style={{
             display: "flex",
-            flexDirection: userPieceColor === "red" ? "column" : "column"
+            flexDirection: userPieceColor === "white" ? "column" : "column"
           }}
           ref={checkersBoardRef}
         >
@@ -111,6 +111,7 @@ const CheckersTestBoard: React.FC<CheckersBoardProps> = () => {
                       showMoves={showMoves}
                       userCheckersColor={userPieceColor}
                       boardRef={checkersBoardRef}
+                      testBoard
                     />
                   );
                 })}

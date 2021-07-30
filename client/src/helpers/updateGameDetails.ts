@@ -3,7 +3,7 @@ import { axiosInstance } from "../config/axiosConfig";
 import { UpdateGameDetails } from "../types/games";
 
 export const updateGameDetailsApiCall = (
-  userId: number,
+  username: string,
   game: "chess" | "checkers",
   object: {
     won?: boolean;
@@ -20,7 +20,7 @@ export const updateGameDetailsApiCall = (
     ...object
   };
 
-  const url = `/${game}/${userId}`;
+  const url = `/games/${game}/${username}`;
 
   const config: AxiosRequestConfig = {
     headers: {

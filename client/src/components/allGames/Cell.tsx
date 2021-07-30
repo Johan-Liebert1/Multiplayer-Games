@@ -12,6 +12,7 @@ interface CellProps {
   color: string;
   isClicked?: boolean;
   blueDot: boolean;
+  testBoard?: boolean;
   redDot?: boolean;
   boardRef?: React.MutableRefObject<HTMLDivElement | null>;
   userChessColor?: ChessPieceColor;
@@ -31,6 +32,7 @@ const Cell: React.FC<CellProps> = ({
   boardRef,
   userChessColor,
   userCheckersColor,
+  testBoard,
   showMoves
 }) => {
   const cellRef = useRef<HTMLDivElement | null>(null);
@@ -82,18 +84,19 @@ const Cell: React.FC<CellProps> = ({
     showMoves(row, col);
   };
 
-  const dragEnded = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    // const { x, y } = info.point;
-    // console.log(info, event);
-
+  const dragEnded = (event: MouseEvent | TouchEvent | PointerEvent) => {
     const { clientX: x, clientY: y } = event as MouseEvent;
 
     if (boardRef?.current) {
-      console.log(boardRef);
       const boardRect = boardRef.current.getBoundingClientRect();
 
       const row1 = Math.floor(Math.abs(boardRect.top - y) / CELL_SIZE);
       const col1 = Math.floor(Math.abs(boardRect.left - x) / CELL_SIZE);
+
+      if (testBoard) {
+        showMoves(row1, col1);
+        return;
+      }
 
       if (userChessColor) {
         switch (userChessColor) {
@@ -133,12 +136,16 @@ const Cell: React.FC<CellProps> = ({
             dragElastic={1}
             dragMomentum={false}
             dragTransition={{ bounceStiffness: 600, bounceDamping: 30 }}
-            onDragEnd={(event, info) => dragEnded(event, info)}
+            onDragEnd={event => dragEnded(event)}
           />
         )}
       </div>
     </div>
   );
+};
+
+Cell.defaultProps = {
+  testBoard: false
 };
 
 export default Cell;

@@ -161,6 +161,7 @@ const ChessBoardTest: React.FC<ChessBoardProps> = () => {
                 boardRef={chessBoardRef}
                 showMoves={showMoves}
                 userChessColor={userPieceColor}
+                testBoard
               />
             );
           })}

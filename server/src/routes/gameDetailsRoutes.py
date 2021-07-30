@@ -23,15 +23,15 @@ games_router = APIRouter()
 def update_model_details(
     model: Union[ChessGames, CheckersGames],
     update_details: GameDetailsUpdateRequest,
-    user_id: int,
+    username: int,
     db: Session,
 ):
-    user_game_model = db.query(model).filter(model.user_id == user_id).first()
+    user_game_model = db.query(model).filter(model.username == username).first()
 
     if not user_game_model:
         # create a ChessGames model for the user
         to_create = model(
-            user_id=user_id,
+            username=username,
             games_started=0,
             games_won=0,
             games_lost=0,
@@ -56,23 +56,23 @@ def update_model_details(
     db.commit()
 
 
-@games_router.post("/chess/{user_id}")
+@games_router.post("/chess/{username}")
 def update_chess_details(
-    user_id: str,
+    username: str,
     update_details: GameDetailsUpdateRequest,
     db: Session = Depends(get_db),
 ):
-    update_model_details(ChessGames, update_details, user_id, db)
+    update_model_details(ChessGames, update_details, username, db)
 
     return default_response(True, "Updated successfully")
 
 
-@games_router.post("/checkers/{user_id}")
+@games_router.post("/checkers/{username}")
 def update_checkers_details(
-    user_id: str,
+    username: str,
     update_details: GameDetailsUpdateRequest,
     db: Session = Depends(get_db),
 ):
-    update_model_details(CheckersGames, update_details, user_id, db)
+    update_model_details(CheckersGames, update_details, username, db)
 
     return default_response(True, "Updated successfully")

@@ -16,4 +16,3 @@ class UserModel(Base):
     lastName = Column(String(50), default="")
     email = Column(String(100), default="")
     profilePictureUrl = Column(String(250), default="")
-    profileBannerUrl = Column(String(250), default="")

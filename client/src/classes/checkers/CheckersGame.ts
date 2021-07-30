@@ -24,8 +24,8 @@ class CheckersGame {
     this.numClicks = 0;
     this.turn = "white";
     this.selected = null;
-    this.redPiecesOnBoard = 8 - 5;
-    this.whitePiecesOnBoard = 8 - 5;
+    this.redPiecesOnBoard = 8;
+    this.whitePiecesOnBoard = 8;
     this.gameOver = false;
     this.winner = null;
   }

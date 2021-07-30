@@ -94,11 +94,6 @@ const CheckersBoard: React.FC<CheckersBoardProps> = ({ roomId }) => {
     );
 
     socket.on(socketListenEvents.CHECKERS_GAME_OVER, (gameOverObject: GameOverState) => {
-      updateGameDetailsApiCall(user.id, "checkers", {
-        won: gameOverObject.winnerName === user.username,
-        lost: gameOverObject.winnerName !== user.username
-      });
-
       setGameOver(gameOverObject);
     });
   }, []);
@@ -126,9 +121,14 @@ const CheckersBoard: React.FC<CheckersBoardProps> = ({ roomId }) => {
 
         socket.emit(socketEmitEvents.CHECKERS_GAME_OVER, newGameOverObject);
 
-        updateGameDetailsApiCall(user.id, "checkers", {
+        updateGameDetailsApiCall(user.username, "checkers", {
           won: winnerName === user.username,
           lost: winnerName !== user.username
+        });
+
+        updateGameDetailsApiCall(player2Name, "checkers", {
+          won: winnerName === player2Name,
+          lost: winnerName !== player2Name
         });
 
         setGameOver(newGameOverObject);
