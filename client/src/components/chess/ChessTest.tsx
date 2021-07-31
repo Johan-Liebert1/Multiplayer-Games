@@ -22,12 +22,17 @@ import { CheckersPieceColor } from "../../types/checkersTypes";
 import { CELL_SIZE, ClickedCellsType } from "../../types/games";
 import { RouteProps } from "../../types/routeProps";
 import { getNewChessBoard } from "../../helpers/chessHelpers";
+import { Button } from "@material-ui/core";
+import { axiosInstance } from "../../config/axiosConfig";
+import { useTypedSelector } from "../../hooks/useTypedSelector";
 
 const game = new ChessGame();
 
 interface ChessBoardProps extends RouteProps {}
 
 const ChessBoardTest: React.FC<ChessBoardProps> = () => {
+  const { user } = useTypedSelector(state => state);
+
   const [board, setBoard] = useState<ChessBoardType>(() => getNewChessBoard());
 
   const chessBoardRef = useRef<HTMLDivElement | null>(null);
@@ -206,7 +211,31 @@ const ChessBoardTest: React.FC<ChessBoardProps> = () => {
           {showChessBoard()}
         </div>
       </div>
-      <div style={{ height: "2rem", padding: "0.5rem 0" }}></div>
+      <div style={{ height: "2rem", padding: "0.5rem 0" }}>
+        <Button
+          variant="contained"
+          color="default"
+          onClick={() => {
+            const data = JSON.stringify({
+              player1: user.username,
+              player2: "Johan",
+              moves: game.allGameMoves
+            });
+            console.log(data);
+            axiosInstance
+              .post("/games/chess/savegame", data, {
+                headers: {
+                  "content-type": "application/json"
+                }
+              })
+              .then(resp => {
+                console.log(resp.data);
+              });
+          }}
+        >
+          save game
+        </Button>
+      </div>
     </div>
   );
 };

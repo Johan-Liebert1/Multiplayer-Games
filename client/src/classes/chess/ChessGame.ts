@@ -1,3 +1,4 @@
+import { pieceNamesToLetter } from "../../helpers/chessHelpers";
 import { getStr } from "../../helpers/globalHelpers";
 import {
   ChessBoardType,
@@ -56,6 +57,7 @@ class ChessGame {
   blackPiecesOnBoard: { [key in ChessPieceName]: number };
 
   allGameMoves: ClickedCellsType[];
+  pgn: { [k: number]: string };
 
   constructor(
     turn: ChessPieceColor = "white",
@@ -98,6 +100,7 @@ class ChessGame {
     this.cellsUnderAttackByBlack = {};
 
     this.allGameMoves = [];
+    this.pgn = {};
 
     this.setKingParams();
   }
@@ -478,6 +481,73 @@ class ChessGame {
     }
   };
 
+  /**
+   * For generating a PGN, two pieces could make the same move, so this function
+   * distinguishes between the pieces and gets the piece that actaully made the move
+   */
+  similarMoveByAnotherPiece = (clickedCells: ClickedCellsType) => {
+    // use cols to indicate the piece
+    // if pieces are on same col, use row
+    // Nbc4 or N4c4
+  };
+
+  generatePgn = (
+    clickedCells: ClickedCellsType,
+    movedPiece: ChessPieceName,
+    moveNumber: number,
+    wasPieceCaptured: boolean,
+    castling: {
+      castled: boolean;
+      side: "king" | "queen";
+    },
+    promotion?: {
+      promoted: boolean;
+      promotedTo: ChessPieceName;
+    }
+  ) => {
+    let movePgn: string = "";
+
+    if (castling.castled) {
+      if (castling.side === "king") movePgn = "O-O";
+      else movePgn = "O-O-O";
+    } else {
+      const {
+        rows: [rowi, rowf],
+        cols: [coli, colf]
+      } = clickedCells;
+
+      // ASCII 'a' = 97
+      const colNamef = String.fromCharCode(colf + 97);
+      const rowNamef = 7 - rowf + 1;
+
+      const colNamei = String.fromCharCode(coli + 97);
+      const rowNamei = 7 - rowi + 1;
+
+      const letter = pieceNamesToLetter[movedPiece];
+
+      let x = "";
+
+      if (wasPieceCaptured) {
+        x = "x";
+
+        if (letter.length === 0) {
+          // pawn captured something
+          x = `${colNamei}x`;
+        }
+      }
+
+      movePgn = `${letter}${x}${colNamef}${rowNamef}`;
+    }
+
+    if (!(moveNumber in this.pgn)) {
+      this.pgn[moveNumber] = movePgn;
+    } else {
+      this.pgn[moveNumber] += " " + movePgn;
+    }
+
+    console.log(this.pgn);
+  };
+
   movePiece = (
     board: ChessBoardType,
     clickedCells: ClickedCellsType
@@ -487,6 +557,8 @@ class ChessGame {
     let castlingDone = false,
       pawnPromoted = false;
 
+    let castleSide: "king" | "queen" = "king";
+
     let { rows, cols } = clickedCells;
 
     const [rowi, rowf] = rows;
@@ -494,10 +566,18 @@ class ChessGame {
 
     let piece = board[rowi][coli] as ChessPiece;
 
+    const wasPieceCaptured = board[rowf][colf] instanceof ChessPiece;
+
     if (piece instanceof King && (colf === coli + 2 || colf === coli - 2)) {
       // castling move played
       this.castleKing(board, clickedCells);
       castlingDone = true;
+
+      if (colf === coli + 2) {
+        castleSide = "king";
+      } else {
+        castleSide = "queen";
+      }
     } else {
       // clicked cell is a valid move
       board[rowi][coli] = 0;
@@ -556,6 +636,13 @@ class ChessGame {
 
     // add the move to the list of all moves
     this.allGameMoves.push(tcc);
+
+    const moveNumber = Math.ceil(this.allGameMoves.length / 2);
+
+    this.generatePgn(tcc, piece.pieceName, moveNumber, wasPieceCaptured, {
+      castled: castlingDone,
+      side: castleSide
+    });
 
     return { cellsClicked: tcc, castlingDone, pawnPromoted };
   };

@@ -2,7 +2,8 @@
 from typing import Union
 from fastapi import APIRouter, Request
 from fastapi.param_functions import Depends
-from schemas.schemas import GameDetailsUpdateRequest
+from sqlalchemy.sql.expression import or_
+from schemas.schemas import GameDetailsUpdateRequest, SaveChessGameDetails
 
 # sqlalchemy
 from sqlalchemy.orm.session import Session
@@ -10,6 +11,8 @@ from sqlalchemy.orm.session import Session
 # models
 from db.models.ChessGames import ChessGames
 from db.models.CheckersGames import CheckersGames
+from db.models.SingleChessGame import SingleChessGame
+
 
 # db
 from db.connection import get_db
@@ -17,6 +20,9 @@ from db.connection import get_db
 # helpers
 from helpers.returnHelpers import default_response
 from helpers.serializers import serialize
+from helpers.printHelper import new_line_print
+
+import json
 
 
 games_router = APIRouter()
@@ -63,6 +69,45 @@ def update_model_details(
         user_game_model.games_drawn += 1
 
     db.commit()
+
+
+@games_router.post("/chess/savegame")
+def save_chess_game(details: SaveChessGameDetails, db: Session = Depends(get_db)):
+    new_game = SingleChessGame(
+        player1=details.player1,
+        player2=details.player2,
+        moves=json.dumps(details.moves),
+    )
+
+    db.add(new_game)
+
+    db.commit()
+
+    serialized_game = serialize([new_game])[0]
+
+    return {"success": True, "data": serialized_game}
+
+
+@games_router.get("/chess/{username}")
+def get_all_games_for_user(
+    username: str,
+    db: Session = Depends(get_db),
+):
+    query = (
+        db.query(SingleChessGame)
+        .filter(
+            or_(
+                SingleChessGame.player1 == username, SingleChessGame.player2 == username
+            )
+        )
+        .all()
+    )
+
+    new_line_print(f"{query=}")
+
+    serialized = serialize(query)
+
+    return {"success": True, "games": serialized}
 
 
 @games_router.post("/chess/{username}")

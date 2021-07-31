@@ -9,11 +9,11 @@ from ..connection import Base
 from db.models.User import UserModel
 
 
-class ChessGames(Base):
-    __tablename__ = "chess_games"
+class SingleChessGame(Base):
+    __tablename__ = "single_chess_game"
 
     game_id = Column(Integer, autoincrement=True, primary_key=True)
     player1 = Column(String(50), ForeignKey(UserModel.username))
     player2 = Column(String(50), ForeignKey(UserModel.username))
-    moves = Column(Text(5000))
+    moves = Column(Text, nullable=False)
     date = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)

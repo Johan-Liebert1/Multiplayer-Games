@@ -4,7 +4,7 @@ import Knight from "../classes/chess/Knight";
 import Pawn from "../classes/chess/Pawn";
 import Queen from "../classes/chess/Queen";
 import Rook from "../classes/chess/Rook";
-import { ChessBoardType } from "../types/chessTypes";
+import { ChessBoardType, ChessPieceName } from "../types/chessTypes";
 
 export const getNewChessBoard = (): ChessBoardType => [
   [
@@ -52,3 +52,12 @@ export const getNewChessBoard = (): ChessBoardType => [
     new Rook("white", 7, 7)
   ]
 ];
+
+export const pieceNamesToLetter: { [k in ChessPieceName]: string } = {
+  pawn: "",
+  knight: "N",
+  bishop: "B",
+  rook: "R",
+  queen: "Q",
+  king: "K"
+};

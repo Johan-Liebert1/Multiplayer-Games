@@ -24,15 +24,14 @@ import { generateFenFromBoard } from "../../helpers/chessParsers";
 import ChessPiece from "../../classes/chess/ChessPiece";
 import { CELL_SIZE, ClickedCellsType } from "../../types/games";
 import { Button } from "@material-ui/core";
+import { getEmptyMatrix } from "../../helpers/globalHelpers";
 
 let game: ChessGame | null = null;
 
 const ChessPlayBoard: React.FC = () => {
   // const { user } = uset(state => state);
 
-  const [board, setBoard] = useState<ChessBoardType>(() =>
-    new Array(8).fill(0).map(e => new Array(8).fill(0))
-  );
+  const [board, setBoard] = useState<ChessBoardType>(() => getEmptyMatrix(8));
   const [gameStarted, setGameStarted] = useState(false);
 
   const [gameOver, setGameOver] = useState<{
@@ -165,8 +164,10 @@ const ChessPlayBoard: React.FC = () => {
     game.setInitiallyAttackedCells(board);
   };
 
-  const resetBoard = () => {
-    setBoard(() => getNewChessBoard());
+  const resetBoard = (empty = true) => {
+    if (empty) setBoard(() => getEmptyMatrix(8));
+    else setBoard(() => getNewChessBoard());
+
     game = null;
     setGameStarted(false);
     setUserPieceColor("white");
@@ -270,6 +271,34 @@ const ChessPlayBoard: React.FC = () => {
     });
   };
 
+  const btnStyles = (bg: string, c: string = "white") => ({
+    color: c,
+    backgroundColor: bg
+  });
+
+  const buttons = [
+    {
+      text: "Start Game",
+      clickHandler: () => handleStartGame(),
+      style: btnStyles("#16a085")
+    },
+    {
+      text: "Reset Board",
+      clickHandler: () => resetBoard(true),
+      style: btnStyles("#c0392b")
+    },
+    {
+      text: "Default Board",
+      clickHandler: () => resetBoard(false),
+      style: btnStyles("#2980b9")
+    },
+    {
+      text: "Generate FEN",
+      clickHandler: () => generateFenFromBoard(board),
+      style: btnStyles("#8e44ad")
+    }
+  ];
+
   return (
     <motion.div style={{ margin: windowSize[0] < 910 ? "2rem" : "2rem" }}>
       <motion.div
@@ -322,6 +351,7 @@ const ChessPlayBoard: React.FC = () => {
                       top: 0,
                       bottom: 0
                     }}
+                    dragTransition={{ bounceStiffness: 700, bounceDamping: 50 }}
                     whileHover={{ cursor: "grab" }}
                     dragElastic={1}
                     src={`${window.location.origin}/images/chess/${color}${piece}.png`}
@@ -333,8 +363,6 @@ const ChessPlayBoard: React.FC = () => {
           ))}
         </motion.div>
 
-        <div>{generatedFen}</div>
-
         <div
           style={{
             display: "flex",
@@ -344,20 +372,11 @@ const ChessPlayBoard: React.FC = () => {
             minHeight: CELL_SIZE * 4 + "px"
           }}
         >
-          <Button onClick={handleStartGame} variant="contained" color="secondary">
-            Start Game
-          </Button>
-          <Button onClick={resetBoard} variant="contained" color="secondary">
-            Reset Board
-          </Button>
-
-          <Button
-            onClick={() => setGeneratedFen(generateFenFromBoard(board))}
-            variant="contained"
-            color="secondary"
-          >
-            Generate fen
-          </Button>
+          {buttons.map(btn => (
+            <Button onClick={btn.clickHandler} variant="contained" style={btn.style}>
+              {btn.text}
+            </Button>
+          ))}
         </div>
       </motion.div>
     </motion.div>
