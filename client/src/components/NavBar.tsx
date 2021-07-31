@@ -12,18 +12,25 @@ import "../styles/NavBarStyles.css";
 import routes, { routeNames } from "../routes/router";
 import { userLogoutAction } from "../store/actions/userActions";
 import { useDispatch } from "react-redux";
+import Dropdown from "./Dropdown";
 
 interface NavBarProps extends RouteProps {}
 
 const NavBar: React.FC<NavBarProps> = ({ history }) => {
-  const [showProfileModal, setShowProfileModal] = useState(false);
   const dispatch = useDispatch();
   const { user } = useTypedSelector(state => state);
+
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showDropdown, setShowDropdown] = useState({ chess: false, checkers: false });
 
   const logoutAction = () => {
     setShowProfileModal(false);
     dispatch(userLogoutAction());
     history.push("/");
+  };
+
+  const closeDropdown = (type: "chess" | "checkers") => {
+    setShowDropdown(old => ({ ...old, [type]: !old[type] }));
   };
 
   return (
@@ -40,15 +47,44 @@ const NavBar: React.FC<NavBarProps> = ({ history }) => {
           </Link>
         </div>
       )}
-      <div className="navbar-navlink">
-        <Link className="nav-link react-link" to={routes[routeNames.CHESS_TEST].path}>
-          Chess Board
-        </Link>
+      <div className="navbar-navlink" style={{ position: "relative" }}>
+        <div
+          className={`nav-link react-link ${
+            showDropdown.chess ? "nav-link-active" : ""
+          } `}
+          onClick={() => closeDropdown("chess")}
+        >
+          Play Chess
+        </div>
+        {showDropdown.chess && (
+          <Dropdown
+            dropdownItems={[
+              { text: "Analyze Games", path: routes[routeNames.CHESS_TEST].path },
+              { text: "Play Board", path: routes[routeNames.CHESS_PLAY].path }
+            ]}
+            type="chess"
+            close={closeDropdown}
+          />
+        )}
       </div>
-      <div className="navbar-navlink">
-        <Link className="nav-link react-link" to={routes[routeNames.CHECKERS_TEST].path}>
-          Checkers Board
-        </Link>
+      <div className="navbar-navlink" style={{ position: "relative" }}>
+        <div
+          className={`nav-link react-link ${
+            showDropdown.checkers ? "nav-link-active" : ""
+          } `}
+          onClick={() => closeDropdown("checkers")}
+        >
+          Play Checkers
+        </div>
+        {showDropdown.checkers && (
+          <Dropdown
+            dropdownItems={[
+              { text: "Analyze Games", path: routes[routeNames.CHECKERS_TEST].path }
+            ]}
+            type="checkers"
+            close={closeDropdown}
+          />
+        )}
       </div>
 
       {user.username && (

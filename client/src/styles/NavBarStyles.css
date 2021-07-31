@@ -34,6 +34,13 @@
 .nav-link:hover {
   color: #3fd2f7;
   border-bottom: 5px solid #0984e3;
+  cursor: pointer;
+}
+
+.nav-link-active {
+  color: #3fd2f7;
+  border-bottom: 5px solid #0984e3;
+  cursor: pointer;
 }
 
 .nav-profile-icon {
