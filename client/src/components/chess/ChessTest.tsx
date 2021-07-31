@@ -48,9 +48,9 @@ const ChessBoardTest: React.FC<ChessBoardProps> = () => {
   const analyzeGame = (gameId: number) => {
     const game = allGamesList.find(g => g.game_id === gameId);
 
-    const moves = getMovesFromString(game?.moves as string);
+    const { moves, promotionMoveIndices } = getMovesFromString(game?.moves as string);
 
-    analysisBoard = new AnalysisBoard(moves);
+    analysisBoard = new AnalysisBoard(moves, promotionMoveIndices);
     analysisBoard.setInitiallyAttackedCells(board);
   };
 

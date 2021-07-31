@@ -58,6 +58,7 @@ class ChessGame {
 
   allGameMoves: ClickedCellsType[];
   pgn: { [k: number]: string };
+  movesString: string;
 
   constructor(
     turn: ChessPieceColor = "white",
@@ -101,6 +102,7 @@ class ChessGame {
 
     this.allGameMoves = [];
     this.pgn = {};
+    this.movesString = "";
 
     this.setKingParams();
   }
@@ -251,6 +253,8 @@ class ChessGame {
   ) => {
     // pawn has already been moved but the opponent hasn't seen it
 
+    this.generateMoveString(cellsClicked, { promoted: true, promotedTo: promoteTo });
+
     const { rows, cols } = cellsClicked;
     const [rowi, rowf] = rows;
     const [coli, colf] = cols;
@@ -341,8 +345,10 @@ class ChessGame {
 
     for (let row = 0; row < board.length; row++) {
       for (let col = 0; col < board.length; col++) {
+        // console.log("setInitiallyAttackedCells");
         let piece = board[row][col];
         if (piece instanceof ChessPiece) {
+          // console.log("piece instanceof ChessPiece");
           let str = getStr(piece.row, piece.col);
           let attackedCells: ValidChessMove | ProtectingChessMove | InvalidChessMove = {};
 
@@ -362,9 +368,11 @@ class ChessGame {
             this.blackPiecesValue += this.piecePoints[piece.pieceName];
           }
 
+          // console.log("before getting moves");
           // this will set piece.moves and piece.protectingMoves
           if (piece instanceof Pawn) piece.validMoves(board, this.kingParams, true);
           else piece.validMoves(board, this.kingParams);
+          // console.log("after gettingmoves");
 
           let totalMoves: ValidChessMove | ProtectingChessMove | InvalidChessMove = {};
 
@@ -381,7 +389,10 @@ class ChessGame {
               | InvalidChessMove;
           }
 
+          // console.log("totalMoves = ", totalMoves);
           Object.keys(totalMoves).forEach(key => {
+            // console.log("iterating over total moves");
+
             const piece = board[row][col];
 
             if (piece instanceof Pawn) {
@@ -482,20 +493,25 @@ class ChessGame {
   };
 
   getAllMoves = () => {
-    let moves = "";
+    return this.movesString;
+  };
 
-    /*  
-    {rows:[1,2],cols:[3,4]} = :1,2;3,4:
-    */
+  generateMoveString = (
+    clickedCells: ClickedCellsType,
+    pawnPromoted?: { promoted: boolean; promotedTo: ChessPieceName }
+  ) => {
+    const {
+      rows: [ri, rf],
+      cols: [ci, cf]
+    } = clickedCells;
 
-    for (let m of this.allGameMoves) {
-      const [r1, r2] = m.rows;
-      const [c1, c2] = m.cols;
+    let moveStr = `${getStr(ri, rf)};${getStr(ci, cf)}`;
 
-      moves += `${getStr(r1, r2)};${getStr(c1, c2)}:`;
+    if (!pawnPromoted) {
+      this.movesString += `${moveStr}:`;
+    } else {
+      this.movesString += `${moveStr}=${pawnPromoted.promotedTo}:`;
     }
-
-    return moves;
   };
 
   /**
@@ -660,6 +676,8 @@ class ChessGame {
       castled: castlingDone,
       side: castleSide
     });
+
+    this.generateMoveString(tcc);
 
     return { cellsClicked: tcc, castlingDone, pawnPromoted };
   };

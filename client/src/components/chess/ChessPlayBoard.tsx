@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import useWindowSize from "../../hooks/useWindowSize";
 
@@ -24,13 +24,15 @@ import { CELL_SIZE, ClickedCellsType } from "../../types/games";
 import { Button } from "@material-ui/core";
 import { getEmptyMatrix } from "../../helpers/globalHelpers";
 import RenderChessBoard from "./RenderChessBoard";
+import { axiosInstance } from "../../config/axiosConfig";
+import { useTypedSelector } from "../../hooks/useTypedSelector";
 
-let game: ChessGame | null = null;
+let game: ChessGame = new ChessGame();
 
 const ChessPlayBoard: React.FC = () => {
-  // const { user } = uset(state => state);
+  const { user } = useTypedSelector(state => state);
 
-  const [board, setBoard] = useState<ChessBoardType>(() => getEmptyMatrix(8));
+  const [board, setBoard] = useState<ChessBoardType>(() => getNewChessBoard());
   const [gameStarted, setGameStarted] = useState(false);
 
   const [gameOver, setGameOver] = useState<{
@@ -155,17 +157,25 @@ const ChessPlayBoard: React.FC = () => {
   };
 
   const handleStartGame = () => {
-    setGameStarted(true);
+    // setGameStarted(true);
     game = new ChessGame("white", whiteKingPos.current, blackKingPos.current);
     console.log(game);
-    game.setInitiallyAttackedCells(board);
+    console.log(board);
+
+    setTimeout(() => {
+      game.setInitiallyAttackedCells(board);
+    }, 500);
   };
+
+  useEffect(() => {
+    game.setInitiallyAttackedCells(board);
+  }, []);
 
   const resetBoard = (empty = true) => {
     if (empty) setBoard(() => getEmptyMatrix(8));
     else setBoard(() => getNewChessBoard());
 
-    game = null;
+    // game = null;
     setGameStarted(false);
     setUserPieceColor("white");
   };
@@ -219,23 +229,60 @@ const ChessPlayBoard: React.FC = () => {
   const buttons = [
     {
       text: "Start Game",
-      clickHandler: () => handleStartGame(),
+      clickHandler: () => {
+        // handleStartGame();
+        console.log("wrong");
+      },
       style: btnStyles("#16a085")
     },
     {
       text: "Reset Board",
-      clickHandler: () => resetBoard(true),
+      clickHandler: () => {
+        resetBoard(true);
+      },
       style: btnStyles("#c0392b")
     },
     {
       text: "Default Board",
-      clickHandler: () => resetBoard(false),
+      clickHandler: () => {
+        resetBoard(false);
+      },
       style: btnStyles("#2980b9")
     },
     {
+      text: "Get Moves String",
+      clickHandler: () => {
+        console.log(game?.movesString);
+      },
+      style: btnStyles("#198510")
+    },
+    {
       text: "Generate FEN",
-      clickHandler: () => generateFenFromBoard(board),
+      clickHandler: () => {
+        generateFenFromBoard(board);
+      },
       style: btnStyles("#8e44ad")
+    },
+    {
+      text: "Save Game",
+      clickHandler: () => {
+        const data = JSON.stringify({
+          player1: user.username,
+          player2: "Johan",
+          moves: game.getAllMoves()
+        });
+
+        axiosInstance
+          .post("/games/chess/savegame", data, {
+            headers: {
+              "content-type": "application/json"
+            }
+          })
+          .then(resp => {
+            console.log(resp.data);
+          });
+      },
+      style: btnStyles("#1321e6")
     }
   ];
 
@@ -318,8 +365,13 @@ const ChessPlayBoard: React.FC = () => {
             minHeight: CELL_SIZE * 4 + "px"
           }}
         >
-          {buttons.map(btn => (
-            <Button onClick={btn.clickHandler} variant="contained" style={btn.style}>
+          {buttons.map((btn, idx) => (
+            <Button
+              onClick={btn.clickHandler}
+              variant="contained"
+              style={btn.style}
+              key={idx}
+            >
               {btn.text}
             </Button>
           ))}
