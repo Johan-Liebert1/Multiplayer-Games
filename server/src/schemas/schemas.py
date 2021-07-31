@@ -23,7 +23,7 @@ class GameDetailsUpdateRequest(BaseModel):
     started: bool
 
 
-class SaveChessGameDetails(BaseModel):
+class SaveGameDetails(BaseModel):
     player1: str
     player2: str
     moves: str

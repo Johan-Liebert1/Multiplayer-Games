@@ -1,3 +1,4 @@
+import CheckersPlayBoard from "../components/checkers/CheckersPlayBoard";
 import CheckersTestBoard from "../components/checkers/CheckersTest";
 import ChessPlayBoard from "../components/chess/ChessPlayBoard";
 import ChessBoardTest from "../components/chess/ChessTest";
@@ -21,7 +22,8 @@ export const routeNames = Object.freeze({
   SKETCHIO_SCREEN: "SKETCHIO_SCREEN",
   CHECKERS_TEST: "CHECKERS_TEST",
   CHESS_TEST: "CHESS_TEST",
-  CHESS_PLAY: "CHESS_PLAY"
+  CHESS_PLAY: "CHESS_PLAY",
+  CHECKERS_PLAY: "CHECKERS_PLAY"
 });
 
 const routes = {
@@ -39,6 +41,21 @@ const routes = {
     name: routeNames.GAMES_SCREEN,
     path: "/games",
     component: GamesScreen
+  },
+  [routeNames.CHESS_TEST]: {
+    name: "chessTest",
+    path: "/chess/analyze",
+    component: ChessBoardTest
+  },
+  [routeNames.CHESS_PLAY]: {
+    name: "CHESS_PLAY",
+    path: "/chess/test",
+    component: ChessPlayBoard
+  },
+  [routeNames.CHECKERS_PLAY]: {
+    name: "CHESSCHECKERS_PLAY_PLAY",
+    path: "/checkers/test",
+    component: CheckersPlayBoard
   },
   [routeNames.CHECKERS_SCREEN]: {
     name: routeNames.CHECKERS_SCREEN,
@@ -60,11 +77,6 @@ const routes = {
     path: "/checkerstest",
     component: CheckersTestBoard
   },
-  [routeNames.CHESS_TEST]: {
-    name: "chessTest",
-    path: "/chesstest",
-    component: ChessBoardTest
-  },
   [routeNames.PROFILE]: {
     name: "profile",
     path: "/profile",
@@ -74,11 +86,6 @@ const routes = {
     name: "stats",
     path: "/stats",
     component: Statistics
-  },
-  [routeNames.CHESS_PLAY]: {
-    name: "CHESS_PLAY",
-    path: "/chessplay",
-    component: ChessPlayBoard
   }
 };
 

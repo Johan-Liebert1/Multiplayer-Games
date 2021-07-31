@@ -3,21 +3,49 @@ import React, { useState, useEffect, useRef } from "react";
 
 // components
 import GameOverComponent from "../allGames/GameOverComponent";
-import Cell from "../allGames/Cell";
+import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
+import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
+import RenderCheckersBoard from "./RenderCheckersBoard";
 
 // checkers
-import CheckersPiece from "../../classes/checkers/CheckersPiece";
-import CheckersGame from "../../classes/checkers/CheckersGame";
+import CheckersAnalysis from "../../classes/checkers/CheckersAnalysis";
 
 // types
 import { CheckersBoardType, CheckersPieceColor } from "../../types/checkersTypes";
 import { RouteProps } from "../../types/routeProps";
 import { getNewCheckersBoard } from "../../helpers/checkersBoard";
-import RenderCheckersBoard from "./RenderCheckersBoard";
+import { CELL_SIZE } from "../../types/games";
+import { Button, List, ListItem, makeStyles } from "@material-ui/core";
+import { chatBoxStyles } from "../../styles/gameScreenStyles";
+import { axiosInstance } from "../../config/axiosConfig";
+import { useTypedSelector } from "../../hooks/useTypedSelector";
+import { getCheckersMovesFromString } from "../../helpers/globalHelpers";
 
-const game = new CheckersGame();
+let analysisBoard: CheckersAnalysis;
+
+interface GameListItem {
+  player1: string;
+  player2: string;
+  moves: string;
+  date: string;
+  game_id: number;
+}
 
 interface CheckersBoardProps extends RouteProps {}
+
+const listClass = makeStyles(t => ({
+  listItem: {
+    "&:hover": {
+      backgroundColor: "#0b1622",
+      color: "#0984e3",
+      cursor: "pointer"
+    }
+  },
+  listItemClicked: {
+    backgroundColor: "#0b1622",
+    color: "#0984e3"
+  }
+}));
 
 interface GameOverState {
   gameOver: boolean;
@@ -26,7 +54,15 @@ interface GameOverState {
 }
 
 const CheckersTestBoard: React.FC<CheckersBoardProps> = () => {
+  const classes = chatBoxStyles();
+  const listStyles = listClass();
+
+  const { user } = useTypedSelector(state => state);
+
   const [board, setBoard] = useState<CheckersBoardType>(() => getNewCheckersBoard());
+  const [allGamesList, setAllGamesList] = useState<GameListItem[]>([]);
+  const [analyzingGameId, setAnalyzingGameId] = useState<number>(-1);
+  const [analyzing, setAnalyzing] = useState(false);
 
   const [gameOver, setGameOver] = useState<GameOverState>({
     gameOver: false,
@@ -38,32 +74,28 @@ const CheckersTestBoard: React.FC<CheckersBoardProps> = () => {
 
   const checkersBoardRef = useRef<HTMLDivElement | null>(null);
 
-  const showMoves = (row: number, col: number) => {
-    if (!gameOver.gameOver) {
-      let tempBoard = board.map(b => b);
-      let cellsClicked = game.showValidMoves(userPieceColor, tempBoard, row, col);
-      setBoard(tempBoard);
+  const analyzeGame = (gameId: number) => {
+    setAnalyzing(true);
+    setAnalyzingGameId(gameId);
 
-      if (cellsClicked && cellsClicked.rows.length === 2) {
-        setUserPieceColor(c => (c === "red" ? "white" : "red"));
+    const game = allGamesList.find(g => g.game_id === gameId);
 
-        let isGameOver = game.isGameOver(board);
+    setBoard(() => getNewCheckersBoard());
 
-        if (isGameOver) {
-          let newGameOverObject = {
-            gameOver: true,
-            winnerColor: game.winner as CheckersPieceColor,
-            winnerName: game.winner as string
-          };
+    const moves = getCheckersMovesFromString(game?.moves as string);
 
-          setGameOver(newGameOverObject);
-        }
-      }
-    }
+    analysisBoard = new CheckersAnalysis(moves);
+  };
+
+  const playMove = () => {
+    const tempBoard = board.map(r => r);
+    analysisBoard.playNextMove(tempBoard);
+    setBoard(tempBoard);
+    return;
   };
 
   return (
-    <div style={{ marginLeft: "4rem" }}>
+    <div style={{ marginLeft: "4rem", display: "flex" }}>
       <div id="checkersBoard" style={{ position: "relative" }}>
         {gameOver.gameOver && (
           <GameOverComponent
@@ -83,9 +115,92 @@ const CheckersTestBoard: React.FC<CheckersBoardProps> = () => {
             checkersBoardRef={checkersBoardRef}
             userPieceColor={userPieceColor}
             testBoard={true}
-            movePiece={showMoves}
+            movePiece={(i: number, j: number) => {
+              return;
+            }}
           />
         </div>
+        <div
+          style={{
+            padding: "0.5rem 0",
+            display: "flex",
+            justifyContent: "space-evenly"
+          }}
+        >
+          <Button variant="contained" disabled={!analyzing}>
+            <KeyboardArrowLeftIcon />
+          </Button>
+
+          <Button
+            variant="contained"
+            onClick={() => {
+              const data = JSON.stringify({
+                player1: user.username,
+                palyer2: "Johan",
+                moves: analysisBoard.getMoves()
+              });
+
+              axiosInstance
+                .post("/games/checkers/savegame", data)
+                .then(resp => console.log(resp.data));
+            }}
+          >
+            Analyze
+          </Button>
+
+          <Button variant="contained" onClick={playMove} disabled={!analyzing}>
+            <KeyboardArrowRightIcon />
+          </Button>
+        </div>
+      </div>
+
+      <div
+        className={classes.messagesContainer}
+        style={{ height: `${CELL_SIZE * board.length}px`, width: "100%" }}
+      >
+        <List
+          style={{
+            height: `${CELL_SIZE * board.length}px`,
+            display: "flex",
+            flexDirection: "column",
+            overflow: "auto"
+          }}
+        >
+          <div style={{ height: "90%" }}>
+            {allGamesList.map((game, index) => (
+              <ListItem
+                key={game.game_id}
+                onClick={() => {
+                  // analyzeGame(game.game_id);
+                }}
+                className={
+                  game.game_id === analyzingGameId
+                    ? listStyles.listItemClicked
+                    : listStyles.listItem
+                }
+              >
+                <h5 style={{ width: "10%" }}>{index + 1}</h5>
+                <span style={{ width: "60%" }}>
+                  {game.player1} vs {game.player2}
+                </span>
+                <span style={{ width: "30%" }}>{"  " + game.date.split("T")[0]}</span>
+              </ListItem>
+            ))}
+          </div>
+
+          <ListItem style={{ height: "10%" }}>
+            <Button
+              variant="contained"
+              onClick={() => {
+                axiosInstance
+                  .get(`/games/checkers/${user.username}`)
+                  .then(resp => setAllGamesList(resp.data.games));
+              }}
+            >
+              Get All Games
+            </Button>
+          </ListItem>
+        </List>
       </div>
     </div>
   );

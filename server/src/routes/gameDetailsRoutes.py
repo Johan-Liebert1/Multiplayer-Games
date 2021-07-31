@@ -3,7 +3,7 @@ from typing import Union
 from fastapi import APIRouter, Request
 from fastapi.param_functions import Depends
 from sqlalchemy.sql.expression import or_
-from schemas.schemas import GameDetailsUpdateRequest, SaveChessGameDetails
+from schemas.schemas import GameDetailsUpdateRequest, SaveGameDetails
 
 # sqlalchemy
 from sqlalchemy.orm.session import Session
@@ -12,7 +12,7 @@ from sqlalchemy.orm.session import Session
 from db.models.ChessGames import ChessGames
 from db.models.CheckersGames import CheckersGames
 from db.models.SingleChessGame import SingleChessGame
-
+from db.models.SingleCheckersGame import SingleCheckersGame
 
 # db
 from db.connection import get_db
@@ -72,7 +72,7 @@ def update_model_details(
 
 
 @games_router.post("/chess/savegame")
-def save_chess_game(details: SaveChessGameDetails, db: Session = Depends(get_db)):
+def save_chess_game(details: SaveGameDetails, db: Session = Depends(get_db)):
     new_game = SingleChessGame(
         player1=details.player1,
         player2=details.player2,
@@ -88,8 +88,25 @@ def save_chess_game(details: SaveChessGameDetails, db: Session = Depends(get_db)
     return {"success": True, "data": serialized_game}
 
 
+@games_router.post("/checkers/savegame")
+def save_chess_game(details: SaveGameDetails, db: Session = Depends(get_db)):
+    new_game = SingleCheckersGame(
+        player1=details.player1,
+        player2=details.player2,
+        moves=details.moves,
+    )
+
+    db.add(new_game)
+
+    db.commit()
+
+    serialized_game = serialize([new_game])[0]
+
+    return {"success": True, "data": serialized_game}
+
+
 @games_router.get("/chess/{username}")
-def get_all_games_for_user(
+def get_all_chess_games_for_user(
     username: str,
     db: Session = Depends(get_db),
 ):
@@ -98,6 +115,27 @@ def get_all_games_for_user(
         .filter(
             or_(
                 SingleChessGame.player1 == username, SingleChessGame.player2 == username
+            )
+        )
+        .all()
+    )
+
+    serialized = serialize(query)
+
+    return {"success": True, "games": serialized}
+
+
+@games_router.get("/checkers/{username}")
+def get_all_checkers_games_for_user(
+    username: str,
+    db: Session = Depends(get_db),
+):
+    query = (
+        db.query(SingleCheckersGame)
+        .filter(
+            or_(
+                SingleCheckersGame.player1 == username,
+                SingleCheckersGame.player2 == username,
             )
         )
         .all()

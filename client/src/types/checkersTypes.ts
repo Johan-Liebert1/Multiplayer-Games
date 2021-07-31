@@ -1,5 +1,4 @@
 import CheckersPiece from "../classes/checkers/CheckersPiece";
-import { MoveType } from "./games";
 
 export type CheckersPieceColor = "white" | "red";
 export type CheckersBoardType = (CheckersPiece | number | "dot")[][];

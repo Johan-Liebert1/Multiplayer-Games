@@ -79,7 +79,8 @@ const NavBar: React.FC<NavBarProps> = ({ history }) => {
         {showDropdown.checkers && (
           <Dropdown
             dropdownItems={[
-              { text: "Analyze Games", path: routes[routeNames.CHECKERS_TEST].path }
+              { text: "Analyze Games", path: routes[routeNames.CHECKERS_TEST].path },
+              { text: "Play Board", path: routes[routeNames.CHECKERS_PLAY].path }
             ]}
             type="checkers"
             close={closeDropdown}

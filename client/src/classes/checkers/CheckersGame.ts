@@ -1,10 +1,8 @@
 import { getRowCol, getStr } from "../../helpers/globalHelpers";
 import {
-  CapturingCheckersMove,
   CheckersBoardType,
   CheckersMoveType,
-  CheckersPieceColor,
-  ValidCheckersMove
+  CheckersPieceColor
 } from "../../types/checkersTypes";
 import { PiecePosition } from "../../types/chessTypes";
 import { ClickedCellsType } from "../../types/games";
@@ -148,10 +146,15 @@ class CheckersGame {
     if (!capturingMove.wasCapturingMove) {
       move += `${getStr(ri, rf)};${getStr(ci, cf)}:`;
     } else {
-      move += `${getStr(ri, rf)};${getStr(cpr, cpc)};${getStr(ci, cf)}:`;
+      // move += `${getStr(ri, rf)};${getStr(cpr, cpc)};${getStr(ci, cf)}:`;
+      move += `${getStr(ri, rf)};${getStr(ci, cf)}:`;
     }
 
     this.gameMoves += move;
+  };
+
+  getMoves = () => {
+    return this.gameMoves;
   };
 
   movePiece = (

@@ -1,26 +1,22 @@
 // react stuff
 import React, { useState, useRef } from "react";
 
-// components
-import Cell from "../allGames/Cell";
-
 // gameplay
 import AnalysisBoard from "../../classes/chess/AnalysisBoard";
-import ChessPiece from "../../classes/chess/ChessPiece";
 
 // types
-import { ChessBoardType, ChessPieceColor } from "../../types/chessTypes";
-import { CELL_SIZE, ClickedCellsType } from "../../types/games";
+import { ChessBoardType } from "../../types/chessTypes";
+import { CELL_SIZE } from "../../types/games";
 import { RouteProps } from "../../types/routeProps";
 import { getNewChessBoard } from "../../helpers/chessHelpers";
-import { Button, List, ListItem, ListItemText, makeStyles } from "@material-ui/core";
+import { Button, List, ListItem, makeStyles } from "@material-ui/core";
 import { axiosInstance } from "../../config/axiosConfig";
 import { useTypedSelector } from "../../hooks/useTypedSelector";
 
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import { chatBoxStyles } from "../../styles/gameScreenStyles";
-import { getMovesFromString } from "../../helpers/globalHelpers";
+import { getChessMovesFromString } from "../../helpers/globalHelpers";
 import RenderChessBoard from "./RenderChessBoard";
 
 let analysisBoard: AnalysisBoard;
@@ -69,7 +65,9 @@ const ChessBoardTest: React.FC<ChessBoardProps> = () => {
 
     setBoard(() => getNewChessBoard());
 
-    const { moves, promotionMoveIndices } = getMovesFromString(game?.moves as string);
+    const { moves, promotionMoveIndices } = getChessMovesFromString(
+      game?.moves as string
+    );
 
     analysisBoard = new AnalysisBoard(moves, promotionMoveIndices);
     analysisBoard.setInitiallyAttackedCells(board);
