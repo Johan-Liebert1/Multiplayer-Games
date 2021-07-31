@@ -13,7 +13,7 @@ import { ChessBoardType, ChessPieceColor } from "../../types/chessTypes";
 import { CELL_SIZE, ClickedCellsType } from "../../types/games";
 import { RouteProps } from "../../types/routeProps";
 import { getNewChessBoard } from "../../helpers/chessHelpers";
-import { Button, List, ListItem, ListItemText } from "@material-ui/core";
+import { Button, List, ListItem, ListItemText, makeStyles } from "@material-ui/core";
 import { axiosInstance } from "../../config/axiosConfig";
 import { useTypedSelector } from "../../hooks/useTypedSelector";
 
@@ -34,19 +34,40 @@ interface GameListItem {
   game_id: number;
 }
 
+const listClass = makeStyles(t => ({
+  listItem: {
+    "&:hover": {
+      backgroundColor: "#0b1622",
+      color: "#0984e3",
+      cursor: "pointer"
+    }
+  },
+  listItemClicked: {
+    backgroundColor: "#0b1622",
+    color: "#0984e3"
+  }
+}));
+
 const ChessBoardTest: React.FC<ChessBoardProps> = () => {
   const classes = chatBoxStyles();
+  const listStyles = listClass();
 
   const { user } = useTypedSelector(state => state);
 
   const [board, setBoard] = useState<ChessBoardType>(() => getNewChessBoard());
-  const [userPieceColor, setUserPieceColor] = useState<ChessPieceColor>("white");
   const [allGamesList, setAllGamesList] = useState<GameListItem[]>([]);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [analyzingGameId, setAnalyzingGameId] = useState<number>(-1);
 
   const chessBoardRef = useRef<HTMLDivElement | null>(null);
 
   const analyzeGame = (gameId: number) => {
+    setAnalyzing(true);
+    setAnalyzingGameId(gameId);
+
     const game = allGamesList.find(g => g.game_id === gameId);
+
+    setBoard(() => getNewChessBoard());
 
     const { moves, promotionMoveIndices } = getMovesFromString(game?.moves as string);
 
@@ -80,13 +101,13 @@ const ChessBoardTest: React.FC<ChessBoardProps> = () => {
         <div
           style={{
             display: "flex",
-            flexDirection: userPieceColor === "white" ? "column" : "column"
+            flexDirection: "column"
           }}
         >
           <RenderChessBoard
             board={board}
             chessBoardRef={chessBoardRef}
-            userPieceColor={userPieceColor}
+            userPieceColor={"white"}
             movePiece={(i: number, j: number) => {
               return;
             }}
@@ -100,36 +121,13 @@ const ChessBoardTest: React.FC<ChessBoardProps> = () => {
             justifyContent: "space-evenly"
           }}
         >
-          {/* <Button
-          variant="contained"
-          color="default"
-          onClick={() => {
-            const data = JSON.stringify({
-              player1: user.username,
-              player2: "Johan",
-              moves: game.getAllMoves()
-            });
-
-            axiosInstance
-              .post("/games/chess/savegame", data, {
-                headers: {
-                  "content-type": "application/json"
-                }
-              })
-              .then(resp => {
-                console.log(resp.data);
-              });
-          }}
-          >
-            save game
-          </Button> */}
-          <Button variant="contained">
+          <Button variant="contained" disabled={!analyzing}>
             <KeyboardArrowLeftIcon />
           </Button>
 
           <Button variant="contained">Analyze</Button>
 
-          <Button variant="contained" onClick={playMove}>
+          <Button variant="contained" onClick={playMove} disabled={!analyzing}>
             <KeyboardArrowRightIcon />
           </Button>
         </div>
@@ -147,19 +145,27 @@ const ChessBoardTest: React.FC<ChessBoardProps> = () => {
             overflow: "auto"
           }}
         >
-          {allGamesList.map((game, index) => (
-            <ListItem
-              style={{ height: "90%" }}
-              key={game.game_id}
-              onClick={() => analyzeGame(game.game_id)}
-            >
-              <h5 style={{ width: "10%" }}>{index + 1}</h5>
-              <span style={{ width: "60%" }}>
-                {game.player1} vs {game.player2}
-              </span>
-              <span style={{ width: "30%" }}>{"  " + game.date.split("T")[0]}</span>
-            </ListItem>
-          ))}
+          <div style={{ height: "90%" }}>
+            {allGamesList.map((game, index) => (
+              <ListItem
+                key={game.game_id}
+                onClick={() => {
+                  analyzeGame(game.game_id);
+                }}
+                className={
+                  game.game_id === analyzingGameId
+                    ? listStyles.listItemClicked
+                    : listStyles.listItem
+                }
+              >
+                <h5 style={{ width: "10%" }}>{index + 1}</h5>
+                <span style={{ width: "60%" }}>
+                  {game.player1} vs {game.player2}
+                </span>
+                <span style={{ width: "30%" }}>{"  " + game.date.split("T")[0]}</span>
+              </ListItem>
+            ))}
+          </div>
 
           <ListItem style={{ height: "10%" }}>
             <Button
