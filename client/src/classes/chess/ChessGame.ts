@@ -55,6 +55,8 @@ class ChessGame {
   whitePiecesOnBoard: { [key in ChessPieceName]: number };
   blackPiecesOnBoard: { [key in ChessPieceName]: number };
 
+  allGameMoves: ClickedCellsType[];
+
   constructor(
     turn: ChessPieceColor = "white",
     whiteKingPos: PiecePosition = [7, 4],
@@ -94,6 +96,8 @@ class ChessGame {
     // value = piece.validMoves()
     this.cellsUnderAttackByWhite = {};
     this.cellsUnderAttackByBlack = {};
+
+    this.allGameMoves = [];
 
     this.setKingParams();
   }
@@ -549,6 +553,9 @@ class ChessGame {
     // the piece has moved and it's row and columns have been changed so there
     // is no point in passing the previously calculated moves to this function
     this.setKingInCheck(board, this.turn, piece);
+
+    // add the move to the list of all moves
+    this.allGameMoves.push(tcc);
 
     return { cellsClicked: tcc, castlingDone, pawnPromoted };
   };

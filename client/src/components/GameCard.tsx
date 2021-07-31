@@ -99,11 +99,7 @@ const GameCard: React.FC<GameCardProps> = ({ gameName, history }) => {
     <>
       <Card className={classes.root} style={{ margin: "1rem 0" }}>
         <CardActionArea className={classes.actionArea}>
-          <CardMedia
-            className={classes.media}
-            image={imageUrl}
-            title="Contemplative Reptile"
-          />
+          <CardMedia className={classes.media} image={imageUrl} title={gameName} />
           <CardContent>
             <Typography gutterBottom variant="h5" component="h2">
               {gameName}

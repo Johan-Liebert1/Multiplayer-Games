@@ -1,4 +1,5 @@
 import CheckersTestBoard from "../components/checkers/CheckersTest";
+import ChessPlayBoard from "../components/chess/ChessPlayBoard";
 import ChessBoardTest from "../components/chess/ChessTest";
 import CheckersScreen from "../views/CheckersScreen";
 import ChessScreen from "../views/ChessScreen";
@@ -19,7 +20,8 @@ export const routeNames = Object.freeze({
   CHESS_SCREEN: "CHESS_SCREEN",
   SKETCHIO_SCREEN: "SKETCHIO_SCREEN",
   CHECKERS_TEST: "CHECKERS_TEST",
-  CHESS_TEST: "CHESS_TEST"
+  CHESS_TEST: "CHESS_TEST",
+  CHESS_PLAY: "CHESS_PLAY"
 });
 
 const routes = {
@@ -72,6 +74,11 @@ const routes = {
     name: "stats",
     path: "/stats",
     component: Statistics
+  },
+  [routeNames.CHESS_PLAY]: {
+    name: "CHESS_PLAY",
+    path: "/chessplay",
+    component: ChessPlayBoard
   }
 };
 
