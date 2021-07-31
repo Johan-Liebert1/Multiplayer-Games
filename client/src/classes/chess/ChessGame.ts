@@ -481,6 +481,23 @@ class ChessGame {
     }
   };
 
+  getAllMoves = () => {
+    let moves = "";
+
+    /*  
+    {rows:[1,2],cols:[3,4]} = :1,2;3,4:
+    */
+
+    for (let m of this.allGameMoves) {
+      const [r1, r2] = m.rows;
+      const [c1, c2] = m.cols;
+
+      moves += `${getStr(r1, r2)};${getStr(c1, c2)}:`;
+    }
+
+    return moves;
+  };
+
   /**
    * For generating a PGN, two pieces could make the same move, so this function
    * distinguishes between the pieces and gets the piece that actaully made the move
@@ -545,7 +562,7 @@ class ChessGame {
       this.pgn[moveNumber] += " " + movePgn;
     }
 
-    console.log(this.pgn);
+    // console.log(this.pgn);
   };
 
   movePiece = (

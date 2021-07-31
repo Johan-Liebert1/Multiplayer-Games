@@ -76,7 +76,7 @@ def save_chess_game(details: SaveChessGameDetails, db: Session = Depends(get_db)
     new_game = SingleChessGame(
         player1=details.player1,
         player2=details.player2,
-        moves=json.dumps(details.moves),
+        moves=details.moves,
     )
 
     db.add(new_game)
@@ -102,8 +102,6 @@ def get_all_games_for_user(
         )
         .all()
     )
-
-    new_line_print(f"{query=}")
 
     serialized = serialize(query)
 

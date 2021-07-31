@@ -26,4 +26,4 @@ class GameDetailsUpdateRequest(BaseModel):
 class SaveChessGameDetails(BaseModel):
     player1: str
     player2: str
-    moves: List[Dict[str, List[int]]]
+    moves: str
