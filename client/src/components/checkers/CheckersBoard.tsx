@@ -8,10 +8,8 @@ import { setSocketAction } from "../../store/actions/socketActions";
 
 // components
 import GameOverComponent from "../allGames/GameOverComponent";
-import Cell from "../allGames/Cell";
 
 // checkers
-import CheckersPiece from "../../classes/checkers/CheckersPiece";
 import CheckersGame from "../../classes/checkers/CheckersGame";
 
 // sockets
@@ -25,6 +23,7 @@ import { SocketState } from "../../types/store/storeTypes";
 import { useRef } from "react";
 import { getNewCheckersBoard } from "../../helpers/checkersBoard";
 import { updateGameDetailsApiCall } from "../../helpers/updateGameDetails";
+import RenderCheckersBoard from "./RenderCheckersBoard";
 
 const game = new CheckersGame();
 let socket: SocketState;
@@ -155,46 +154,13 @@ const CheckersBoard: React.FC<CheckersBoardProps> = ({ roomId }) => {
           }}
           ref={checkersBoardRef}
         >
-          {board.map((row, ri) => {
-            return (
-              <div style={{ margin: 0, padding: 0, display: "flex" }} key={`row${ri}`}>
-                {row.map((_col, ci) => {
-                  let color = (ri + ci) % 2 === 0 ? "#222f3e" : "#e74c3c";
-
-                  let image = "";
-                  let piece = board[ri][ci];
-                  let blueDot = false;
-
-                  if (piece instanceof CheckersPiece) {
-                    if (piece.color === "white") {
-                      if (piece.isKing) image = "images/checkers/WhiteKing.png";
-                      else image = "images/checkers/WhitePiece.png";
-                    } else {
-                      if (piece.isKing) image = "images/checkers/RedKing.png";
-                      else image = "images/checkers/RedPiece.png";
-                    }
-                  } else if (piece === "dot") {
-                    blueDot = true;
-                  }
-
-                  return (
-                    <Cell
-                      game="checkers"
-                      blueDot={blueDot}
-                      row={ri}
-                      col={ci}
-                      color={color}
-                      key={`row${ri}-col${ci}`}
-                      image={image}
-                      showMoves={showMoves}
-                      boardRef={checkersBoardRef}
-                      userCheckersColor={userPieceColor}
-                    />
-                  );
-                })}
-              </div>
-            );
-          })}
+          <RenderCheckersBoard
+            board={board}
+            checkersBoardRef={checkersBoardRef}
+            userPieceColor={userPieceColor}
+            testBoard={false}
+            movePiece={showMoves}
+          />
         </div>
       </div>
       <div style={{ height: "2rem", padding: "0.5rem 0" }}>

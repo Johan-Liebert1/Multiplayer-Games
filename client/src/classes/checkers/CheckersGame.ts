@@ -6,6 +6,7 @@ import {
   CheckersPieceColor,
   ValidCheckersMove
 } from "../../types/checkersTypes";
+import { PiecePosition } from "../../types/chessTypes";
 import { ClickedCellsType } from "../../types/games";
 import CheckersPiece from "./CheckersPiece";
 
@@ -18,6 +19,7 @@ class CheckersGame {
   whitePiecesOnBoard: number;
   gameOver: boolean;
   winner: CheckersPieceColor | null;
+  gameMoves: string;
 
   constructor() {
     this.cellsClicked = { rows: [], cols: [] };
@@ -28,6 +30,7 @@ class CheckersGame {
     this.whitePiecesOnBoard = 8;
     this.gameOver = false;
     this.winner = null;
+    this.gameMoves = "";
   }
 
   clearDots = (board: CheckersBoardType): void => {
@@ -130,6 +133,27 @@ class CheckersGame {
     }
   };
 
+  generateGameMove = (
+    clickedCells: ClickedCellsType,
+    capturingMove: { wasCapturingMove: boolean; capturedPiecePos: PiecePosition }
+  ) => {
+    let move = "";
+
+    const {
+      rows: [ri, rf],
+      cols: [ci, cf]
+    } = clickedCells;
+    const [cpr, cpc] = capturingMove.capturedPiecePos;
+
+    if (!capturingMove.wasCapturingMove) {
+      move += `${getStr(ri, rf)};${getStr(ci, cf)}:`;
+    } else {
+      move += `${getStr(ri, rf)};${getStr(cpr, cpc)};${getStr(ci, cf)}:`;
+    }
+
+    this.gameMoves += move;
+  };
+
   movePiece = (
     board: CheckersBoardType,
     clickedCells: ClickedCellsType,
@@ -152,6 +176,9 @@ class CheckersGame {
 
     const actualMove = validPieceMoves[getStr(rowf, colf)];
 
+    let wasCapturingMove = false;
+    let capturedPiecePos: PiecePosition = [-1, -1];
+
     if (actualMove === "valid") {
       // not a capturing move
       piece.setRowCol(rowf, colf);
@@ -160,6 +187,8 @@ class CheckersGame {
       board[rowi][coli] = 0;
       board[rowf][colf] = piece;
     } else {
+      wasCapturingMove = true;
+
       // if it is a capturing move then the info about the piece captured
       // is stored in the second position of the array
       const { row, col } = actualMove.capturing;
@@ -181,14 +210,16 @@ class CheckersGame {
       board[rowi][coli] = 0;
       board[row][col] = 0; // remove the captured piece
       board[rowf][colf] = piece;
+
+      capturedPiecePos = [row, col];
     }
 
     let tcc = this.cellsClicked;
 
+    this.generateGameMove(tcc, { wasCapturingMove, capturedPiecePos });
+
     this.clearDots(board);
     this.changeTurn();
-
-    console.log({ red: this.redPiecesOnBoard, white: this.whitePiecesOnBoard });
 
     return tcc;
   };

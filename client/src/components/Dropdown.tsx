@@ -10,7 +10,7 @@ interface DropdownProps extends RouteProps {
   close: (type: "chess" | "checkers") => void;
 }
 
-const Dropdown: React.FC<DropdownProps> = ({ dropdownItems, match, close, type }) => {
+const Dropdown: React.FC<DropdownProps> = ({ dropdownItems, location, close, type }) => {
   const handleClick = () => {
     close(type);
   };
@@ -19,12 +19,14 @@ const Dropdown: React.FC<DropdownProps> = ({ dropdownItems, match, close, type }
     <div className="dropdown">
       {dropdownItems.map((item, i) => (
         <div
-          className={"dropdown-item" + `${match.path === item.path ? " selected" : ""}`}
+          className={
+            "dropdown-item" + `${location.pathname === item.path ? " selected" : ""}`
+          }
+          key={i}
         >
           <Link
             onClick={handleClick}
             to={item.path}
-            key={i}
             style={{ textDecoration: "none", color: "inherit" }}
           >
             {item.text}
