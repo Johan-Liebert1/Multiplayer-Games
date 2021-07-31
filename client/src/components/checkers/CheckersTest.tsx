@@ -131,22 +131,7 @@ const CheckersTestBoard: React.FC<CheckersBoardProps> = () => {
             <KeyboardArrowLeftIcon />
           </Button>
 
-          <Button
-            variant="contained"
-            onClick={() => {
-              const data = JSON.stringify({
-                player1: user.username,
-                palyer2: "Johan",
-                moves: analysisBoard.getMoves()
-              });
-
-              axiosInstance
-                .post("/games/checkers/savegame", data)
-                .then(resp => console.log(resp.data));
-            }}
-          >
-            Analyze
-          </Button>
+          <Button variant="contained">Analyze</Button>
 
           <Button variant="contained" onClick={playMove} disabled={!analyzing}>
             <KeyboardArrowRightIcon />
@@ -171,7 +156,7 @@ const CheckersTestBoard: React.FC<CheckersBoardProps> = () => {
               <ListItem
                 key={game.game_id}
                 onClick={() => {
-                  // analyzeGame(game.game_id);
+                  analyzeGame(game.game_id);
                 }}
                 className={
                   game.game_id === analyzingGameId

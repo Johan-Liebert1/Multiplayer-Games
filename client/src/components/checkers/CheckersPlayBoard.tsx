@@ -15,6 +15,7 @@ import { getNewCheckersBoard } from "../../helpers/checkersBoard";
 import { axiosInstance } from "../../config/axiosConfig";
 import { useTypedSelector } from "../../hooks/useTypedSelector";
 import { getCheckersMovesFromString } from "../../helpers/globalHelpers";
+import { Button } from "@material-ui/core";
 
 let game = new CheckersGame();
 
@@ -91,6 +92,24 @@ const CheckersPlayBoard: React.FC<CheckersBoardProps> = () => {
             movePiece={showMoves}
           />
         </div>
+        <Button
+          variant="contained"
+          onClick={() => {
+            const data = JSON.stringify({
+              player1: user.username,
+              player2: "Johan",
+              moves: game.getMoves()
+            });
+
+            console.log(data);
+
+            axiosInstance
+              .post("/games/checkers/savegame", data)
+              .then(resp => console.log(resp.data));
+          }}
+        >
+          Analyze
+        </Button>
       </div>
     </div>
   );
