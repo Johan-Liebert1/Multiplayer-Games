@@ -9,6 +9,7 @@ interface RenderChessBoardProps {
   board: ChessBoardType;
   chessBoardRef: React.MutableRefObject<HTMLDivElement | null>;
   userPieceColor: ChessPieceColor;
+  testBoard: boolean;
   movePiece: (row: number, col: number) => void;
 }
 
@@ -16,6 +17,7 @@ const RenderChessBoard: React.FC<RenderChessBoardProps> = ({
   board,
   chessBoardRef,
   userPieceColor,
+  testBoard,
   movePiece
 }) => {
   return (
@@ -67,7 +69,7 @@ const RenderChessBoard: React.FC<RenderChessBoardProps> = ({
                   boardRef={chessBoardRef}
                   showMoves={movePiece}
                   userChessColor={userPieceColor}
-                  testBoard
+                  testBoard={testBoard}
                 />
               );
             })}

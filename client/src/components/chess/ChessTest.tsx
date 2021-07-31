@@ -90,6 +90,7 @@ const ChessBoardTest: React.FC<ChessBoardProps> = () => {
             movePiece={(i: number, j: number) => {
               return;
             }}
+            testBoard={true}
           />
         </div>
         <div

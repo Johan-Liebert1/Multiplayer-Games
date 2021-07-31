@@ -4,14 +4,12 @@ import { withRouter } from "react-router-dom";
 import useWindowSize from "../../hooks/useWindowSize";
 
 // components
-import Cell from "../allGames/Cell";
 import GameOverComponent from "../allGames/GameOverComponent";
 import PawnPromotionDialog from "./PawnPromotionDialog";
 
 // gameplay
 import ChessGame from "../../classes/chess/ChessGame";
 import Pawn from "../../classes/chess/Pawn";
-import ChessPiece from "../../classes/chess/ChessPiece";
 
 // types
 import {
@@ -32,6 +30,7 @@ import { useTypedSelector } from "../../hooks/useTypedSelector";
 import { updateUserSocketDetails } from "../../store/actions/userActions";
 import { getNewChessBoard } from "../../helpers/chessHelpers";
 import { updateGameDetailsApiCall } from "../../helpers/updateGameDetails";
+import RenderChessBoard from "./RenderChessBoard";
 
 const game = new ChessGame();
 let socket: SocketState;
@@ -215,62 +214,6 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
     }
   };
 
-  const showChessBoard = () => {
-    return board.map((row, ri) => {
-      return (
-        <div
-          style={{
-            margin: 0,
-            padding: 0,
-            display: "flex"
-          }}
-          key={`row${ri}`}
-        >
-          {row.map((col, ci) => {
-            let color =
-              (ri + ci) % 2 !== 0 ? "rgba(195,105,56,0)" : "rgba(239, 206,163,0)";
-
-            let piece = board[ri][ci];
-            let blueDot = false,
-              redDot,
-              isClicked;
-
-            if (piece === "dot") {
-              blueDot = true;
-            }
-
-            if (piece instanceof ChessPiece) {
-              if (piece.isBeingAttacked) {
-                redDot = true;
-              }
-
-              if (piece.isClicked) {
-                isClicked = true;
-              }
-            }
-
-            return (
-              <Cell
-                game="chess"
-                blueDot={blueDot}
-                redDot={redDot}
-                isClicked={isClicked}
-                row={ri}
-                col={ci}
-                color={color}
-                key={`row${ri}-col${ci}`}
-                image={piece instanceof ChessPiece ? piece.image : ""}
-                showMoves={showMoves}
-                boardRef={chessBoardRef}
-                userChessColor={userPieceColor}
-              />
-            );
-          })}
-        </div>
-      );
-    });
-  };
-
   return (
     <div style={{ margin: windowSize[0] < 910 ? "2rem 0" : "" }}>
       <div style={{ height: "2rem" }}>
@@ -306,7 +249,13 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
           }}
           ref={chessBoardRef}
         >
-          {showChessBoard()}
+          <RenderChessBoard
+            board={board}
+            chessBoardRef={chessBoardRef}
+            userPieceColor={userPieceColor}
+            testBoard={false}
+            movePiece={showMoves}
+          />
         </div>
       </div>
       <div style={{ height: "2rem", padding: "0.5rem 0" }}>
