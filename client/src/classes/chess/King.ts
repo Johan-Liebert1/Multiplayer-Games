@@ -45,7 +45,7 @@ class King extends ChessPiece {
     const cellsUnderAttack =
       this.color === "white" ? cellsUnderAttackByBlack : cellsUnderAttackByWhite;
 
-    // console.log({ cellsUnderAttack });
+    console.log({ cellsUnderAttack });
 
     const moveKeys = Object.keys(this.moves);
 
@@ -60,7 +60,7 @@ class King extends ChessPiece {
 
     this.invalidMoves = newInvalidMoves;
 
-    // console.log({ newInvalidMoves });
+    // console.log({ newValidMoves, newInvalidMoves });
 
     return newValidMoves;
   };
@@ -267,9 +267,13 @@ class King extends ChessPiece {
 
     let cm = getStr(pieceCheckingKing.row, pieceCheckingKing.col);
 
+    // console.log("king in check by bishop, this.moves = ", this.moves);
+
     if (cm in this.moves) {
       newValidMoves[cm] = this.moves[cm];
     }
+
+    // console.log("right after, newValidMoves = ", newValidMoves);
 
     this.moves = newValidMoves;
   };
@@ -341,7 +345,9 @@ class King extends ChessPiece {
       }
     }
 
-    this.moves = this.notAllowKingToMoveToAttackedCell(kingParameters);
+    this.notAllowKingToMoveToAttackedCell(kingParameters);
+
+    // console.log("king moves final = ", this.moves);
 
     return this.moves;
   };

@@ -82,39 +82,55 @@ class ChessPiece {
       }
     }
 
-    // get the cells between the king and the piece checking the king
-    // this way we can check if a move exists that blocks the check
-    // const cellsBetweenPieces = pieceCheckingKing.getCellsBetweenPieces(kingPos);
+    if (pieceCheckingKing) {
+      // get the cells between the king and the piece checking the king
+      // this way we can check if a move exists that blocks the check
+      const cellsBetweenPieces = pieceCheckingKing.getCellsBetweenPieces(kingPos);
 
-    // if (this.pieceName === "king") {
-    //   // console.log("inside if ");
-    //   // if it is the king then it has to move
-    //   Object.keys(this.moves).forEach(key => {
-    //     if (!(key in cellsBetweenPieces)) {
-    //       // if the move is not a check blocking move
-    //       newValidMoves[key] = "valid";
-    //     }
+      if (this.pieceName === "king") {
+        // console.log("inside if ");
+        // if it is the king then it has to move
+        console.log("king moves = ", this.moves);
+        Object.keys(this.moves).forEach(key => {
+          if (!(key in cellsBetweenPieces)) {
+            // if the move is not a check blocking move
+            // as the king cannot move to a square that's under attack
+            newValidMoves[key] = "valid";
+          }
 
-    //     // can only capture with the king if the piece being captured is not
-    //     // being protected by one of it's own pieces
-    //     if (key === getStr(pieceCheckingKing.row, pieceCheckingKing.col)) {
-    //       newValidMoves[key] = "capturing";
-    //     }
-    //   });
-    // } else {
-    //   // if it's not the king then it can block the check
-    //   //console.log("inside else");
-    //   Object.keys(this.moves).forEach(key => {
-    //     if (key in cellsBetweenPieces) {
-    //       // try to implement piece being pinned here
+          // can only capture with the king if the piece being captured is not
+          // being protected by one of it's own pieces
+          if (
+            key ===
+            getStr(
+              (pieceCheckingKing as ChessPiece).row,
+              (pieceCheckingKing as ChessPiece).col
+            )
+          ) {
+            newValidMoves[key] = "capturing";
+          }
+        });
+      } else {
+        // if it's not the king then it can block the check
+        //console.log("inside else");
+        Object.keys(this.moves).forEach(key => {
+          if (key in cellsBetweenPieces) {
+            // try to implement piece being pinned here
 
-    //       newValidMoves[key] = "valid";
-    //     }
-    //     if (key === getStr(pieceCheckingKing.row, pieceCheckingKing.col)) {
-    //       newValidMoves[key] = "capturing";
-    //     }
-    //   });
-    // }
+            newValidMoves[key] = "valid";
+          }
+          if (
+            key ===
+            getStr(
+              (pieceCheckingKing as ChessPiece).row,
+              (pieceCheckingKing as ChessPiece).col
+            )
+          ) {
+            newValidMoves[key] = "capturing";
+          }
+        });
+      }
+    }
 
     return newValidMoves;
   };

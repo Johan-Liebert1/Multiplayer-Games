@@ -716,7 +716,10 @@ class ChessGame {
       for (let col = 0; col < board.length; col++) {
         const piece = board[row][col];
         if (piece instanceof ChessPiece && piece.color === color) {
-          if (Object.keys(piece.validMoves(board, this.kingParams)).length > 0) {
+          const validMoves = piece.validMoves(board, this.kingParams);
+          piece.pieceName === "king" &&
+            console.log(piece.color + " " + piece.pieceName, validMoves);
+          if (Object.keys(validMoves).length > 0) {
             return true;
           }
         }
@@ -755,12 +758,12 @@ class ChessGame {
     if (this.blackPiecesValue === 0 || this.blackPiecesValue === 3) {
       if (this.whitePiecesValue === 0 || this.whitePiecesValue === 3) {
         // only two kings are left on board, or a king and bishop/knight left
-
         return this.draw(waysToDraw.INSUFFICIENT_PIECES);
       }
     }
 
     if (!this.colorHasMovesLeft(board, "white")) {
+      console.log("no white moves left");
       if (this.whiteKingInCheck) {
         return this.blackWins();
       } else {
@@ -769,6 +772,8 @@ class ChessGame {
     }
 
     if (!this.colorHasMovesLeft(board, "black")) {
+      console.log("no black moves left");
+
       if (this.blackKingInCheck) {
         return this.whiteWins();
       } else {

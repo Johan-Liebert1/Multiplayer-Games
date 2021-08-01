@@ -38,7 +38,7 @@ const Cell: React.FC<CellProps> = ({
   const cellRef = useRef<HTMLDivElement | null>(null);
 
   const bgColor = isClicked ? "rgba(240, 147, 43, 0.5)" : null;
-  const imgDim = game === "chess" ? 70 : 50;
+  const imgDim = game === "chess" ? 65 : 50;
 
   const divStyles: React.CSSProperties = {
     width: CELL_SIZE,
