@@ -37,30 +37,33 @@ class King extends ChessPiece {
   }
 
   notAllowKingToMoveToAttackedCell = (kingParameters: KingParametersType) => {
-    // not allow king to capture a protected piece
-    let newValidMoves: ValidChessMove = {};
-    let newInvalidMoves = {};
+    let newValidMoves: ValidChessMove = {},
+      newInvalidMoves: InvalidChessMove = {};
 
     const { cellsUnderAttackByWhite, cellsUnderAttackByBlack } = kingParameters;
+
     const cellsUnderAttack =
       this.color === "white" ? cellsUnderAttackByBlack : cellsUnderAttackByWhite;
 
-    console.log({ cellsUnderAttack });
-
     const moveKeys = Object.keys(this.moves);
+    const otherKeys = Object.keys(cellsUnderAttack);
 
-    for (const move of moveKeys) {
-      if (move in cellsUnderAttack) {
-        this.invalidMoves[move] = "invalid";
-        delete this.moves[move];
+    for (let i = 0; i < moveKeys.length; i++) {
+      let moveAllowed = true;
+      for (let j = 0; j < otherKeys.length; j++) {
+        if (moveKeys[i] in cellsUnderAttack[otherKeys[j]]) {
+          moveAllowed = false;
+          break;
+        }
+      }
+      if (moveAllowed) {
+        newValidMoves[moveKeys[i]] = this.moves[moveKeys[i]];
       } else {
-        newValidMoves[move] = this.moves[move];
+        newInvalidMoves[moveKeys[i]] = "invalid";
       }
     }
 
     this.invalidMoves = newInvalidMoves;
-
-    // console.log({ newValidMoves, newInvalidMoves });
 
     return newValidMoves;
   };
@@ -345,7 +348,7 @@ class King extends ChessPiece {
       }
     }
 
-    this.notAllowKingToMoveToAttackedCell(kingParameters);
+    this.moves = this.notAllowKingToMoveToAttackedCell(kingParameters);
 
     // console.log("king moves final = ", this.moves);
 

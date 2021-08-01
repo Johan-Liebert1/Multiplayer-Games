@@ -1,6 +1,7 @@
 import { pieceNamesToLetter } from "../../helpers/chessHelpers";
 import { getStr } from "../../helpers/globalHelpers";
 import {
+  CellsUnderAttack,
   ChessBoardType,
   ChessDrawType,
   ChessPieceColor,
@@ -10,6 +11,7 @@ import {
   KingParametersType,
   MovePieceReturnType,
   PiecePosition,
+  PotentialCapturingMove,
   ProtectingChessMove,
   ShowValidMovesReturnType,
   ValidChessMove,
@@ -36,12 +38,8 @@ class ChessGame {
   pieceCheckingBlackKing: ChessPiece | null;
   whiteKingPos: PiecePosition;
   blackKingPos: PiecePosition;
-  cellsUnderAttackByWhite: {
-    [key: string]: ValidChessMove | ProtectingChessMove | InvalidChessMove;
-  };
-  cellsUnderAttackByBlack: {
-    [key: string]: ValidChessMove | ProtectingChessMove | InvalidChessMove;
-  };
+  cellsUnderAttackByWhite: CellsUnderAttack;
+  cellsUnderAttackByBlack: CellsUnderAttack;
 
   kingParams: KingParametersType;
 
@@ -350,7 +348,11 @@ class ChessGame {
         if (piece instanceof ChessPiece) {
           // console.log("piece instanceof ChessPiece");
           let str = getStr(piece.row, piece.col);
-          let attackedCells: ValidChessMove | ProtectingChessMove | InvalidChessMove = {};
+          let attackedCells:
+            | ValidChessMove
+            | ProtectingChessMove
+            | InvalidChessMove
+            | PotentialCapturingMove = {};
 
           if (piece.color === "white") {
             if (!(piece.pieceName in this.whitePiecesOnBoard)) {
@@ -374,19 +376,26 @@ class ChessGame {
           else piece.validMoves(board, this.kingParams);
           // console.log("after gettingmoves");
 
-          let totalMoves: ValidChessMove | ProtectingChessMove | InvalidChessMove = {};
+          let totalMoves: ValidChessMove | ProtectingChessMove | PotentialCapturingMove =
+            {};
 
           if (piece instanceof King) {
             totalMoves = {
               ...piece.moves,
+              ...piece.protectingMoves
+              // ...piece.invalidMoves
+            } as ValidChessMove | ProtectingChessMove | PotentialCapturingMove;
+          } else if (piece instanceof Pawn) {
+            totalMoves = {
+              ...piece.moves,
               ...piece.protectingMoves,
-              ...piece.invalidMoves
-            } as ValidChessMove | ProtectingChessMove | InvalidChessMove;
+              ...piece.potentialCapturingMoves
+            } as ValidChessMove | ProtectingChessMove | PotentialCapturingMove;
           } else {
             totalMoves = { ...piece.moves, ...piece.protectingMoves } as
               | ValidChessMove
               | ProtectingChessMove
-              | InvalidChessMove;
+              | PotentialCapturingMove;
           }
 
           // console.log("totalMoves = ", totalMoves);
@@ -397,7 +406,7 @@ class ChessGame {
 
             if (piece instanceof Pawn) {
               // as pawn's valid moves aren't its capturing moves
-              if (totalMoves[key] === "capturing") {
+              if (totalMoves[key] !== "valid") {
                 attackedCells[key] = totalMoves[key];
 
                 if (piece.color === "black" && getStr(...this.whiteKingPos) === key) {

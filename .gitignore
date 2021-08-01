@@ -4,6 +4,7 @@ env
 
 test
 TODO.txt
+__js__
 
 # dependencies
 node_modules

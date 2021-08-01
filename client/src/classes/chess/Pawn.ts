@@ -1,7 +1,8 @@
 import {
   ChessBoardType,
   ChessPieceColor,
-  KingParametersType
+  KingParametersType,
+  PotentialCapturingMove
 } from "../../types/chessTypes";
 import ChessPiece from "./ChessPiece";
 
@@ -9,6 +10,7 @@ import { getStr } from "../../helpers/globalHelpers";
 
 class Pawn extends ChessPiece {
   hasMoved: boolean;
+  potentialCapturingMoves: PotentialCapturingMove;
 
   constructor(color: ChessPieceColor, row: number, col: number) {
     super(color, row, col);
@@ -16,6 +18,7 @@ class Pawn extends ChessPiece {
     this.pieceName = "pawn";
     this.image = `images/chess/${this.color}Pawn.png`;
 
+    this.potentialCapturingMoves = {};
     this.setHasMoved();
   }
 
@@ -60,6 +63,9 @@ class Pawn extends ChessPiece {
           } else {
             this.protectingMoves[getStr(this.row + adder, this.col + 1)] = "protecting";
           }
+        } else if (potentialCapture === 0) {
+          this.potentialCapturingMoves[getStr(this.row + adder, this.col + 1)] =
+            "potentialCapture";
         }
       }
       if (this.col - 1 >= 0) {
@@ -71,6 +77,9 @@ class Pawn extends ChessPiece {
           } else {
             this.protectingMoves[getStr(this.row + adder, this.col - 1)] = "protecting";
           }
+        } else if (potentialCapture === 0) {
+          this.potentialCapturingMoves[getStr(this.row + adder, this.col - 1)] =
+            "potentialCapture";
         }
       }
     }

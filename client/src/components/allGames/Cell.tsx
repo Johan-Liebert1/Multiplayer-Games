@@ -38,7 +38,7 @@ const Cell: React.FC<CellProps> = ({
   const cellRef = useRef<HTMLDivElement | null>(null);
 
   const bgColor = isClicked ? "rgba(240, 147, 43, 0.5)" : null;
-  const imgDim = game === "chess" ? 65 : 50;
+  const imgDim = game === "chess" ? 65 : 40;
 
   const divStyles: React.CSSProperties = {
     width: CELL_SIZE,
@@ -76,8 +76,9 @@ const Cell: React.FC<CellProps> = ({
     height: 20,
     width: 20,
     position: "absolute",
-    top: 27.5,
-    left: 27.5
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)"
   };
 
   const handleCellClick = () => {
@@ -131,6 +132,7 @@ const Cell: React.FC<CellProps> = ({
             src={window.location.origin + "/" + image}
             style={imgStyle}
             alt={image}
+            whileHover={{ cursor: "grab" }}
             drag
             dragConstraints={cellRef}
             dragElastic={1}

@@ -23,6 +23,8 @@ export type ProtectingMoveType = "protecting";
 export type CastlingMoveType = "castling";
 export type InvalidMoveType = "invalid";
 
+export type PotentialCapturingMove = { [k: string]: "potentialCapture" };
+
 export type ValidChessMove = {
   [key: string]: ValidMoveType | CapturingMoveType | CastlingMoveType;
 };
@@ -39,6 +41,23 @@ export type ChessBoardType = (ChessPiece | number | "dot")[][];
 
 export type PiecePosition = [number, number];
 
+// export type CellsUnderAttack = {
+//   [key: string]:
+//     | ValidMoveType
+//     | CapturingMoveType
+//     | ProtectingMoveType
+//     | CastlingMoveType
+//     | InvalidMoveType;
+// };
+
+export type CellsUnderAttack = {
+  [key: string]:
+    | ValidChessMove
+    | InvalidChessMove
+    | ProtectingChessMove
+    | PotentialCapturingMove;
+};
+
 export type KingParametersType = {
   blackKingInCheck: boolean;
   whiteKingInCheck: boolean;
@@ -46,12 +65,8 @@ export type KingParametersType = {
   pieceCheckingBlackKing: ChessPiece | null;
   whiteKingPos: PiecePosition;
   blackKingPos: PiecePosition;
-  cellsUnderAttackByWhite: {
-    [key: string]: ValidChessMove | ProtectingChessMove | InvalidChessMove;
-  };
-  cellsUnderAttackByBlack: {
-    [key: string]: ValidChessMove | ProtectingChessMove | InvalidChessMove;
-  };
+  cellsUnderAttackByWhite: CellsUnderAttack;
+  cellsUnderAttackByBlack: CellsUnderAttack;
 };
 
 export type GenericKingParametersType = {

@@ -18,20 +18,21 @@ const Dropdown: React.FC<DropdownProps> = ({ dropdownItems, location, close, typ
   return (
     <div className="dropdown">
       {dropdownItems.map((item, i) => (
-        <div
-          className={
-            "dropdown-item" + `${location.pathname === item.path ? " selected" : ""}`
-          }
+        <Link
+          onClick={handleClick}
+          to={item.path}
+          style={{ textDecoration: "none", color: "inherit" }}
           key={i}
         >
-          <Link
-            onClick={handleClick}
-            to={item.path}
-            style={{ textDecoration: "none", color: "inherit" }}
+          <div
+            className={
+              "dropdown-item" + `${location.pathname === item.path ? " selected" : ""}`
+            }
+            style={{ width: "100%", height: "100%" }}
           >
             {item.text}
-          </Link>
-        </div>
+          </div>
+        </Link>
       ))}
     </div>
   );
