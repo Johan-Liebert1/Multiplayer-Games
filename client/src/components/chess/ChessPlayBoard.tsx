@@ -128,20 +128,20 @@ const ChessPlayBoard: React.FC = () => {
     const ele = chessBoardRef.current as HTMLDivElement;
     const eleRect = ele.getBoundingClientRect();
 
-    const targetRect = (e.target as HTMLDivElement).getBoundingClientRect();
+    const targetRect = (e.target as HTMLElement).getBoundingClientRect();
 
     // Calculate the top and left positions
     const top = Math.abs(eleRect.top - targetRect.top);
     const left = Math.abs(eleRect.left - targetRect.left);
 
-    const row = Math.floor(top / 65);
-    const col = Math.floor(left / 65);
+    const row = Math.floor(top / CELL_SIZE);
+    const col = Math.floor(left / CELL_SIZE);
 
     if (row < 0 || row > 7 || col < 0 || col > 7) return;
 
-    if ((e.target as HTMLDivElement).tagName === "DIV") return;
+    if ((e.target as HTMLElement).tagName === "DIV") return;
 
-    let imgSrc = (e.target as HTMLDivElement).getAttribute("src") as string;
+    let imgSrc = (e.target as HTMLElement).getAttribute("src") as string;
     let pieceColor, pieceName;
 
     const possibleNames = imgSrc.slice(imgSrc.lastIndexOf("/") + 1);
@@ -159,8 +159,8 @@ const ChessPlayBoard: React.FC = () => {
   const handleStartGame = () => {
     // setGameStarted(true);
     game = new ChessGame("white", whiteKingPos.current, blackKingPos.current);
-    console.log(game);
-    console.log(board);
+    // console.log(game);
+    // console.log(board);
 
     setTimeout(() => {
       game.setInitiallyAttackedCells(board);
@@ -230,8 +230,8 @@ const ChessPlayBoard: React.FC = () => {
     {
       text: "Start Game",
       clickHandler: () => {
-        // handleStartGame();
-        console.log("wrong");
+        handleStartGame();
+        // console.log("wrong");
       },
       style: btnStyles("#16a085")
     },
@@ -287,9 +287,16 @@ const ChessPlayBoard: React.FC = () => {
   ];
 
   return (
-    <motion.div style={{ margin: windowSize[0] < 910 ? "2rem" : "2rem" }}>
+    <motion.div
+      style={{
+        minWidth: "100vw",
+        minHeight: "92vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
+      }}
+    >
       <motion.div
-        id="checkersBoard"
         style={{
           position: "relative",
           margin: "2rem 0",

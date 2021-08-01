@@ -33,6 +33,26 @@ const NavBar: React.FC<NavBarProps> = ({ history }) => {
     setShowDropdown(old => ({ ...old, [type]: !old[type] }));
   };
 
+  const chessDropdownItems = [
+    { text: "Play Board", path: routes[routeNames.CHESS_PLAY].path }
+  ];
+
+  const checkersDropdownItems = [
+    { text: "Play Board", path: routes[routeNames.CHECKERS_PLAY].path }
+  ];
+
+  // can only have the analysis board available to them if they're logged in
+  if (user?.username) {
+    chessDropdownItems.unshift({
+      text: "Analyze Games",
+      path: routes[routeNames.CHESS_TEST].path
+    });
+    checkersDropdownItems.unshift({
+      text: "Analyze Games",
+      path: routes[routeNames.CHECKERS_TEST].path
+    });
+  }
+
   return (
     <nav
       className="navbar-container"
@@ -40,13 +60,19 @@ const NavBar: React.FC<NavBarProps> = ({ history }) => {
         justifyContent: user?.username ? "space-between" : "space-around"
       }}
     >
-      {user?.username && (
-        <div className="navbar-logo">
-          <Link to={routes[routeNames.GAMES_SCREEN].path} className="react-link">
-            <h3>Multiplayer Games</h3>
-          </Link>
-        </div>
-      )}
+      <div className="navbar-logo">
+        <Link
+          to={
+            user?.username
+              ? routes[routeNames.GAMES_SCREEN].path
+              : routes[routeNames.LOGIN].path
+          }
+          className="react-link"
+        >
+          <h3>Multiplayer Games</h3>
+        </Link>
+      </div>
+
       <div className="navbar-navlink" style={{ position: "relative" }}>
         <div
           className={`nav-link react-link ${
@@ -58,15 +84,13 @@ const NavBar: React.FC<NavBarProps> = ({ history }) => {
         </div>
         {showDropdown.chess && (
           <Dropdown
-            dropdownItems={[
-              { text: "Analyze Games", path: routes[routeNames.CHESS_TEST].path },
-              { text: "Play Board", path: routes[routeNames.CHESS_PLAY].path }
-            ]}
+            dropdownItems={chessDropdownItems}
             type="chess"
             close={closeDropdown}
           />
         )}
       </div>
+
       <div className="navbar-navlink" style={{ position: "relative" }}>
         <div
           className={`nav-link react-link ${
@@ -78,10 +102,7 @@ const NavBar: React.FC<NavBarProps> = ({ history }) => {
         </div>
         {showDropdown.checkers && (
           <Dropdown
-            dropdownItems={[
-              { text: "Analyze Games", path: routes[routeNames.CHECKERS_TEST].path },
-              { text: "Play Board", path: routes[routeNames.CHECKERS_PLAY].path }
-            ]}
+            dropdownItems={checkersDropdownItems}
             type="checkers"
             close={closeDropdown}
           />
