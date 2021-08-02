@@ -1,9 +1,10 @@
 import os
+from helpers.decorators import login_required
 
 from helpers.printHelper import new_line_print
 import sys
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 import socketio
 
 from routes.userRoutes import user_router
@@ -31,6 +32,12 @@ fast_app.add_middleware(
 fast_app.include_router(user_router, prefix="/api/user", tags=["user"])
 fast_app.include_router(upload_router, prefix="/api/upload", tags=["upload"])
 fast_app.include_router(games_router, prefix="/api/games", tags=["games"])
+
+
+# @fast_app.get("/random/{a}")
+# @login_required
+# def random(a: int, request: Request):
+#     new_line_print(f"in the handler {request.state.user=}")
 
 
 socket = socketio.AsyncServer(

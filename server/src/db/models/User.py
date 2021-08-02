@@ -1,6 +1,6 @@
 from sqlalchemy import Integer, String
 from sqlalchemy.sql.schema import Column
-from sqlalchemy.sql.sqltypes import LargeBinary
+from sqlalchemy.sql.sqltypes import Boolean, LargeBinary
 
 from ..connection import Base
 
@@ -16,3 +16,4 @@ class UserModel(Base):
     lastName = Column(String(50), default="")
     email = Column(String(100), default="")
     profilePictureUrl = Column(String(250), default="")
+    isSuperAdmin = Column(Boolean, nullable=False, default=False)

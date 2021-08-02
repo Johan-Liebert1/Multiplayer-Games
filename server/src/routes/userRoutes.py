@@ -77,6 +77,8 @@ def user_register_handler(details: UserCreateRequest, db: Session = Depends(get_
         )
 
         db.add(to_create)
+        db.commit()  # comitting so that a ForeignKey exists for the next two tables
+
         db.add(to_create_chess)
         db.add(to_create_checkers)
         db.commit()
@@ -126,7 +128,8 @@ def user_login_handler(details: UserLoginRequest, db: Session = Depends(get_db))
 
 
 @user_router.get("/{user_id}")
-def get_user_info(user_id: str, db: Session = Depends(get_db)):
+@login_required
+def get_user_info(user_id: int, request: Request, db: Session = Depends(get_db)):
     q = (
         db.query(UserModel, ChessGames, CheckersGames)
         .filter(UserModel.id == user_id)
@@ -139,9 +142,32 @@ def get_user_info(user_id: str, db: Session = Depends(get_db)):
         .all()
     )
 
-    new_line_print(q)
+    if len(q) == 0:
+        return default_response(False, f"User with id {user_id} not found")
 
     serialized = serialize(q[0])
+
+    # don't allow random users to access other user's info, except if it's a superadmin
+    found_user_id = serialized[0].get("id")
+
+    # added by the @login_required decorator
+    requesting_user_id = request.state.user.get("id")
+
+    requesting_user = (
+        db.query(UserModel).filter(UserModel.id == requesting_user_id).first()
+    )
+
+    if not requesting_user:
+        return default_response(False, "Not Authorized")
+
+    if found_user_id != requesting_user_id and not requesting_user.isSuperAdmin:
+        """
+        A user who is not the superadmin is trying to access someone else's profile,
+        don't allow it
+        """
+        return default_response(
+            False, "You are not Authroised to access this information"
+        )
 
     return {"info": serialized, "list_order": ["chess", "checkers"]}
 
