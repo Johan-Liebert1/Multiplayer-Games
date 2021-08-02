@@ -3,7 +3,7 @@ import React from "react";
 
 export const wrapperDivStyles: React.CSSProperties = {
   width: "95%",
-  height: "100%",
+  minHeight: "92vh",
   display: "flex",
   justifyContent: "space-evenly",
   alignItems: "center",

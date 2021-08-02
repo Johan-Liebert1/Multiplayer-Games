@@ -80,6 +80,12 @@ const ChessBoardTest: React.FC<ChessBoardProps> = () => {
     return;
   };
 
+  const getAllChessGames = () => {
+    axiosInstance
+      .get(`/games/chess/${user.username}`)
+      .then(resp => setAllGamesList(resp.data.games));
+  };
+
   return (
     <div style={{ margin: "2rem 4rem", display: "flex" }}>
       <div
@@ -166,14 +172,7 @@ const ChessBoardTest: React.FC<ChessBoardProps> = () => {
           </div>
 
           <ListItem style={{ height: "10%" }}>
-            <Button
-              variant="contained"
-              onClick={() => {
-                axiosInstance
-                  .get(`/games/chess/${user.username}`)
-                  .then(resp => setAllGamesList(resp.data.games));
-              }}
-            >
+            <Button variant="contained" onClick={getAllChessGames}>
               Get All Games
             </Button>
           </ListItem>

@@ -26,7 +26,9 @@ interface GameCardProps extends RouteProps {
 
 const useStyles = makeStyles({
   root: {
-    maxWidth: 225
+    maxWidth: 225,
+    backgroundColor: "#0b1622",
+    color: "rgb(200, 200, 200) !important"
   },
   actionArea: {
     minWidth: "100%"
@@ -104,7 +106,7 @@ const GameCard: React.FC<GameCardProps> = ({ gameName, history }) => {
             <Typography gutterBottom variant="h5" component="h2">
               {gameName}
             </Typography>
-            <Typography variant="body2" color="textSecondary" component="h4">
+            <Typography variant="body2" component="h4">
               Play {gameName}
             </Typography>
           </CardContent>

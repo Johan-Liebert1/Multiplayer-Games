@@ -94,98 +94,111 @@ const CheckersTestBoard: React.FC<CheckersBoardProps> = () => {
     return;
   };
 
+  const getAllCheckersGames = () => {
+    axiosInstance
+      .get(`/games/checkers/${user.username}`)
+      .then(resp => setAllGamesList(resp.data.games));
+  };
+
   return (
-    <div style={{ marginLeft: "4rem", display: "flex" }}>
-      <div id="checkersBoard" style={{ position: "relative" }}>
-        {gameOver.gameOver && (
-          <GameOverComponent
-            winnerColor={gameOver.winnerColor}
-            winnerName={gameOver.winnerName}
-          />
-        )}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: userPieceColor === "white" ? "column" : "column"
-          }}
-          ref={checkersBoardRef}
-        >
-          <RenderCheckersBoard
-            board={board}
-            checkersBoardRef={checkersBoardRef}
-            userPieceColor={userPieceColor}
-            testBoard={true}
-            movePiece={(i: number, j: number) => {
-              return;
+    <div
+      style={{
+        minWidth: "100vw",
+        minHeight: "92vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }}
+    >
+      <div style={{ minWidth: "90%", display: "flex" }}>
+        <div id="checkersBoard" style={{ position: "relative" }}>
+          {gameOver.gameOver && (
+            <GameOverComponent
+              winnerColor={gameOver.winnerColor}
+              winnerName={gameOver.winnerName}
+            />
+          )}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: userPieceColor === "white" ? "column" : "column"
             }}
-          />
+            ref={checkersBoardRef}
+          >
+            <RenderCheckersBoard
+              board={board}
+              checkersBoardRef={checkersBoardRef}
+              userPieceColor={userPieceColor}
+              testBoard={true}
+              movePiece={(i: number, j: number) => {
+                return;
+              }}
+            />
+          </div>
+          <div
+            style={{
+              padding: "0.5rem 0",
+              display: "flex",
+              justifyContent: "space-evenly"
+            }}
+          >
+            <Button variant="contained" disabled={!analyzing}>
+              <KeyboardArrowLeftIcon />
+            </Button>
+
+            <Button variant="contained">Analyze</Button>
+
+            <Button variant="contained" onClick={playMove} disabled={!analyzing}>
+              <KeyboardArrowRightIcon />
+            </Button>
+          </div>
         </div>
+
         <div
-          style={{
-            padding: "0.5rem 0",
-            display: "flex",
-            justifyContent: "space-evenly"
-          }}
-        >
-          <Button variant="contained" disabled={!analyzing}>
-            <KeyboardArrowLeftIcon />
-          </Button>
-
-          <Button variant="contained">Analyze</Button>
-
-          <Button variant="contained" onClick={playMove} disabled={!analyzing}>
-            <KeyboardArrowRightIcon />
-          </Button>
-        </div>
-      </div>
-
-      <div
-        className={classes.messagesContainer}
-        style={{ height: `${CELL_SIZE * board.length}px`, width: "100%" }}
-      >
-        <List
+          className={classes.messagesContainer}
           style={{
             height: `${CELL_SIZE * board.length}px`,
-            display: "flex",
-            flexDirection: "column",
-            overflow: "auto"
+            width: "100%",
+            borderLeft: "0.2rem solid gray"
           }}
         >
-          <div style={{ height: "90%" }}>
-            {allGamesList.map((game, index) => (
-              <ListItem
-                key={game.game_id}
-                onClick={() => {
-                  analyzeGame(game.game_id);
-                }}
-                className={
-                  game.game_id === analyzingGameId
-                    ? listStyles.listItemClicked
-                    : listStyles.listItem
-                }
-              >
-                <h5 style={{ width: "10%" }}>{index + 1}</h5>
-                <span style={{ width: "60%" }}>
-                  {game.player1} vs {game.player2}
-                </span>
-                <span style={{ width: "30%" }}>{"  " + game.date.split("T")[0]}</span>
-              </ListItem>
-            ))}
-          </div>
+          <List
+            style={{
+              height: `${CELL_SIZE * board.length}px`,
+              display: "flex",
+              flexDirection: "column",
+              overflow: "auto"
+            }}
+          >
+            <div style={{ height: "90%" }}>
+              {allGamesList.map((game, index) => (
+                <ListItem
+                  key={game.game_id}
+                  onClick={() => {
+                    analyzeGame(game.game_id);
+                  }}
+                  className={
+                    game.game_id === analyzingGameId
+                      ? listStyles.listItemClicked
+                      : listStyles.listItem
+                  }
+                >
+                  <h5 style={{ width: "10%" }}>{index + 1}</h5>
+                  <span style={{ width: "60%" }}>
+                    {game.player1} vs {game.player2}
+                  </span>
+                  <span style={{ width: "30%" }}>{"  " + game.date.split("T")[0]}</span>
+                </ListItem>
+              ))}
+            </div>
 
-          <ListItem style={{ height: "10%" }}>
-            <Button
-              variant="contained"
-              onClick={() => {
-                axiosInstance
-                  .get(`/games/checkers/${user.username}`)
-                  .then(resp => setAllGamesList(resp.data.games));
-              }}
-            >
-              Get All Games
-            </Button>
-          </ListItem>
-        </List>
+            <ListItem style={{ height: "10%" }}>
+              <Button variant="contained" onClick={getAllCheckersGames}>
+                Get All Games
+              </Button>
+            </ListItem>
+          </List>
+        </div>
       </div>
     </div>
   );
