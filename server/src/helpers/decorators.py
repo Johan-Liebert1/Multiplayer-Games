@@ -1,18 +1,19 @@
 from functools import wraps
-from typing import Union
-from helpers.printHelper import new_line_print
-from config.Config import Config
-import jwt
-from helpers.returnHelpers import default_response
-from schemas.schemas import UserCreateRequest
+
 from fastapi import Request
+import jwt
+
+from config.Config import Config
+
+from helpers.printHelper import new_line_print
+from helpers.returnHelpers import default_response
 
 
 def login_required(function):
     @wraps(function)
     def wrapper(*args, **kwargs):
         # def wrapper(details: Union[UserCreateRequest or None], request: Request, db):
-        new_line_print(f"{args}, {kwargs}")
+        # new_line_print(f"{args}, {kwargs}")
 
         details = kwargs.get("details")
 
@@ -38,6 +39,20 @@ def login_required(function):
 
         if details:
             details.__setattr__("user", user)
+
+        return function(*args, **kwargs)
+
+    return wrapper
+
+
+def superadmin_required(function):
+    @wraps(function)
+    def wrapper(*args, **kwargs):
+        request: Request = kwargs["request"]
+        if not request.state.user["isSuperAdmin"]:
+            return default_response(
+                False, "Only superadmin has the privileges to perform this action"
+            )
 
         return function(*args, **kwargs)
 

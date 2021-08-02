@@ -10,7 +10,7 @@ from sqlalchemy.orm.session import Session
 from helpers.printHelper import new_line_print
 from helpers.returnHelpers import default_response
 from helpers.serializers import serialize
-from helpers.decorators import login_required
+from helpers.decorators import login_required, superadmin_required
 
 # db models
 from db.connection import get_db
@@ -28,7 +28,9 @@ user_router = APIRouter()
 
 
 @user_router.get("/all")
-def get_all_users(db: Session = Depends(get_db)):
+@login_required
+@superadmin_required
+def get_all_users(request: Request, db: Session = Depends(get_db)):
     all_users = db.query(UserModel).all()
 
     serialized_users = serialize(all_users)
@@ -117,7 +119,7 @@ def user_login_handler(details: UserLoginRequest, db: Session = Depends(get_db))
         return default_response(False, "Invalid Password")
 
     token = jwt.encode(
-        {"id": user.id, "username": user.username},
+        {"id": user.id, "username": user.username, 'isSuperAdmin': user.isSuperAdmin},
         Config.JWT_SECRET,
         algorithm=Config.JWT_ALGORITHM,
     )
@@ -177,7 +179,7 @@ def get_user_info(user_id: int, request: Request, db: Session = Depends(get_db))
 def edit_user_details(
     details: UserCreateRequest, request: Request, db: Session = Depends(get_db)
 ):
-    user = details.user
+    user = request.state.user
 
     user_model = db.query(UserModel).filter(UserModel.id == user["id"]).first()
 

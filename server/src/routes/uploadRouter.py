@@ -4,9 +4,6 @@ from fastapi.param_functions import Depends
 from helpers.awsHelpers import upload_file
 from helpers.decorators import login_required
 
-from config.Config import Config
-import jwt
-
 from sqlalchemy.orm.session import Session
 
 from db.connection import get_db
@@ -19,11 +16,7 @@ upload_router = APIRouter()
 @upload_router.post("/profile-picture")
 @login_required
 async def upload_new_profile_picture(request: Request, db: Session = Depends(get_db)):
-    token = request.headers.get("Authorization").split(" ")[1]
-
-    user: "dict[str, str]" = jwt.decode(
-        token, Config.JWT_SECRET, [Config.JWT_ALGORITHM]
-    )
+    user: "dict[str, str]" = request.state.user
 
     user_model = db.query(UserModel).filter(UserModel.id == user["id"]).first()
 

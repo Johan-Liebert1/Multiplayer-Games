@@ -21,6 +21,7 @@ from db.connection import get_db
 from helpers.returnHelpers import default_response
 from helpers.serializers import serialize
 from helpers.printHelper import new_line_print
+from helpers.decorators import login_required
 
 import json
 
@@ -29,7 +30,8 @@ games_router = APIRouter()
 
 
 @games_router.get("/{username}")
-def get_user_games_info(username: str, db: Session = Depends(get_db)):
+@login_required
+def get_user_games_info(username: str, request: Request, db: Session = Depends(get_db)):
     chess_info = db.query(ChessGames).filter(ChessGames.username == username).first()
     checkers_info = (
         db.query(CheckersGames).filter(CheckersGames.username == username).first()
@@ -52,6 +54,7 @@ def update_model_details(
     model: Union[ChessGames, CheckersGames],
     update_details: GameDetailsUpdateRequest,
     username: int,
+    request: Request,
     db: Session,
 ):
     user_game_model = db.query(model).filter(model.username == username).first()
@@ -72,7 +75,9 @@ def update_model_details(
 
 
 @games_router.post("/chess/savegame")
-def save_chess_game(details: SaveGameDetails, db: Session = Depends(get_db)):
+def save_chess_game(
+    details: SaveGameDetails, request: Request, db: Session = Depends(get_db)
+):
     new_game = SingleChessGame(
         player1=details.player1,
         player2=details.player2,
@@ -89,7 +94,10 @@ def save_chess_game(details: SaveGameDetails, db: Session = Depends(get_db)):
 
 
 @games_router.post("/checkers/savegame")
-def save_chess_game(details: SaveGameDetails, db: Session = Depends(get_db)):
+@login_required
+def save_chess_game(
+    details: SaveGameDetails, request: Request, db: Session = Depends(get_db)
+):
     new_game = SingleCheckersGame(
         player1=details.player1,
         player2=details.player2,
@@ -106,8 +114,10 @@ def save_chess_game(details: SaveGameDetails, db: Session = Depends(get_db)):
 
 
 @games_router.get("/chess/{username}")
+@login_required
 def get_all_chess_games_for_user(
     username: str,
+    request: Request,
     db: Session = Depends(get_db),
 ):
     query = (
@@ -126,8 +136,10 @@ def get_all_chess_games_for_user(
 
 
 @games_router.get("/checkers/{username}")
+@login_required
 def get_all_checkers_games_for_user(
     username: str,
+    request: Request,
     db: Session = Depends(get_db),
 ):
     query = (
@@ -147,9 +159,11 @@ def get_all_checkers_games_for_user(
 
 
 @games_router.post("/chess/{username}")
+@login_required
 def update_chess_details(
     username: str,
     update_details: GameDetailsUpdateRequest,
+    request: Request,
     db: Session = Depends(get_db),
 ):
     update_model_details(ChessGames, update_details, username, db)
@@ -158,9 +172,11 @@ def update_chess_details(
 
 
 @games_router.post("/checkers/{username}")
+@login_required
 def update_checkers_details(
     username: str,
     update_details: GameDetailsUpdateRequest,
+    request: Request,
     db: Session = Depends(get_db),
 ):
     update_model_details(CheckersGames, update_details, username, db)
