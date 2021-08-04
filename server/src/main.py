@@ -1,20 +1,21 @@
 import os
-from helpers.decorators import login_required
-
-from helpers.printHelper import new_line_print
 import sys
 
 from fastapi import FastAPI, Request
-import socketio
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 
 from routes.userRoutes import user_router
 from routes.uploadRouter import upload_router
 from routes.gameDetailsRoutes import games_router
 
-
-from fastapi.middleware.cors import CORSMiddleware
-
+import socketio
 from sockets.mainSockets import SocketHandler
+
+from config.Config import Config
+from helpers.printHelper import new_line_print
+
 
 BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 sys.path.insert(0, BASE_DIR)
@@ -32,6 +33,14 @@ fast_app.add_middleware(
 fast_app.include_router(user_router, prefix="/api/user", tags=["user"])
 fast_app.include_router(upload_router, prefix="/api/upload", tags=["upload"])
 fast_app.include_router(games_router, prefix="/api/games", tags=["games"])
+
+# SERVER_FOLDER = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# CONTAINER_FOLER = os.path.dirname(SERVER_FOLDER)
+# index_html_path = os.path.join(CONTAINER_FOLER, "client", "build")
+
+# new_line_print(index_html_path)
+
+# fast_app.mount("/", StaticFiles(directory=index_html_path), name="static")
 
 
 # @fast_app.get("/random/{a}")
@@ -114,4 +123,4 @@ async def pawnPromoted(socket_id, data):
 
 @fast_app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return {"message": "Successfully connected to api"}

@@ -2,7 +2,10 @@ import os
 
 
 class Config:
-    # POSTGRES_URI = os.getenv("POSTGRES_URI")
+    PROD_ENV = "PROD_ENV"
+    DEV_ENV = "DEV_ENV"
+    ENVIRONMENT = DEV_ENV
+
     POSTGRES_URI = "postgresql://postgres:123456@localhost:5432/multiplayergames"
     JWT_SECRET = "KALJ09293842093UIOFHJAJFKH2983482"
     JWT_ALGORITHM = "HS256"
