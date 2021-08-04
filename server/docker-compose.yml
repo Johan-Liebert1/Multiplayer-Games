@@ -3,14 +3,20 @@ version: "3"
 services:
   database:
     image: postgres:13
+    container_name: postgres_db
     volumes:
       - ./data/db:/var/lib/postgresql/data
+    user: 1001:1001
     environment:
       - POSTGRES_PASSWORD=123456
       - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+    # ports:
+    #   - 5432:5432
 
   fastapiserver:
     image: fastapi/multiplayer-games
+    container_name: fastapi_server
     ports:
       - 8000:8000
     volumes:

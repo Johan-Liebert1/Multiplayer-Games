@@ -6,7 +6,7 @@ class Config:
     DEV_ENV = "DEV_ENV"
     ENVIRONMENT = DEV_ENV
 
-    POSTGRES_URI = "postgresql://postgres:123456@localhost:5432/multiplayergames"
+    POSTGRES_URI = "postgresql://postgres:123456@0.0.0.0:5432/multiplayergames"
     JWT_SECRET = "KALJ09293842093UIOFHJAJFKH2983482"
     JWT_ALGORITHM = "HS256"
 
