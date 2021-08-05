@@ -24,6 +24,7 @@ import { useRef } from "react";
 import { getNewCheckersBoard } from "../../helpers/checkersBoard";
 import { updateGameDetailsApiCall } from "../../helpers/updateGameDetails";
 import RenderCheckersBoard from "./RenderCheckersBoard";
+import { baseURL } from "../../config/axiosConfig";
 
 const game = new CheckersGame();
 let socket: SocketState;
@@ -56,7 +57,7 @@ const CheckersBoard: React.FC<CheckersBoardProps> = ({ roomId }) => {
   const checkersBoardRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    socket = io("http://localhost:8000");
+    socket = io(baseURL);
 
     socket.emit(socketEmitEvents.JOIN_A_ROOM, {
       roomId: `checkers_${roomId}`,

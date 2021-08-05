@@ -22,6 +22,7 @@ import { RouteProps } from "../../types/routeProps";
 
 import SketchIO from "../../classes/sketchio/SketchIO";
 import { io } from "socket.io-client";
+import { baseURL } from "../../config/axiosConfig";
 
 let sketchIO: SketchIO;
 let socket: SocketState;
@@ -86,7 +87,7 @@ const CanvasComponent: React.FC<CanvasComponentProps> = ({ roomId }) => {
   }, [canvasContainer, windowHeight, windowWidth]);
 
   useEffect(() => {
-    socket = io("http://localhost:8000");
+    socket = io(baseURL);
 
     socket.emit(socketEmitEvents.JOIN_A_ROOM, {
       roomId: `sketchio_${roomId}`,

@@ -31,6 +31,7 @@ import { updateUserSocketDetails } from "../../store/actions/userActions";
 import { getNewChessBoard } from "../../helpers/chessHelpers";
 import { updateGameDetailsApiCall } from "../../helpers/updateGameDetails";
 import RenderChessBoard from "./RenderChessBoard";
+import { baseURL } from "../../config/axiosConfig";
 
 const game = new ChessGame();
 let socket: SocketState;
@@ -72,7 +73,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
   const chessBoardRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    socket = io("http://localhost:8000");
+    socket = io(baseURL);
 
     socket.emit(socketEmitEvents.JOIN_A_ROOM, {
       roomId: `chess_${roomId}`,

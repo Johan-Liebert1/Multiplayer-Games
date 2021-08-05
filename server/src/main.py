@@ -1,9 +1,7 @@
 import os
 import sys
 
-from fastapi import FastAPI, Request
-from fastapi.responses import FileResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from routes.userRoutes import user_router
@@ -33,15 +31,6 @@ fast_app.add_middleware(
 fast_app.include_router(user_router, prefix="/api/user", tags=["user"])
 fast_app.include_router(upload_router, prefix="/api/upload", tags=["upload"])
 fast_app.include_router(games_router, prefix="/api/games", tags=["games"])
-
-# SERVER_FOLDER = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# CONTAINER_FOLER = os.path.dirname(SERVER_FOLDER)
-# index_html_path = os.path.join(CONTAINER_FOLER, "client", "build")
-
-# new_line_print(index_html_path)
-
-# fast_app.mount("/", StaticFiles(directory=index_html_path), name="static")
-
 
 # @fast_app.get("/random/{a}")
 # @login_required
