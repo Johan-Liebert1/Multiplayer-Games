@@ -40,6 +40,9 @@ def get_all_users(request: Request, db: Session = Depends(get_db)):
 
 @user_router.post("/register")
 def user_register_handler(details: UserCreateRequest, db: Session = Depends(get_db)):
+    if len(details.username.strip()) == 0:
+        return default_response(False, "Username cannot be empty")
+
     # username should be unique
     user_exists = db.query(UserModel).filter(UserModel.username == details.username)
 
@@ -48,6 +51,9 @@ def user_register_handler(details: UserCreateRequest, db: Session = Depends(get_
             False,
             f"User with username {details.username} already exists",
         )
+
+    if len(details.password.strip()) == 0:
+        return default_response(False, "Password cannot be empty")
 
     salt = bcrypt.gensalt()
     password = bcrypt.hashpw(details.password.encode("utf-8"), salt)
@@ -98,33 +104,40 @@ def user_register_handler(details: UserCreateRequest, db: Session = Depends(get_
 
 @user_router.post("/login")
 def user_login_handler(details: UserLoginRequest, db: Session = Depends(get_db)):
-    user_exists = db.query(UserModel).filter(UserModel.username == details.username)
+    try:
+        user_exists = db.query(UserModel).filter(UserModel.username == details.username)
 
-    if user_exists.count() == 0:
-        # user does not exist
-        return default_response(
-            False, f"User with username {details.username} is not registered"
+        if user_exists.count() == 0:
+            # user does not exist
+            return default_response(
+                False, f"User with username {details.username} is not registered"
+            )
+
+        user: UserModel = user_exists[0]
+
+        """
+        take the user input password and hash it with the same salt use used to 
+        hash the original password. Then we compare hashes to see if they're equal
+        """
+        password = details.password.encode("utf-8")
+        hashed_input_password: bytes = bcrypt.hashpw(password, user.salt)
+
+        if hashed_input_password != user.password:
+            return default_response(False, "Invalid Password")
+
+        token = jwt.encode(
+            {
+                "id": user.id,
+                "username": user.username,
+                "isSuperAdmin": user.isSuperAdmin,
+            },
+            Config.JWT_SECRET,
+            algorithm=Config.JWT_ALGORITHM,
         )
 
-    user: UserModel = user_exists[0]
-
-    """
-    take the user input password and hash it with the same salt use used to 
-    hash the original password. Then we compare hashes to see if they're equal
-    """
-    password = details.password.encode("utf-8")
-    hashed_input_password: bytes = bcrypt.hashpw(password, user.salt)
-
-    if hashed_input_password != user.password:
-        return default_response(False, "Invalid Password")
-
-    token = jwt.encode(
-        {"id": user.id, "username": user.username, 'isSuperAdmin': user.isSuperAdmin},
-        Config.JWT_SECRET,
-        algorithm=Config.JWT_ALGORITHM,
-    )
-
-    serialized_user = serialize([user])[0]
+        serialized_user = serialize([user])[0]
+    except Exception as e:
+        new_line_print(e)
 
     return {"success": True, "user": {"token": token, **serialized_user}}
 
