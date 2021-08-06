@@ -262,8 +262,11 @@ const ChessPlayBoard: React.FC = () => {
         generateFenFromBoard(board);
       },
       style: btnStyles("#8e44ad")
-    },
-    {
+    }
+  ];
+
+  if (user.username) {
+    buttons.push({
       text: "Save Game",
       clickHandler: () => {
         const data = JSON.stringify({
@@ -283,8 +286,8 @@ const ChessPlayBoard: React.FC = () => {
           });
       },
       style: btnStyles("#1321e6")
-    }
-  ];
+    });
+  }
 
   return (
     <motion.div

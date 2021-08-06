@@ -28,7 +28,7 @@ const getSvg = (type: ToastType) => {
 
 const ToastMessage: React.FC<ToastMessageProps> = ({ header, message, type }) => {
   return (
-    <div style={{ display: "flex", alignItems: "center" }}>
+    <div style={{ display: "flex", alignItems: "center", color: "white !important" }}>
       <div style={{ marginRight: "1rem" }}>{getSvg(type)}</div>
       <div>
         {header && <h3>{header}</h3>}
