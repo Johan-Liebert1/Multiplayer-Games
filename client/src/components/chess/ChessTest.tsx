@@ -82,7 +82,9 @@ const ChessBoardTest: React.FC<ChessBoardProps> = () => {
 
   const getAllChessGames = () => {
     axiosInstance
-      .get(`/games/chess/${user.username}`)
+      .get(`/games/chess/${user.username}`, {
+        headers: { Authorization: `Bearer ${user.token}` }
+      })
       .then(resp => setAllGamesList(resp.data.games));
   };
 

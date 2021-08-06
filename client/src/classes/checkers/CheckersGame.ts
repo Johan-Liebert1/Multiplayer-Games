@@ -131,24 +131,15 @@ class CheckersGame {
     }
   };
 
-  generateGameMove = (
-    clickedCells: ClickedCellsType,
-    capturingMove: { wasCapturingMove: boolean; capturedPiecePos: PiecePosition }
-  ) => {
+  generateGameMove = (clickedCells: ClickedCellsType) => {
     let move = "";
 
     const {
       rows: [ri, rf],
       cols: [ci, cf]
     } = clickedCells;
-    const [cpr, cpc] = capturingMove.capturedPiecePos;
 
-    if (!capturingMove.wasCapturingMove) {
-      move += `${getStr(ri, rf)};${getStr(ci, cf)}:`;
-    } else {
-      // move += `${getStr(ri, rf)};${getStr(cpr, cpc)};${getStr(ci, cf)}:`;
-      move += `${getStr(ri, rf)};${getStr(ci, cf)}:`;
-    }
+    move += `${getStr(ri, rf)};${getStr(ci, cf)}:`;
 
     this.gameMoves += move;
   };
@@ -219,7 +210,9 @@ class CheckersGame {
 
     let tcc = this.cellsClicked;
 
-    this.generateGameMove(tcc, { wasCapturingMove, capturedPiecePos });
+    if (tcc.rows.length !== 2) tcc = clickedCells;
+
+    this.generateGameMove(tcc);
 
     this.clearDots(board);
     this.changeTurn();

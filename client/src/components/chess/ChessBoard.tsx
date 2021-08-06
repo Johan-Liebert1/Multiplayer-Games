@@ -29,11 +29,11 @@ import { useDispatch } from "react-redux";
 import { useTypedSelector } from "../../hooks/useTypedSelector";
 import { updateUserSocketDetails } from "../../store/actions/userActions";
 import { getNewChessBoard } from "../../helpers/chessHelpers";
-import { updateGameDetailsApiCall } from "../../helpers/updateGameDetails";
+import { saveGame, updateGameDetailsApiCall } from "../../helpers/updateGameDetails";
 import RenderChessBoard from "./RenderChessBoard";
 import { baseURL } from "../../config/axiosConfig";
 
-const game = new ChessGame();
+let game: ChessGame;
 let socket: SocketState;
 
 interface ChessBoardProps extends RouteProps {
@@ -73,6 +73,8 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
   const chessBoardRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    game = new ChessGame();
+
     socket = io(baseURL);
 
     socket.emit(socketEmitEvents.JOIN_A_ROOM, {
@@ -188,6 +190,8 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
         }
       }
 
+      // console.log(game.getAllMoves());
+
       setBoard(tempBoard);
 
       if (game.isGameOver(board)) {
@@ -217,7 +221,9 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
           drawn: !["white", "black"].includes(game.winner)
         });
 
-        // game over event is sent to all users
+        // add the game in the database
+        saveGame("chess", user.username, player2Name, game.getAllMoves(), user.token);
+
         setGameOver(newGameOverObject);
       }
     }

@@ -278,7 +278,8 @@ const ChessPlayBoard: React.FC = () => {
         axiosInstance
           .post("/games/chess/savegame", data, {
             headers: {
-              "content-type": "application/json"
+              "content-type": "application/json",
+              Authorization: `Bearer ${user.token}`
             }
           })
           .then(resp => {

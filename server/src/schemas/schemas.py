@@ -14,6 +14,7 @@ class UserCreateRequest(BaseModel):
 class UserLoginRequest(BaseModel):
     username: str
     password: str
+    user: Union[Dict[str, str], None]
 
 
 class GameDetailsUpdateRequest(BaseModel):
@@ -21,9 +22,11 @@ class GameDetailsUpdateRequest(BaseModel):
     lost: bool
     drawn: bool
     started: bool
+    user: Union[Dict[str, str], None]
 
 
 class SaveGameDetails(BaseModel):
     player1: str
     player2: str
     moves: str
+    user: Union[Dict[str, str], None]

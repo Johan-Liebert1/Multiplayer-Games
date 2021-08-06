@@ -96,7 +96,9 @@ const CheckersTestBoard: React.FC<CheckersBoardProps> = () => {
 
   const getAllCheckersGames = () => {
     axiosInstance
-      .get(`/games/checkers/${user.username}`)
+      .get(`/games/checkers/${user.username}`, {
+        headers: { Authorization: `Bearer ${user.token}` }
+      })
       .then(resp => setAllGamesList(resp.data.games));
   };
 

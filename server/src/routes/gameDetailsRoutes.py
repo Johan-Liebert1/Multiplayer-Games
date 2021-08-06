@@ -72,22 +72,27 @@ def update_model_details(
 
 
 @games_router.post("/chess/savegame")
+@login_required
 def save_chess_game(
     details: SaveGameDetails, request: Request, db: Session = Depends(get_db)
 ):
-    new_game = SingleChessGame(
-        player1=details.player1,
-        player2=details.player2,
-        moves=details.moves,
-    )
+    try:
+        new_game = SingleChessGame(
+            player1=details.player1,
+            player2=details.player2,
+            moves=details.moves,
+        )
 
-    db.add(new_game)
+        db.add(new_game)
 
-    db.commit()
+        db.commit()
 
-    serialized_game = serialize([new_game])[0]
+        serialized_game = serialize([new_game])[0]
 
-    return {"success": True, "data": serialized_game}
+        return {"success": True, "data": serialized_game}
+
+    except Exception as e:
+        new_line_print(e)
 
 
 @games_router.post("/checkers/savegame")

@@ -104,7 +104,9 @@ const CheckersPlayBoard: React.FC<CheckersBoardProps> = () => {
             console.log(data);
 
             axiosInstance
-              .post("/games/checkers/savegame", data)
+              .post("/games/checkers/savegame", data, {
+                headers: { Authorization: `Bearer ${user.token}` }
+              })
               .then(resp => console.log(resp.data));
           }}
         >

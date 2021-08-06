@@ -509,6 +509,8 @@ class ChessGame {
     clickedCells: ClickedCellsType,
     pawnPromoted?: { promoted: boolean; promotedTo: ChessPieceName }
   ) => {
+    console.log("generateMoveString, tcc = ", clickedCells);
+
     const {
       rows: [ri, rf],
       cols: [ci, cf]
@@ -663,7 +665,10 @@ class ChessGame {
     // in order to set the 'attacked' squares
     this.setInitiallyAttackedCells(board);
 
+    // this.cellsClicked || clickedCells for moves that come via socket
     let tcc = this.cellsClicked;
+
+    if (tcc.rows.length !== 2) tcc = clickedCells;
 
     this.clearDots(board);
     this.changeTurn();

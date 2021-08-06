@@ -64,9 +64,9 @@ const CheckersBoard: React.FC<CheckersBoardProps> = ({ roomId }) => {
       username: user.username
     });
 
-    updateGameDetailsApiCall(user.username, user.token, "chess", { started: true });
-
     dispatch(setSocketAction(socket));
+
+    updateGameDetailsApiCall(user.username, user.token, "chess", { started: true });
   }, []);
 
   useEffect(() => {

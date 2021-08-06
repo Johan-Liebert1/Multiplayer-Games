@@ -32,3 +32,38 @@ export const updateGameDetailsApiCall = (
 
   axiosInstance.post(url, data, config);
 };
+
+export const saveGame = (
+  game: "chess" | "checkers",
+  p1: string,
+  p2: string,
+  moves: string,
+  token: string
+) => {
+  const url = `/games/${game}/savegame`;
+
+  const config: AxiosRequestConfig = {
+    headers: {
+      "content-type": "application/json",
+      Authorization: `Bearer ${token}`
+    }
+  };
+
+  console.log(
+    JSON.stringify({
+      player1: p1,
+      player2: p2,
+      moves
+    })
+  );
+
+  axiosInstance.post(
+    url,
+    {
+      player1: p1,
+      player2: p2,
+      moves
+    },
+    config
+  );
+};
