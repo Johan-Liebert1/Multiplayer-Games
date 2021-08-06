@@ -4,6 +4,7 @@ import { UpdateGameDetails } from "../types/games";
 
 export const updateGameDetailsApiCall = (
   username: string,
+  token: string,
   game: "chess" | "checkers",
   object: {
     won?: boolean;
@@ -24,7 +25,8 @@ export const updateGameDetailsApiCall = (
 
   const config: AxiosRequestConfig = {
     headers: {
-      "content-type": "application/json"
+      "content-type": "application/json",
+      Authorization: `Bearer ${token}`
     }
   };
 

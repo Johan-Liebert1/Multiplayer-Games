@@ -23,8 +23,6 @@ from helpers.serializers import serialize
 from helpers.printHelper import new_line_print
 from helpers.decorators import login_required
 
-import json
-
 
 games_router = APIRouter()
 
@@ -54,7 +52,6 @@ def update_model_details(
     model: Union[ChessGames, CheckersGames],
     update_details: GameDetailsUpdateRequest,
     username: int,
-    request: Request,
     db: Session,
 ):
     user_game_model = db.query(model).filter(model.username == username).first()
@@ -166,9 +163,14 @@ def update_chess_details(
     request: Request,
     db: Session = Depends(get_db),
 ):
-    update_model_details(ChessGames, update_details, username, db)
+    try:
+        new_line_print(f"updating chess for {username}, {update_details}")
 
-    return default_response(True, "Updated successfully")
+        update_model_details(ChessGames, update_details, username, db)
+
+        return default_response(True, "Updated successfully")
+    except Exception as e:
+        new_line_print(e)
 
 
 @games_router.post("/checkers/{username}")

@@ -80,6 +80,8 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
       username: user.username
     });
 
+    updateGameDetailsApiCall(user.username, user.token, "chess", { started: true });
+
     dispatch(setSocketAction(socket));
     // eslint-disable-next-line
   }, []);
@@ -124,7 +126,8 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
     });
 
     socket.on(socketListenEvents.CHESS_PLAYER_2_JOINED, (data: { users: string[] }) => {
-      setPlayer2Name(data.users.filter(username => username !== user.username)[0]);
+      const p2Name = data.users.filter(username => username !== user.username)[0];
+      setPlayer2Name(p2Name);
     });
 
     // eslint-disable-next-line
@@ -188,6 +191,9 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
       setBoard(tempBoard);
 
       if (game.isGameOver(board)) {
+        // this will only be called for one player as the other player is
+        // notified of the game over via sockets
+
         const winnerName = game.winner === userPieceColor ? user.username : player2Name;
 
         let newGameOverObject = {
@@ -198,18 +204,20 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ roomId }) => {
 
         socket.emit(socketEmitEvents.CHESS_GAME_OVER, newGameOverObject);
 
-        updateGameDetailsApiCall(user.username, "chess", {
+        // update the games won/lost of the players
+        updateGameDetailsApiCall(user.username, user.token, "chess", {
           won: winnerName === user.username,
           lost: winnerName !== user.username,
           drawn: !["white", "black"].includes(game.winner)
         });
 
-        updateGameDetailsApiCall(player2Name, "chess", {
+        updateGameDetailsApiCall(player2Name, user.token, "chess", {
           won: winnerName === player2Name,
           lost: winnerName !== player2Name,
           drawn: !["white", "black"].includes(game.winner)
         });
 
+        // game over event is sent to all users
         setGameOver(newGameOverObject);
       }
     }

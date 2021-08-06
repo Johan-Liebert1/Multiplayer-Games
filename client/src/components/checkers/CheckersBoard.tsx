@@ -64,6 +64,8 @@ const CheckersBoard: React.FC<CheckersBoardProps> = ({ roomId }) => {
       username: user.username
     });
 
+    updateGameDetailsApiCall(user.username, user.token, "chess", { started: true });
+
     dispatch(setSocketAction(socket));
   }, []);
 
@@ -89,7 +91,9 @@ const CheckersBoard: React.FC<CheckersBoardProps> = ({ roomId }) => {
     socket.on(
       socketListenEvents.CHECKERS_PLAYER_2_JOINED,
       (data: { users: string[] }) => {
-        setPlayer2Name(data.users.filter(username => username !== user.username)[0]);
+        const p2Name = data.users.filter(username => username !== user.username)[0];
+
+        setPlayer2Name(p2Name);
       }
     );
 
@@ -121,12 +125,12 @@ const CheckersBoard: React.FC<CheckersBoardProps> = ({ roomId }) => {
 
         socket.emit(socketEmitEvents.CHECKERS_GAME_OVER, newGameOverObject);
 
-        updateGameDetailsApiCall(user.username, "checkers", {
+        updateGameDetailsApiCall(user.username, user.token, "checkers", {
           won: winnerName === user.username,
           lost: winnerName !== user.username
         });
 
-        updateGameDetailsApiCall(player2Name, "checkers", {
+        updateGameDetailsApiCall(player2Name, user.token, "checkers", {
           won: winnerName === player2Name,
           lost: winnerName !== player2Name
         });

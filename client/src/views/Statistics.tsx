@@ -39,8 +39,17 @@ interface StatsState {
   checkers: ApiResponse;
 }
 
-const getUserData = async (username: string): Promise<StatsState> => {
-  const { data } = await axiosInstance.get(`/games/${username}`);
+const getUserData = async (username: string, token: string): Promise<StatsState> => {
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    }
+  };
+
+  const { data } = await axiosInstance.get(`/games/${username}`, config);
+
+  console.log(data);
 
   const object: StatsState = {
     chess: {
@@ -68,7 +77,7 @@ const Statistics: React.FC = () => {
   const [statistics, setStatistics] = useState<StatsState>({} as StatsState);
 
   useEffect(() => {
-    getUserData(user.username).then(stats => setStatistics(stats));
+    getUserData(user.username, user.token).then(stats => setStatistics(stats));
   }, []);
 
   const capitalize = (word: string) => {
@@ -94,22 +103,22 @@ const Statistics: React.FC = () => {
         justifyContent: "space-around"
       }}
     >
-      {Object.entries(statistics).map(
-        ([gameName, gameStatsObject]: [string, ApiResponse]) => (
-          <List
-            className={classes.root}
-            key={gameName}
-            subheader={
-              <ListSubheader
-                component="h1"
-                style={{ color: "inherit", fontSize: "1.2rem", fontWeight: "bold" }}
-              >
-                {capitalize(gameName)}
-              </ListSubheader>
-            }
-          >
-            {Object.entries(gameStatsObject).map(([key, value]: [string, number]) => (
-              <>
+      {statistics &&
+        Object.entries(statistics).map(
+          ([gameName, gameStatsObject]: [string, ApiResponse]) => (
+            <List
+              className={classes.root}
+              key={gameName}
+              subheader={
+                <ListSubheader
+                  component="h1"
+                  style={{ color: "inherit", fontSize: "1.2rem", fontWeight: "bold" }}
+                >
+                  {capitalize(gameName)}
+                </ListSubheader>
+              }
+            >
+              {Object.entries(gameStatsObject).map(([key, value]: [string, number]) => (
                 <ListItem alignItems="flex-start" key={key}>
                   <ListItemAvatar>
                     <CircularGraph
@@ -138,12 +147,10 @@ const Statistics: React.FC = () => {
                     }
                   />
                 </ListItem>
-                <Divider variant="inset" component="li" />
-              </>
-            ))}
-          </List>
-        )
-      )}
+              ))}
+            </List>
+          )
+        )}
     </div>
   );
 };
