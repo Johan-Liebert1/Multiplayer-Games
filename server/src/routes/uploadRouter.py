@@ -4,6 +4,7 @@ from fastapi.param_functions import Depends
 from helpers.awsHelpers import upload_file
 from helpers.decorators import async_login_required
 from helpers.printHelper import new_line_print
+from helpers.returnHelpers import default_response
 
 from sqlalchemy.orm.session import Session
 
@@ -34,7 +35,8 @@ async def upload_new_profile_picture(request: Request, db: Session = Depends(get
 
         db.commit()
 
+        return {"success": True, "profilePictureUrl": s3_url}
+
     except Exception as e:
         new_line_print(e)
-
-    return {"success": True, "profilePictureUrl": s3_url}
+        return default_response(False, "Upload Failed")

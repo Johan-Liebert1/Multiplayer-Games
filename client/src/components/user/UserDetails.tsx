@@ -22,6 +22,7 @@ import { useTypedSelector } from "../../hooks/useTypedSelector";
 import { axiosInstance } from "../../config/axiosConfig";
 import { useDispatch } from "react-redux";
 import { updateProfilePicAction } from "../../store/actions/userActions";
+import showToast from "../../store/toasts";
 
 export type UserInformation = {
   username: string;
@@ -111,7 +112,10 @@ const UserDetails: React.FC<UserDetailsProps> = ({
     if (areFormDetailsValid()) {
       submitHandler(formDetails);
     } else {
-      console.log("nooooooooo");
+      showToast("error", {
+        header: "Form Error",
+        message: "Please fix all the errors in the form"
+      });
     }
   };
 
@@ -138,10 +142,6 @@ const UserDetails: React.FC<UserDetailsProps> = ({
       // Details of the uploaded file
       console.log(selectedFile);
 
-      // for (let i of formData.entries()) {
-      //   console.log(i);
-      // }
-
       const config = {
         headers: {
           Authorization: `Bearer ${user.token}`,
@@ -159,14 +159,16 @@ const UserDetails: React.FC<UserDetailsProps> = ({
         );
 
         if (response.data.success) {
-          console.log(response.data);
           dispatch(updateProfilePicAction(response.data.profilePictureUrl));
-          // toastrSuccess("Profile Picture Changed", response.data.message);
+          showToast("success", {
+            header: "Profile Picture Changed",
+            message: response.data.message
+          });
         } else {
-          // toastrError("Error", response.data.message);
+          showToast("error", response.data.message);
         }
       } catch (err) {
-        // toastrError("Error", err);
+        showToast("error", { message: err });
       }
     };
   };
@@ -191,7 +193,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({
         ) : (
           <div className={moreClasses.editIconContainer}>
             <EditIcon onClick={openFileUploader} className={moreClasses.editIcon} />
-            {userInfo.profilePictureUrl.length ? (
+            {userInfo?.profilePictureUrl?.length ? (
               <ProfilePic
                 src={userInfo.profilePictureUrl}
                 navbar={false}

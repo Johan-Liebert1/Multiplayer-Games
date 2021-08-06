@@ -209,6 +209,8 @@ def edit_user_details(
         password = bcrypt.hashpw(details.password.encode("utf-8"), salt)
         user_model.password = password
 
-    db.commit()
-
-    return default_response(True, "Updated User")
+    try:
+        db.commit()
+        return default_response(True, "Successfully updated user details")
+    except:
+        return default_response(False, "Details updation Failed")

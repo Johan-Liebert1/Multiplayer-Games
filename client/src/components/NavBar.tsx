@@ -115,7 +115,7 @@ const NavBar: React.FC<NavBarProps> = ({ history }) => {
             className="nav-profile-icon"
             onClick={() => setShowProfileModal(!showProfileModal)}
           >
-            {user.profilePictureUrl.length > 0 ? (
+            {user?.profilePictureUrl?.length > 0 ? (
               <ProfilePic src={user.profilePictureUrl} navbar />
             ) : (
               <AccountCircleIcon />
