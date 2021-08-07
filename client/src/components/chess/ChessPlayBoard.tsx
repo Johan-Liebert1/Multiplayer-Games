@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import useWindowSize from "../../hooks/useWindowSize";
 
 import Pawn from "../../classes/chess/Pawn";
 import Rook from "../../classes/chess/Rook";
@@ -26,8 +25,6 @@ import { getEmptyMatrix } from "../../helpers/globalHelpers";
 import RenderChessBoard from "./RenderChessBoard";
 import { axiosInstance } from "../../config/axiosConfig";
 import { useTypedSelector } from "../../hooks/useTypedSelector";
-
-let game: ChessGame = new ChessGame();
 
 const ChessPlayBoard: React.FC = () => {
   const { user } = useTypedSelector(state => state);
@@ -56,11 +53,10 @@ const ChessPlayBoard: React.FC = () => {
   });
   const [userPieceColor, setUserPieceColor] = useState<ChessPieceColor>("white");
 
-  const windowSize = useWindowSize();
-
   const whiteKingPos = useRef<[number, number]>([0, 0]);
   const blackKingPos = useRef<[number, number]>([0, 0]);
   const chessBoardRef = useRef<HTMLDivElement>(null);
+  const chessGame = useRef<ChessGame | null>(null);
 
   const [generatedFen, setGeneratedFen] = useState("");
 
@@ -69,7 +65,7 @@ const ChessPlayBoard: React.FC = () => {
     let tempBoard = board.map(row => [...row]);
 
     // the pawn has been moved at this point
-    game?.promotePawn(tempBoard, pieceName, cellsClicked);
+    chessGame?.current?.promotePawn(tempBoard, pieceName, cellsClicked);
 
     setBoard(tempBoard);
 
@@ -158,22 +154,29 @@ const ChessPlayBoard: React.FC = () => {
 
   const handleStartGame = () => {
     // setGameStarted(true);
-    game = new ChessGame("white", whiteKingPos.current, blackKingPos.current);
+    chessGame.current = new ChessGame(
+      "white",
+      whiteKingPos.current,
+      blackKingPos.current
+    );
     // console.log(game);
     // console.log(board);
 
     setTimeout(() => {
-      game.setInitiallyAttackedCells(board);
+      chessGame.current?.setInitiallyAttackedCells(board);
     }, 500);
   };
 
   useEffect(() => {
-    game.setInitiallyAttackedCells(board);
+    chessGame.current?.setInitiallyAttackedCells(board);
   }, []);
 
   const resetBoard = (empty = true) => {
     if (empty) setBoard(() => getEmptyMatrix(8));
-    else setBoard(() => getNewChessBoard());
+    else {
+      chessGame.current = new ChessGame();
+      setBoard(() => getNewChessBoard());
+    }
 
     // game = null;
     setGameStarted(false);
@@ -183,11 +186,16 @@ const ChessPlayBoard: React.FC = () => {
   const showMoves = (row: number, col: number) => {
     if (!gameOver.gameOver) {
       let tempBoard = board.map(b => b);
-      let returnedValue = game?.showValidMoves(userPieceColor, tempBoard, row, col);
+      let returnedValue = chessGame.current?.showValidMoves(
+        userPieceColor,
+        tempBoard,
+        row,
+        col
+      );
 
       if (returnedValue) {
         if ("cellsClicked" in returnedValue) {
-          const { cellsClicked, castlingDone, pawnPromoted } = returnedValue;
+          const { cellsClicked, pawnPromoted } = returnedValue;
 
           setUserPieceColor(c => (c === "white" ? "black" : "white"));
 
@@ -207,12 +215,12 @@ const ChessPlayBoard: React.FC = () => {
 
       setBoard(tempBoard);
 
-      if (game?.isGameOver(board)) {
+      if (chessGame.current?.isGameOver(board)) {
         // const winnerName = game.winner === userPieceColor ? user.username : player2Name;
 
         let newGameOverObject = {
           gameOver: true,
-          winnerColor: game.winner,
+          winnerColor: chessGame.current.winner,
           winnerName: ""
         };
 
@@ -252,7 +260,7 @@ const ChessPlayBoard: React.FC = () => {
     {
       text: "Get Moves String",
       clickHandler: () => {
-        console.log(game?.movesString);
+        console.log(chessGame.current?.movesString);
       },
       style: btnStyles("#198510")
     },
@@ -272,7 +280,7 @@ const ChessPlayBoard: React.FC = () => {
         const data = JSON.stringify({
           player1: user.username,
           player2: "Johan",
-          moves: game.getAllMoves()
+          moves: chessGame.current?.getAllMoves()
         });
 
         axiosInstance

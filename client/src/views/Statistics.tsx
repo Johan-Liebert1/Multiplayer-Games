@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { createStyles, Theme, makeStyles } from "@material-ui/core/styles";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import Divider from "@material-ui/core/Divider";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Typography from "@material-ui/core/Typography";
@@ -49,8 +48,6 @@ const getUserData = async (username: string, token: string): Promise<StatsState>
 
   const { data } = await axiosInstance.get(`/games/${username}`, config);
 
-  console.log(data);
-
   const object: StatsState = {
     chess: {
       games_won: data.chess_info.games_won,
@@ -78,7 +75,7 @@ const Statistics: React.FC = () => {
 
   useEffect(() => {
     getUserData(user.username, user.token).then(stats => setStatistics(stats));
-  }, []);
+  }, [user.username, user.token]);
 
   const capitalize = (word: string) => {
     return word

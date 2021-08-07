@@ -131,8 +131,6 @@ const ChessBoardTest: React.FC<ChessBoardProps> = () => {
             <KeyboardArrowLeftIcon />
           </Button>
 
-          <Button variant="contained">Analyze</Button>
-
           <Button variant="contained" onClick={playMove} disabled={!analyzing}>
             <KeyboardArrowRightIcon />
           </Button>
@@ -168,7 +166,11 @@ const ChessBoardTest: React.FC<ChessBoardProps> = () => {
                 <span style={{ width: "60%" }}>
                   {game.player1} vs {game.player2}
                 </span>
-                <span style={{ width: "30%" }}>{"  " + game.date.split("T")[0]}</span>
+                <span style={{ width: "30%" }}>
+                  {`${game.date.split("T")[0]}   ${
+                    game.date.split("T")[1].split(".")[0]
+                  }`}
+                </span>
               </ListItem>
             ))}
           </div>

@@ -509,8 +509,6 @@ class ChessGame {
     clickedCells: ClickedCellsType,
     pawnPromoted?: { promoted: boolean; promotedTo: ChessPieceName }
   ) => {
-    console.log("generateMoveString, tcc = ", clickedCells);
-
     const {
       rows: [ri, rf],
       cols: [ci, cf]

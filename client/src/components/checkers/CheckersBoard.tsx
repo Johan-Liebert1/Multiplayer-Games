@@ -22,7 +22,7 @@ import { CheckersBoardType, CheckersPieceColor } from "../../types/checkersTypes
 import { SocketState } from "../../types/store/storeTypes";
 import { useRef } from "react";
 import { getNewCheckersBoard } from "../../helpers/checkersBoard";
-import { updateGameDetailsApiCall } from "../../helpers/updateGameDetails";
+import { saveGame, updateGameDetailsApiCall } from "../../helpers/updateGameDetails";
 import RenderCheckersBoard from "./RenderCheckersBoard";
 import { baseURL } from "../../config/axiosConfig";
 
@@ -134,6 +134,9 @@ const CheckersBoard: React.FC<CheckersBoardProps> = ({ roomId }) => {
           won: winnerName === player2Name,
           lost: winnerName !== player2Name
         });
+
+        // add the game in the database
+        saveGame("checkers", user.username, player2Name, game.getAllMoves(), user.token);
 
         setGameOver(newGameOverObject);
       }

@@ -25,9 +25,9 @@ const Dropdown: React.FC<DropdownProps> = ({ dropdownItems, location, close, typ
           key={i}
         >
           <div
-            className={
-              "dropdown-item" + `${location.pathname === item.path ? " selected" : ""}`
-            }
+            className={`dropdown-item ${
+              location.pathname === item.path ? " selected" : ""
+            }`}
             style={{ width: "100%", height: "100%" }}
           >
             {item.text}

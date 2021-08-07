@@ -56,16 +56,28 @@ const PawnPromotionDialog: React.FC<PawnPromotionDialogProps> = ({
           exit="exit"
         >
           <div onClick={() => handleClick("queen")}>
-            <img src={`images/chess/${pawnColor}Queen.png`} alt={`${pawnColor}queen`} />
+            <img
+              src={`${window.origin}/images/chess/${pawnColor}Queen.png`}
+              alt={`${pawnColor}queen`}
+            />
           </div>
           <div onClick={() => handleClick("rook")}>
-            <img src={`images/chess/${pawnColor}Rook.png`} alt={`${pawnColor}rook`} />
+            <img
+              src={`${window.origin}/images/chess/${pawnColor}Rook.png`}
+              alt={`${pawnColor}rook`}
+            />
           </div>
           <div onClick={() => handleClick("bishop")}>
-            <img src={`images/chess/${pawnColor}Bishop.png`} alt={`${pawnColor}bishop`} />
+            <img
+              src={`${window.origin}/images/chess/${pawnColor}Bishop.png`}
+              alt={`${pawnColor}bishop`}
+            />
           </div>
           <div onClick={() => handleClick("knight")}>
-            <img src={`images/chess/${pawnColor}Knight.png`} alt={`${pawnColor}knight`} />
+            <img
+              src={`${window.origin}/images/chess/${pawnColor}Knight.png`}
+              alt={`${pawnColor}knight`}
+            />
           </div>
         </motion.div>
       </AnimatePresence>

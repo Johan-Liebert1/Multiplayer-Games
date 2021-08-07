@@ -49,14 +49,6 @@ export const saveGame = (
     }
   };
 
-  console.log(
-    JSON.stringify({
-      player1: p1,
-      player2: p2,
-      moves
-    })
-  );
-
   axiosInstance.post(
     url,
     {

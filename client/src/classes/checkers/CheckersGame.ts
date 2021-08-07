@@ -4,7 +4,6 @@ import {
   CheckersMoveType,
   CheckersPieceColor
 } from "../../types/checkersTypes";
-import { PiecePosition } from "../../types/chessTypes";
 import { ClickedCellsType } from "../../types/games";
 import CheckersPiece from "./CheckersPiece";
 
@@ -144,7 +143,7 @@ class CheckersGame {
     this.gameMoves += move;
   };
 
-  getMoves = () => {
+  getAllMoves = () => {
     return this.gameMoves;
   };
 
@@ -170,9 +169,6 @@ class CheckersGame {
 
     const actualMove = validPieceMoves[getStr(rowf, colf)];
 
-    let wasCapturingMove = false;
-    let capturedPiecePos: PiecePosition = [-1, -1];
-
     if (actualMove === "valid") {
       // not a capturing move
       piece.setRowCol(rowf, colf);
@@ -181,8 +177,6 @@ class CheckersGame {
       board[rowi][coli] = 0;
       board[rowf][colf] = piece;
     } else {
-      wasCapturingMove = true;
-
       // if it is a capturing move then the info about the piece captured
       // is stored in the second position of the array
       const { row, col } = actualMove.capturing;
@@ -204,8 +198,6 @@ class CheckersGame {
       board[rowi][coli] = 0;
       board[row][col] = 0; // remove the captured piece
       board[rowf][colf] = piece;
-
-      capturedPiecePos = [row, col];
     }
 
     let tcc = this.cellsClicked;

@@ -1,5 +1,4 @@
-import { CheckersMoveType } from "../types/checkersTypes";
-import { ChessPieceName, PiecePosition } from "../types/chessTypes";
+import { ChessPieceName } from "../types/chessTypes";
 import { ClickedCellsType } from "../types/games";
 
 export const getStr = (r: number, c: number) => `${r},${c}`;

@@ -3,7 +3,7 @@ import React from "react";
 import routes from "./routes/router";
 import { Route, Switch } from "react-router";
 import NavBar from "./components/NavBar";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const App: React.FC = () => {

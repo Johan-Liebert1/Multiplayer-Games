@@ -20,9 +20,11 @@ sys.path.insert(0, BASE_DIR)
 
 fast_app = FastAPI(debug=True)
 
+CORS_ALLOWED_ORIGINS = ["https://multiplayergames.netlify.app", "http://localhost"]
+
 fast_app.add_middleware(
     CORSMiddleware,
-    allow_origins="*",
+    allow_origins=CORS_ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -98,7 +98,7 @@ const CheckersPlayBoard: React.FC<CheckersBoardProps> = () => {
             const data = JSON.stringify({
               player1: user.username,
               player2: "Johan",
-              moves: game.getMoves()
+              moves: game.getAllMoves()
             });
 
             console.log(data);
