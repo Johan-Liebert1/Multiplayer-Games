@@ -7,6 +7,7 @@ import jwt
 from config.Config import Config
 
 from helpers.returnHelpers import default_response
+from helpers.printHelper import new_line_print
 
 
 def check_for_token(
@@ -57,6 +58,7 @@ def async_login_required(function):
         request: Request = kwargs["request"]
 
         bad_request, response = check_for_token(request, details)
+        new_line_print(bad_request, response)
 
         if bad_request:
             return response

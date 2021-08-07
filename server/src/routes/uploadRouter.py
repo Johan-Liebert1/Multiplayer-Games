@@ -31,6 +31,11 @@ async def upload_new_profile_picture(request: Request, db: Session = Depends(get
             file_to_upload.file, file_to_upload.filename, user_model.username
         )
 
+        if not s3_url:
+            return default_response(False, "Sorry something went wrong")
+
+        new_line_print(f"{s3_url=}")
+
         user_model.profilePictureUrl = s3_url
 
         db.commit()
