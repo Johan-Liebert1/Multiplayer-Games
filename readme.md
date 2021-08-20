@@ -1,6 +1,6 @@
 # What is it?
 
-Multiplayer games made using SocketIO, React and FastAPI. 
+Multiplayer games made using SocketIO, React and FastAPI.
 In-game chat is available for all games
 
 ## Games you can play
@@ -12,3 +12,15 @@ In-game chat is available for all games
 > # Live
 >
 > http://ec2-13-234-177-50.ap-south-1.compute.amazonaws.com
+
+# Chess
+
+![Chess](.demo/chess.gif)
+
+# Checkers
+
+![Chess](.demo/checkers.gif)
+
+# Sketch IO
+
+![Sketchio](.demo/skribbl.gif)
