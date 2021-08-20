@@ -10,4 +10,4 @@ Multiplayer games made using SocketIO, React and NodeJS. In-game chat is availab
 
 > # Live
 >
-> https://multiplayergames.netlify.app/
+> http://ec2-13-234-177-50.ap-south-1.compute.amazonaws.com
