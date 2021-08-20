@@ -1,6 +1,7 @@
 # What is it?
 
-Multiplayer games made using SocketIO, React and NodeJS. In-game chat is available for all games
+Multiplayer games made using SocketIO, React and FastAPI. 
+In-game chat is available for all games
 
 ## Games you can play
 
