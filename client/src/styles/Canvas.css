@@ -1,55 +1,55 @@
 .canvasSuperContainer {
-  min-width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  margin: 0;
+    min-width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin: 0;
 }
 
 .canvasContainer {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .colorsContainer {
-  flex-direction: column;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    flex-direction: column;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .color {
-  width: 40px;
-  height: 40px;
-  margin: 0.5rem 0.5rem;
-  border-radius: 50%;
-  transition: transform ease-out 0.2s;
+    width: 40px;
+    height: 40px;
+    margin: 0.5rem 0.5rem;
+    border-radius: 50%;
+    transition: transform ease-out 0.2s;
 }
 
 .color:hover {
-  cursor: pointer;
-  transform: scale(1.2);
-  transition: transform ease-in 0.2s;
+    cursor: pointer;
+    transform: scale(1.2);
+    transition: transform ease-in 0.2s;
 }
 
 .paint-fill {
-  margin: 0 1rem;
-  width: 4rem;
-  height: 2rem;
-  background-color: transparent;
-  outline: none;
-  border: 2px solid #c8d6e5;
-  color: #c8d6e5;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    margin: 0 1rem;
+    width: 4rem;
+    height: 2rem;
+    background-color: transparent;
+    outline: none;
+    border: 2px solid #c8d6e5;
+    color: #c8d6e5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .paint-fill:hover {
-  cursor: pointer;
-  background-color: #c8d6e5;
-  color: black;
+    cursor: pointer;
+    background-color: #c8d6e5;
+    color: black;
 }

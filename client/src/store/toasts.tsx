@@ -7,52 +7,68 @@ import { ToastType } from "../types/store/toastsTypes";
 export type ToastMessageType = { header?: string; message: string };
 
 const showToast = (
-  type: ToastType,
-  message: ToastMessageType,
-  options?: ToastOptions
+    type: ToastType,
+    message: ToastMessageType,
+    options?: ToastOptions
 ) => {
-  const newOptions: ToastOptions = {
-    position: "top-right",
-    autoClose: 2000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    progress: undefined,
-    ...options
-  };
+    const newOptions: ToastOptions = {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        ...options,
+    };
 
-  message.header = message.header || type[0].toUpperCase() + type.slice(1);
+    message.header = message.header || type[0].toUpperCase() + type.slice(1);
 
-  switch (type) {
-    case "success":
-      toast.success(
-        <ToastMessage type={type} header={message.header} message={message.message} />,
-        newOptions
-      );
-      break;
+    switch (type) {
+        case "success":
+            toast.success(
+                <ToastMessage
+                    type={type}
+                    header={message.header}
+                    message={message.message}
+                />,
+                newOptions
+            );
+            break;
 
-    case "warning":
-      toast.warning(
-        <ToastMessage type={type} header={message.header} message={message.message} />,
-        newOptions
-      );
-      break;
+        case "warning":
+            toast.warning(
+                <ToastMessage
+                    type={type}
+                    header={message.header}
+                    message={message.message}
+                />,
+                newOptions
+            );
+            break;
 
-    case "info":
-      toast.info(
-        <ToastMessage type={type} header={message.header} message={message.message} />,
-        newOptions
-      );
-      break;
+        case "info":
+            toast.info(
+                <ToastMessage
+                    type={type}
+                    header={message.header}
+                    message={message.message}
+                />,
+                newOptions
+            );
+            break;
 
-    case "error":
-      toast.error(
-        <ToastMessage type={type} header={message.header} message={message.message} />,
-        newOptions
-      );
-      break;
-  }
+        case "error":
+            toast.error(
+                <ToastMessage
+                    type={type}
+                    header={message.header}
+                    message={message.message}
+                />,
+                newOptions
+            );
+            break;
+    }
 };
 
 export default showToast;

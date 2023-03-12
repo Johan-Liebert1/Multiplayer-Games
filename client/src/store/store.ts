@@ -8,14 +8,14 @@ import { getFromLocalStorage } from "../helpers/storeHelpers";
 const initialUserState = getFromLocalStorage<UserState>("user");
 
 const initialState = {
-  user: initialUserState,
-  socket: null
+    user: initialUserState,
+    socket: null,
 };
 
 const store = createStore(
-  combinedReducers,
-  initialState,
-  composeWithDevTools(applyMiddleware(thunk))
+    combinedReducers,
+    initialState,
+    composeWithDevTools(applyMiddleware(thunk))
 );
 
 export default store;

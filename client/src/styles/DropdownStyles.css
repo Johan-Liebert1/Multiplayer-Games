@@ -1,47 +1,47 @@
 .dropdown {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-content: center;
-  position: absolute;
-  top: 180%;
-  left: -50%;
-  min-width: 200%;
-  background-color: #0b1622;
-  border-radius: 5px;
-  z-index: 3000;
-  animation: grow 200ms linear;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    position: absolute;
+    top: 180%;
+    left: -50%;
+    min-width: 200%;
+    background-color: #0b1622;
+    border-radius: 5px;
+    z-index: 3000;
+    animation: grow 200ms linear;
 }
 
 @keyframes grow {
-  0% {
-    transform: translateY(-50%);
-    opacity: 0;
-    pointer-events: none;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-    pointer-events: all;
-  }
+    0% {
+        transform: translateY(-50%);
+        opacity: 0;
+        pointer-events: none;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: all;
+    }
 }
 
 .dropdown-item {
-  height: 100%;
-  width: 100%;
-  padding: 0.5rem 1rem;
-  color: #0984e3;
-  font-size: 1.1rem;
-  border-radius: 5px;
+    height: 100%;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    color: #0984e3;
+    font-size: 1.1rem;
+    border-radius: 5px;
 }
 
 .dropdown-item:hover {
-  background-color: #0984e3;
-  color: #0b1622;
-  cursor: pointer;
+    background-color: #0984e3;
+    color: #0b1622;
+    cursor: pointer;
 }
 
 .selected {
-  background-color: #0984e3;
-  color: #0b1622;
+    background-color: #0984e3;
+    color: #0b1622;
 }
