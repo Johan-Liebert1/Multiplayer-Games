@@ -68,6 +68,20 @@ class Rook extends ChessPiece {
         return cellsBetweenPieces;
     };
 
+    addMove = (board: ChessBoardType, row: number, col: number) => {
+        const piece = board[row][col];
+
+        if (piece instanceof ChessPiece) {
+            if (piece.color === this.color) {
+                this.protectingMoves[getStr(this.row, col)] = "protecting";
+            } else {
+                this.moves[getStr(this.row, col)] = "capturing";
+            }
+        }
+
+        this.moves[getStr(this.row, col)] = "valid";
+    };
+
     validMoves = (
         board: ChessBoardType,
         kingParameters: KingParametersType
@@ -76,72 +90,32 @@ class Rook extends ChessPiece {
 
         // go outwards from the current row, i.e iterate through columns
         for (let c = this.col - 1; c >= 0; c--) {
-            const piece = board[this.row][c];
-
-            if (piece instanceof ChessPiece) {
-                if (piece.color === this.color) {
-                    this.protectingMoves[getStr(this.row, c)] = "protecting";
-                    break;
-                } else {
-                    this.moves[getStr(this.row, c)] = "capturing";
-                    break;
-                }
-            }
-
-            this.moves[getStr(this.row, c)] = "valid";
+            this.addMove(board, this.row, c);
         }
 
         for (let c = this.col + 1; c < 8; c++) {
-            const piece = board[this.row][c];
-
-            if (piece instanceof ChessPiece) {
-                if (piece.color === this.color) {
-                    this.protectingMoves[getStr(this.row, c)] = "protecting";
-                    break;
-                } else {
-                    this.moves[getStr(this.row, c)] = "capturing";
-                    break;
-                }
-            }
-
-            this.moves[getStr(this.row, c)] = "valid";
+            this.addMove(board, this.row, c);
         }
 
         // go outwards from the current column, i.e iterate through rows
         for (let r = this.row - 1; r >= 0; r--) {
-            const piece = board[r][this.col];
-
-            if (piece instanceof ChessPiece) {
-                if (piece.color === this.color) {
-                    this.protectingMoves[getStr(r, this.col)] = "protecting";
-                    break;
-                } else {
-                    this.moves[getStr(r, this.col)] = "capturing";
-                    break;
-                }
-            }
-
-            this.moves[getStr(r, this.col)] = "valid";
+            this.addMove(board, r, this.col);
         }
 
         for (let r = this.row + 1; r < 8; r++) {
-            const piece = board[r][this.col];
-            if (piece instanceof ChessPiece) {
-                if (piece.color === this.color) {
-                    this.protectingMoves[getStr(r, this.col)] = "protecting";
-                    break;
-                } else if (piece.color !== this.color) {
-                    this.moves[getStr(r, this.col)] = "capturing";
-                    break;
-                }
-            }
-
-            this.moves[getStr(r, this.col)] = "valid";
+            this.addMove(board, r, this.col);
         }
 
+        console.log('after adding all move');
+
         this.checkIfKingInCheck(kingParameters);
+        console.log('this.checkIfKingInCheck(kingParameters);')
+
         this.handlePiecePinnedByRook(kingParameters, board);
+        console.log('this.handlePiecePinnedByRook(kingParameters, board);')
+
         this.handlePiecePinnedByBishop(kingParameters, board);
+        console.log('this.handlePiecePinnedByBishop(kingParameters, board);')
 
         return this.moves;
     };

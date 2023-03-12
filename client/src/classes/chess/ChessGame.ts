@@ -346,7 +346,7 @@ class ChessGame {
 
         for (let row = 0; row < board.length; row++) {
             for (let col = 0; col < board.length; col++) {
-                // console.log("setInitiallyAttackedCells");
+                console.log("setInitiallyAttackedCells");
                 let piece = board[row][col];
                 if (piece instanceof ChessPiece) {
                     // console.log("piece instanceof ChessPiece");
@@ -375,12 +375,14 @@ class ChessGame {
                             this.piecePoints[piece.pieceName];
                     }
 
-                    // console.log("before getting moves");
+                    console.log("before getting moves", piece);
                     // this will set piece.moves and piece.protectingMoves
-                    if (piece instanceof Pawn)
+                    if (piece instanceof Pawn) {
                         piece.validMoves(board, this.kingParams, true);
-                    else piece.validMoves(board, this.kingParams);
-                    // console.log("after gettingmoves");
+                    } else {
+                        piece.validMoves(board, this.kingParams);
+                    }
+                    console.log("after gettingmoves");
 
                     let totalMoves:
                         | ValidChessMove

@@ -104,3 +104,5 @@ export type FenChars =
     | "B"
     | "p"
     | "P";
+
+export type MoveType = 'valid' | 'check-blocking' | 'capturing';

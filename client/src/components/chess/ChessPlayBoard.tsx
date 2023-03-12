@@ -162,12 +162,8 @@ const ChessPlayBoard: React.FC = () => {
             whiteKingPos.current,
             blackKingPos.current
         );
-        // console.log(game);
-        // console.log(board);
 
-        setTimeout(() => {
-            chessGame.current?.setInitiallyAttackedCells(board);
-        }, 500);
+        chessGame.current?.setInitiallyAttackedCells(board);
     };
 
     useEffect(() => {

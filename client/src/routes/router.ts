@@ -2,6 +2,7 @@ import CheckersPlayBoard from "../components/checkers/CheckersPlayBoard";
 import CheckersTestBoard from "../components/checkers/CheckersTest";
 import ChessPlayBoard from "../components/chess/ChessPlayBoard";
 import ChessBoardTest from "../components/chess/ChessTest";
+import TestComponent from "../components/test";
 import CheckersScreen from "../views/CheckersScreen";
 import ChessScreen from "../views/ChessScreen";
 import GamesScreen from "../views/GamesScreen";
@@ -87,6 +88,11 @@ const routes = {
         path: "/stats",
         component: Statistics,
     },
+    '/test': {
+        name: "test",
+        path: "/test",
+        component: TestComponent,
+    }
 };
 
 export default routes;
