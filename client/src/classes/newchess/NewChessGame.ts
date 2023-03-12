@@ -5,7 +5,7 @@ export const rowColToCellName = (row: number, col: number) =>
     `${letters[col]}${row + 1}`;
 
 export class NewChessGame {
-    board: (number | NewChessPiece)[][];
+    board: (0 | NewChessPiece)[][];
 
     constructor() {
         this.board = this.setupBoard();
@@ -20,6 +20,6 @@ export class NewChessGame {
                     .map(() => 0)
             );
 
-        return array;
+        return array as 0[][];
     }
 }

@@ -2,10 +2,15 @@ import { ChessPieceColor, ChessPieceName } from "../../types/chessTypes";
 import { NewChessGame } from "./NewChessGame";
 import { NewChessPiece } from "./NewChessPiece";
 
-const rowAdders = [1, -1, 0, 0];
-const colAdders = [0, 0, 1, -1];
+const rowAdders = [2, -2, 1, -1];
+const colAdders = [
+    [-1, 1],
+    [-1, 1],
+    [-2, 2],
+    [-2, 2],
+];
 
-export class NewRook extends NewChessPiece {
+export class NewKnight extends NewChessPiece {
     hasMoved: boolean;
 
     constructor(
@@ -20,10 +25,10 @@ export class NewRook extends NewChessPiece {
 
     calculateMoves(game: NewChessGame) {
         for (let i = 0; i < rowAdders.length; i++) {
-            for (let j = 0; j < 8; j++) {
-                const newRow = this.row + rowAdders[i] + (j * rowAdders[i]);
-                const newCol = this.col + colAdders[i] + (j * colAdders[i]);
+            const newRow = this.row + rowAdders[i];
 
+            for (const ca of colAdders[i]) {
+                const newCol = this.col + ca;
 
                 if (this.rowColWithinBounds(newRow, newCol)) {
                     const piece = game.board[newRow][newCol];
@@ -34,12 +39,7 @@ export class NewRook extends NewChessPiece {
                         if (piece.color !== this.color) {
                             this.addMove("capturing", newRow, newCol);
                         }
-
-                        // the rook can't move over the piece, so we break
-                        break;
                     }
-                } else {
-                    break;
                 }
             }
         }
