@@ -168,7 +168,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({
           showToast("error", response.data.message);
         }
       } catch (err) {
-        showToast("error", { message: err });
+        showToast("error", { message: err as string });
       }
     };
   };

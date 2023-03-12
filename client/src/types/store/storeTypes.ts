@@ -1,5 +1,5 @@
 import { Socket } from "socket.io-client";
-import { DefaultEventsMap } from "socket.io-client/build/typed-events";
+// import { DefaultEventsMap } from "socket.io-client";
 import { CheckersPieceColor } from "../checkersTypes";
 import { ChessPieceColor } from "../chessTypes";
 
@@ -16,4 +16,4 @@ export interface UserState {
   chatColor?: string;
 }
 
-export type SocketState = Socket<DefaultEventsMap, DefaultEventsMap>;
+export type SocketState = Socket<any, any>;

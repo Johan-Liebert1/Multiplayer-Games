@@ -21,7 +21,8 @@ const UserRegister: React.FC<UserRegisterProps> = () => {
         showToast("warning", { message: createRequest.data.message });
       }
     } catch (e) {
-      showToast("error", { message: e.error.message });
+      // @ts-ignore
+      showToast("error", { message: e.error.message});
     }
   };
 
