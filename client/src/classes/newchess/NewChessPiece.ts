@@ -1,7 +1,16 @@
-import { ChessPieceColor, ChessPieceName, MoveType } from "../../types/chessTypes";
-import { rowColToCellName } from "./NewChessGame";
+import {
+    ChessPieceColor,
+    ChessPieceName,
+    MoveType,
+    NewChessBoard,
+} from "../../types/chessTypes";
+import { rowColToCellName } from "./helpers";
 
-export class NewChessPiece {
+interface ImplChessPiece {
+    calculateMoves: (_: NewChessBoard) => void;
+}
+
+export class NewChessPiece implements ImplChessPiece {
     color: ChessPieceColor;
     row: number;
     col: number;
@@ -26,13 +35,23 @@ export class NewChessPiece {
         this.image = `/images/chess/${color}${
             name[0].toUpperCase() + name.slice(1)
         }.png`;
-        this.moves = {
-            'valid': [],
-            'capturing': [],
-            'check-blocking': []
-        };
+        this.moves = this.defaultMoves();
     }
 
+    defaultMoves() {
+        return {
+            valid: [],
+            capturing: [],
+            "check-blocking": [],
+        }
+    }
+
+    calculateMoves(_: NewChessBoard) {}
+
+    moveTo([row, col]: [number, number]) {
+        this.row = row;
+        this.col = col;
+    }
 
     addMove(moveType: MoveType, row: number, col: number) {
         this.moves[moveType].push(rowColToCellName(row, col));
@@ -45,5 +64,4 @@ export class NewChessPiece {
     rowColWithinBounds(row: number, col: number) {
         return row >= 0 && row < 8 && col >= 0 && col < 8;
     }
-
 }

@@ -1,4 +1,5 @@
 import ChessPiece from "../classes/chess/ChessPiece";
+import { NewChessPiece } from "../classes/newchess/NewChessPiece";
 import { ClickedCellsType } from "./games";
 
 export type ChessDrawType = "Stalemate" | "Insufficient Pieces";
@@ -106,3 +107,5 @@ export type FenChars =
     | "P";
 
 export type MoveType = 'valid' | 'check-blocking' | 'capturing';
+
+export type NewChessBoard =  (0 | NewChessPiece)[][];

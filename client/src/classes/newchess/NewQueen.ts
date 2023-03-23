@@ -1,8 +1,8 @@
 import { ChessPieceColor, ChessPieceName } from "../../types/chessTypes";
 import { NewBishop } from "./NewBishop";
-import { NewChessGame } from "./NewChessGame";
 import { NewChessPiece } from "./NewChessPiece";
 import { NewRook } from "./NewRook";
+import { NewChessBoard } from "../../types/chessTypes";
 
 export class NewQueen extends NewChessPiece {
     rook: NewRook;
@@ -19,9 +19,9 @@ export class NewQueen extends NewChessPiece {
         this.bishop = new NewBishop(color, "bishop", row, col);
     }
 
-    calculateMoves(game: NewChessGame) {
-        this.rook.calculateMoves(game);
-        this.bishop.calculateMoves(game);
+    calculateMoves(board: NewChessBoard) {
+        this.rook.calculateMoves(board);
+        this.bishop.calculateMoves(board);
 
         this.moves = {
             valid: [...this.rook.moves["valid"], ...this.rook.moves["valid"]],

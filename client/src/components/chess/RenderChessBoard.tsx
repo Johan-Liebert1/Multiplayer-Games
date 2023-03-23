@@ -4,13 +4,17 @@ import Cell from "../allGames/Cell";
 
 import { ChessBoardType, ChessPieceColor } from "../../types/chessTypes";
 import ChessPiece from "../../classes/chess/ChessPiece";
+import { NewChessGame } from "../../classes/newchess/NewChessGame";
+import { NewChessPiece } from "../../classes/newchess/NewChessPiece";
+import { rowColToCellName } from "../../classes/newchess/helpers";
 
 interface RenderChessBoardProps {
-    board: ChessBoardType;
-    chessBoardRef: React.MutableRefObject<HTMLDivElement | null>;
+    board: ChessBoardType | NewChessGame["board"];
+    chessBoardRef?: React.MutableRefObject<HTMLDivElement | null>;
     userPieceColor: ChessPieceColor;
     testBoard: boolean;
     movePiece: (row: number, col: number) => void;
+    dots?: string[];
 }
 
 const RenderChessBoard: React.FC<RenderChessBoardProps> = ({
@@ -19,10 +23,12 @@ const RenderChessBoard: React.FC<RenderChessBoardProps> = ({
     userPieceColor,
     testBoard,
     movePiece,
+    dots
 }) => {
     return (
         <>
-            {board.map((row, ri) => {
+            {board.map((row, rIndex) => {
+                const ri = 7 - rIndex;
                 return (
                     <div
                         style={{
@@ -32,22 +38,29 @@ const RenderChessBoard: React.FC<RenderChessBoardProps> = ({
                         }}
                         key={`row${ri}`}
                     >
-                        {row.map((col, ci) => {
+                        {row.map((_, ci) => {
                             let color =
                                 (ri + ci) % 2 !== 0
-                                    ? "rgba(195,105,56,0)"
-                                    : "rgba(239, 206,163,0)";
+                                    ? "rgba(195,105,56)"
+                                    : "rgba(239, 206,163)";
 
-                            let piece = board[ri][ci];
+                            const piece = board[ri][ci];
                             let blueDot = false,
                                 redDot,
                                 isClicked;
+
+                            if (dots && dots.includes(rowColToCellName(ri, ci))) {
+                                blueDot = true;
+                            }
 
                             if (piece === "dot") {
                                 blueDot = true;
                             }
 
-                            if (piece instanceof ChessPiece) {
+                            if (
+                                piece instanceof ChessPiece ||
+                                piece instanceof NewChessPiece
+                            ) {
                                 if (piece.isBeingAttacked) {
                                     redDot = true;
                                 }
@@ -68,7 +81,8 @@ const RenderChessBoard: React.FC<RenderChessBoardProps> = ({
                                     color={color}
                                     key={`row${ri}-col${ci}`}
                                     image={
-                                        piece instanceof ChessPiece
+                                        piece instanceof ChessPiece ||
+                                        piece instanceof NewChessPiece
                                             ? piece.image
                                             : ""
                                     }

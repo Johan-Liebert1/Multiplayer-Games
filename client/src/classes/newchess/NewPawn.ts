@@ -1,6 +1,6 @@
 import { ChessPieceColor, ChessPieceName } from "../../types/chessTypes";
-import { NewChessGame } from "./NewChessGame";
 import { NewChessPiece } from "./NewChessPiece";
+import { NewChessBoard } from "../../types/chessTypes";
 
 export class NewPawn extends NewChessPiece {
     hasMoved: boolean;
@@ -15,20 +15,26 @@ export class NewPawn extends NewChessPiece {
         this.hasMoved = false;
     }
 
-    calculateMoves(game: NewChessGame) {
+    calculateMoves(board: NewChessBoard) {
+        this.moves = this.defaultMoves();
+
         const adder = this.color === "white" ? 1 : -1;
 
         // pawn becomes another piece at the end of the board so we don't need to
         // do row boundary checks
 
         // forward move
-        if (game.board[this.row + adder][this.col] === 0) {
+        if (
+            this.rowColWithinBounds(this.row + adder, this.col) &&
+            board[this.row + adder][this.col] === 0
+        ) {
             this.addMove("valid", this.row + adder, this.col);
 
             // double forward move
             if (
                 !this.hasMoved &&
-                game.board[this.row + 2 * adder][this.col] === 0
+                this.rowColWithinBounds(this.row + 2 * adder, this.col) &&
+                board[this.row + 2 * adder][this.col] === 0
             ) {
                 this.addMove("valid", this.row + adder * 2, this.col);
             }
@@ -37,7 +43,7 @@ export class NewPawn extends NewChessPiece {
         // capturing move
         // TODO: handle en passent
         if (this.col - 1 > 0) {
-            let piece = game.board[this.row + adder][this.col - 1];
+            let piece = board[this.row + adder][this.col - 1];
 
             if (piece instanceof NewChessPiece && piece.color !== this.color) {
                 this.addMove("capturing", piece.row, piece.col);
@@ -45,7 +51,7 @@ export class NewPawn extends NewChessPiece {
         }
 
         if (this.col + 1 < 8) {
-            let piece = game.board[this.row + adder][this.col + 1];
+            let piece = board[this.row + adder][this.col + 1];
 
             if (piece instanceof NewChessPiece && piece.color !== this.color) {
                 this.addMove("capturing", piece.row, piece.col);

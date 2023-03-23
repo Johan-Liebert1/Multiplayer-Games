@@ -3,6 +3,7 @@ import { CELL_SIZE, Games } from "../../types/games";
 import { motion, PanInfo } from "framer-motion";
 import { ChessPieceColor } from "../../types/chessTypes";
 import { CheckersPieceColor } from "../../types/checkersTypes";
+import { letters } from "../../classes/newchess/helpers";
 
 interface CellProps {
     game: Games;
@@ -88,6 +89,8 @@ const Cell: React.FC<CellProps> = ({
     const dragEnded = (event: MouseEvent | TouchEvent | PointerEvent) => {
         const { clientX: x, clientY: y } = event as MouseEvent;
 
+        console.log('dragEnded', boardRef);
+
         if (boardRef?.current) {
             const boardRect = boardRef.current.getBoundingClientRect();
 
@@ -98,6 +101,8 @@ const Cell: React.FC<CellProps> = ({
                 showMoves(row1, col1);
                 return;
             }
+
+            console.log(userChessColor);
 
             if (userChessColor) {
                 switch (userChessColor) {
@@ -126,6 +131,28 @@ const Cell: React.FC<CellProps> = ({
     return (
         <div onMouseDown={handleCellClick} style={divStyles} ref={cellRef}>
             <div style={innerDivStyles}>
+                <div
+                    style={{
+                        position: "absolute",
+                        bottom: 5,
+                        left: 5,
+                        color: "black",
+                        fontWeight: "bold",
+                    }}
+                >
+                    {col === 0 && row + 1}
+                </div>
+                <div
+                    style={{
+                        position: "absolute",
+                        bottom: 5,
+                        right: 5,
+                        color: "black",
+                        fontWeight: "bold",
+                    }}
+                >
+                    {row === 0 && letters[col]}
+                </div>
                 {(blueDot || redDot) && <div style={dotStyle}></div>}
                 {image && (
                     <motion.img

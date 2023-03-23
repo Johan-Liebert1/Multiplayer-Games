@@ -1,6 +1,6 @@
 import { ChessPieceColor, ChessPieceName } from "../../types/chessTypes";
-import { NewChessGame } from "./NewChessGame";
 import { NewChessPiece } from "./NewChessPiece";
+import { NewChessBoard } from "../../types/chessTypes";
 
 const rowAdders = [2, -2, 1, -1];
 const colAdders = [
@@ -23,7 +23,9 @@ export class NewKnight extends NewChessPiece {
         this.hasMoved = false;
     }
 
-    calculateMoves(game: NewChessGame) {
+    calculateMoves(board: NewChessBoard) {
+        this.moves = this.defaultMoves();
+
         for (let i = 0; i < rowAdders.length; i++) {
             const newRow = this.row + rowAdders[i];
 
@@ -31,7 +33,7 @@ export class NewKnight extends NewChessPiece {
                 const newCol = this.col + ca;
 
                 if (this.rowColWithinBounds(newRow, newCol)) {
-                    const piece = game.board[newRow][newCol];
+                    const piece = board[newRow][newCol];
 
                     if (piece === 0) {
                         this.addMove("valid", newRow, newCol);
